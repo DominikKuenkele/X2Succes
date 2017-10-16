@@ -35,7 +35,7 @@ public class ViewUProfilErstellen implements Initializable {
 	private TextField cCeoname;
 
 	@FXML
-	private TextField cCeoprename;
+	private TextField cCeoprenom;
 
 	@FXML
 	private TextField cWebsite;
@@ -104,7 +104,7 @@ public class ViewUProfilErstellen implements Initializable {
 		int mitarbeiter = Integer.parseInt(UMitarbeiter.getText());
 		String branche = UBranche.getValue();
 		String beschreibung = UBeschreibung.getText();
-		String ceoFirstName = cCeoprename.getText();
+		String ceoFirstName = cCeoprenom.getText();
 		String ceoLastName = cCeoname.getText();
 		String website = cWebsite.getText();
 		try {
