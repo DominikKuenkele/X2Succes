@@ -40,7 +40,7 @@ public class BrancheDAOTest {
 	@Test
 	public void testGetBrancheString() {
 		try {
-			System.out.println(new BrancheDAO().getBID("Chemie"));
+			System.out.println(new BrancheDAO().getBID("Banken"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

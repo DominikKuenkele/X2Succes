@@ -3,8 +3,6 @@
  */
 package persistence;
 
-import static org.junit.Assert.fail;
-
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -76,7 +74,12 @@ public class UnternehmensprofilDAOTest {
 	@Ignore
 	@Test
 	public void testGetAllUnternehmen() {
-		fail("Not yet implemented");
+		try {
+			System.out.println(new UnternehmensprofilDAO().getAllUnternehmen());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -86,7 +89,12 @@ public class UnternehmensprofilDAOTest {
 	@Ignore
 	@Test
 	public void testDeleteUnternehmensprofil() {
-		fail("Not yet implemented");
+		try {
+			new UnternehmensprofilDAO().deleteUnternehmensprofil(8);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -97,15 +105,13 @@ public class UnternehmensprofilDAOTest {
 	@Test
 	public void testChangeUnternehmen() {
 		try {
-			for (int i = 0; i < 5; i++) {
-				Unternehmensprofil u = new UnternehmensprofilDAO().getUnternehmensprofil(i + 7);
+			Unternehmensprofil u = new UnternehmensprofilDAO().getUnternehmensprofil(9);
 
-				Unternehmensprofil u2 = new Unternehmensprofil(u.getName(), u.getLegalForm(), u.getAddress(),
-						u.getFounding(), i * 100, u.getDescription(), u.getBranche(), u.getWebsite(),
-						u.getCeoFirstName(), u.getCeoLastName(), u.getNutzer());
-				u2.setId(u.getId());
-				new UnternehmensprofilDAO().changeUnternehmen(u2);
-			}
+			Unternehmensprofil u2 = new Unternehmensprofil(u.getName(), u.getLegalForm(), u.getAddress(),
+					u.getFounding(), 50000, u.getDescription(), u.getBranche(), u.getWebsite(), "Olaf",
+					u.getCeoLastName(), u.getNutzer());
+			u2.setId(u.getId());
+			new UnternehmensprofilDAO().changeUnternehmen(u2);
 		} catch (ValidateConstrArgsException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,7 +124,6 @@ public class UnternehmensprofilDAOTest {
 	 */
 	@Test
 	public void testGetUnternehmensprofilBYNutzer() {
-
 		try {
 			System.out.println(new UnternehmensprofilDAO().getUnternehmensprofilByNutzer(22));
 		} catch (SQLException e) {

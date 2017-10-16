@@ -19,28 +19,7 @@ import util.exception.ValidateConstrArgsException;
  *
  */
 public class UnternehmensprofilDAO {
-	private Connection connect = null;
-	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet = null;
-
-	private void open() throws SQLException {
-		DataSource dbconnection = new DataSource();
-		connect = dbconnection.getConnection();
-	}
-
-	private void close() throws SQLException {
-		if (resultSet != null) {
-			resultSet.close();
-		}
-
-		if (preparedStatement != null) {
-			preparedStatement.close();
-		}
-
-		if (connect != null) {
-			connect.close();
-		}
-	}
+	private DataSource datasource = DataSource.getInstance();
 
 	/**
 	 * @param unternehmen
@@ -50,11 +29,10 @@ public class UnternehmensprofilDAO {
 	public int addUnternehmensprofil(Unternehmensprofil unternehmen) throws SQLException {
 		Adresse address = unternehmen.getAddress();
 		int uid = -1;
-		try {
-			open();
+		String sql = "INSERT INTO Unternehmensprofil values (default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-			preparedStatement = connect.prepareStatement(
-					"INSERT INTO Unternehmensprofil values (default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			int nutzerId = unternehmen.getNutzer().getNID();
 			preparedStatement.setInt(1, nutzerId);
 			int bid = new BrancheDAO().getBID(unternehmen.getBranche());
@@ -71,15 +49,18 @@ public class UnternehmensprofilDAO {
 			preparedStatement.setString(12, address.getCity());
 			preparedStatement.setString(13, address.getStrasse());
 			preparedStatement.setString(14, address.getNumber());
-			preparedStatement.executeUpdate();
 
-			preparedStatement = connect.prepareStatement("SELECT LAST_INSERT_ID()");
-			resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				uid = resultSet.getInt("last_insert_id()");
+			preparedStatement.executeUpdate();
+		}
+
+		sql = "SELECT LAST_INSERT_ID()";
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					uid = resultSet.getInt("last_insert_id()");
+				}
 			}
-		} finally {
-			close();
 		}
 		return uid;
 	}
@@ -90,19 +71,21 @@ public class UnternehmensprofilDAO {
 	 * @throws SQLException
 	 */
 	public Unternehmensprofil getUnternehmensprofil(int uid) throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement(
-					"SELECT UID, NID, branche.branche, name, legalForm, founding, employees, description, "
-							+ "website, ceoFirstName, ceoLastName, plz, city, street, number "
-							+ "FROM unternehmensprofil " + "INNER JOIN branche ON unternehmensprofil.BID = branche.BID "
-							+ "WHERE UID = ?");
-			preparedStatement.setInt(1, uid);
+		String sql = "SELECT UID, NID, branche.branche, name, legalForm, founding, employees, description, "
+				+ "website, ceoFirstName, ceoLastName, plz, city, street, number " + "FROM unternehmensprofil "
+				+ "INNER JOIN branche ON unternehmensprofil.BID = branche.BID " + "WHERE UID = ?";
 
-			resultSet = preparedStatement.executeQuery();
-			return getUnternehmensprofilFromResultSet(resultSet).get(0);
-		} finally {
-			close();
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setInt(1, uid);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				List<Unternehmensprofil> resultList = getUnternehmensprofilFromResultSet(resultSet);
+				if (resultList.size() > 0) {
+					return resultList.get(0);
+				} else {
+					return null;
+				}
+			}
 		}
 	}
 
@@ -112,17 +95,15 @@ public class UnternehmensprofilDAO {
 	 * @throws SQLException
 	 */
 	public List<Unternehmensprofil> getAllUnternehmen() throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement(
-					"SELECT UID, NID, branche.branche, name, legalForm, founding, employees, description, "
-							+ "website, ceoFirstName, ceoLastName, plz, city, street, number "
-							+ "FROM Unternehmensprofil"
-							+ "INNER JOIN branche ON unternehmensprofil.BID = branche.BID ");
-			resultSet = preparedStatement.executeQuery();
-			return getUnternehmensprofilFromResultSet(resultSet);
-		} finally {
-			close();
+		String sql = "SELECT UID, NID, branche.branche, name, legalForm, founding, employees, description, "
+				+ "website, ceoFirstName, ceoLastName, plz, city, street, number " + "FROM unternehmensprofil "
+				+ "INNER JOIN branche ON unternehmensprofil.BID = branche.BID ";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				return getUnternehmensprofilFromResultSet(resultSet);
+			}
 		}
 	}
 
@@ -131,14 +112,13 @@ public class UnternehmensprofilDAO {
 	 * @throws SQLException
 	 */
 	public void deleteUnternehmensprofil(int uid) throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("DELETE FROM Unternehmensprofil WHERE UID = ?");
+		String sql = "DELETE FROM Unternehmensprofil WHERE UID = ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setInt(1, uid);
 
 			preparedStatement.executeUpdate();
-		} finally {
-			close();
 		}
 	}
 
@@ -181,12 +161,13 @@ public class UnternehmensprofilDAO {
 	 */
 	public void changeUnternehmen(Unternehmensprofil aUnternehmen) throws SQLException {
 		Adresse address = aUnternehmen.getAddress();
-		try {
-			open();
-			this.preparedStatement = this.connect.prepareStatement(
-					"UPDATE unternehmensprofil SET NID = ?, BID = ?, name = ?, legalForm = ?, founding = ?, employees = ?, description = ?, "
-							+ "website = ?, ceoFirstName = ?, ceoLastName = ?, plz = ?, city = ?, street = ?,"
-							+ " number = ? WHERE UID = ?");
+
+		String sql = "UPDATE unternehmensprofil SET NID = ?, BID = ?, name = ?, legalForm = ?, founding = ?, employees = ?, description = ?, "
+				+ "website = ?, ceoFirstName = ?, ceoLastName = ?, plz = ?, city = ?, street = ?,"
+				+ " number = ? WHERE UID = ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			int nutzerId = aUnternehmen.getNutzer().getNID();
 			preparedStatement.setInt(1, nutzerId);
 			int bid = new BrancheDAO().getBID(aUnternehmen.getBranche());
@@ -204,9 +185,8 @@ public class UnternehmensprofilDAO {
 			preparedStatement.setString(13, address.getStrasse());
 			preparedStatement.setString(14, address.getNumber());
 			preparedStatement.setInt(15, aUnternehmen.getId());
+
 			preparedStatement.executeUpdate();
-		} finally {
-			close();
 		}
 	}
 
@@ -216,23 +196,21 @@ public class UnternehmensprofilDAO {
 	 * @throws SQLException
 	 */
 	public Unternehmensprofil getUnternehmensprofilByNutzer(int aNid) throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement(
-					"SELECT UID, NID, branche.branche, name, legalForm, founding, employees, description, "
-							+ "website, ceoFirstName, ceoLastName, plz, city, street, number "
-							+ "FROM unternehmensprofil " + "INNER JOIN branche ON unternehmensprofil.BID = branche.BID "
-							+ "WHERE NID = ?");
+		String sql = "SELECT UID, NID, branche.branche, name, legalForm, founding, employees, description, "
+				+ "website, ceoFirstName, ceoLastName, plz, city, street, number " + "FROM unternehmensprofil "
+				+ "INNER JOIN branche ON unternehmensprofil.BID = branche.BID " + "WHERE NID = ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setInt(1, aNid);
-			resultSet = preparedStatement.executeQuery();
-			List<Unternehmensprofil> resultList = getUnternehmensprofilFromResultSet(resultSet);
-			if (resultList.size() > 0) {
-				return resultList.get(0);
-			} else {
-				return null;
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				List<Unternehmensprofil> resultList = getUnternehmensprofilFromResultSet(resultSet);
+				if (resultList.size() > 0) {
+					return resultList.get(0);
+				} else {
+					return null;
+				}
 			}
-		} finally {
-			close();
 		}
 	}
 }

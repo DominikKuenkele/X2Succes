@@ -18,35 +18,7 @@ import util.exception.ValidateConstrArgsException;
  *
  */
 public class JobangebotDAO {
-	private Connection connect = null;
-	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet = null;
-
-	/**
-	 * @throws SQLException
-	 */
-	private void open() throws SQLException {
-		DataSource dbconnection = new DataSource();
-		connect = dbconnection.getConnection();
-	}
-
-	/**
-	 * @throws SQLException
-	 */
-	private void close() throws SQLException {
-		if (resultSet != null) {
-			resultSet.close();
-		}
-
-		if (preparedStatement != null) {
-			preparedStatement.close();
-		}
-
-		if (connect != null) {
-			connect.close();
-		}
-
-	}
+	private DataSource datasource = DataSource.getInstance();
 
 	/**
 	 * @param jobangebot
@@ -56,10 +28,10 @@ public class JobangebotDAO {
 	public int addJobangebot(Jobangebot jobangebot) throws SQLException {
 		int unternehmensId = jobangebot.getUnternehmensprofil().getId();
 		int jid = -1;
-		try {
-			open();
-			preparedStatement = connect
-					.prepareStatement("INSERT INTO Jobangebot values (default, ?, ?, ?, ?, ?, ?, ?, ?)");
+		String sql = "INSERT INTO Jobangebot values (default, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setInt(1, unternehmensId);
 			int gid = new AbschlussDAO().getAbschluss(jobangebot.getAbschluss());
 			preparedStatement.setInt(2, gid);
@@ -70,27 +42,34 @@ public class JobangebotDAO {
 			preparedStatement.setObject(6, jobangebot.getFrist());
 			preparedStatement.setInt(7, jobangebot.getGehalt());
 			preparedStatement.setInt(8, jobangebot.getWochenstunden());
-			preparedStatement.executeUpdate();
 
-			preparedStatement = connect.prepareStatement("SELECT LAST_INSERT_ID()");
-			resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				jid = resultSet.getInt("last_insert_id()");
+			preparedStatement.executeUpdate();
+		}
+
+		sql = "SELECT LAST_INSERT_ID()";
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					jid = resultSet.getInt("last_insert_id()");
+				}
 			}
+		}
+
+		sql = "INSERT INTO SprachenzuordnungJA values (?, ?)";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 
 			List<String> sprachen = jobangebot.getSprachen();
-
 			for (int i = 0; i < sprachen.size(); i++) {
 				int sid = new SpracheDAO().getSID(sprachen.get(i));
 
-				preparedStatement = connect.prepareStatement("INSERT INTO SprachenzuordnungJA values (?, ?)");
 				preparedStatement.setInt(1, jid);
 				preparedStatement.setInt(2, sid);
 
 				preparedStatement.executeUpdate();
 			}
-		} finally {
-			close();
 		}
 		return jid;
 	}
@@ -101,17 +80,22 @@ public class JobangebotDAO {
 	 * @throws SQLException
 	 */
 	public Jobangebot getJobangebot(int jid) throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT JID, UID, graduation.graduation, expertise.expertise, "
-					+ "jobTitle, description, deadline, salary, weeklyHours FROM jobangebot "
-					+ "INNER JOIN graduation ON jobangebot.GID=graduation.GID "
-					+ "INNER JOIN expertise ON jobangebot.EID = expertise.EID WHERE JID = ?");
+		String sql = "SELECT JID, UID, graduation.graduation, expertise.expertise, "
+				+ "jobTitle, description, deadline, salary, weeklyHours FROM jobangebot "
+				+ "INNER JOIN graduation ON jobangebot.GID=graduation.GID "
+				+ "INNER JOIN expertise ON jobangebot.EID = expertise.EID WHERE JID = ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setInt(1, jid);
-			resultSet = preparedStatement.executeQuery();
-			return getJobangebotFromResultSet(resultSet).get(0);
-		} finally {
-			close();
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				List<Jobangebot> resultList = getJobangebotFromResultSet(resultSet);
+				if (resultList.size() > 0) {
+					return resultList.get(0);
+				} else {
+					return null;
+				}
+			}
 		}
 	}
 
@@ -120,16 +104,16 @@ public class JobangebotDAO {
 	 * @throws SQLException
 	 */
 	public List<Jobangebot> getAllJobangebote() throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT JID, UID, graduation.graduation, expertise.expertise, "
-					+ "jobTitle, description, deadline, salary, weeklyHours FROM jobangebot "
-					+ "INNER JOIN graduation ON jobangebot.GID = graduation.GID "
-					+ "INNER JOIN expertise ON jobangebot.EID = expertise.EID");
-			resultSet = preparedStatement.executeQuery();
-			return getJobangebotFromResultSet(resultSet);
-		} finally {
-			close();
+		String sql = "SELECT JID, UID, graduation.graduation, expertise.expertise, "
+				+ "jobTitle, description, deadline, salary, weeklyHours FROM jobangebot "
+				+ "INNER JOIN graduation ON jobangebot.GID = graduation.GID "
+				+ "INNER JOIN expertise ON jobangebot.EID = expertise.EID";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				return getJobangebotFromResultSet(resultSet);
+			}
 		}
 	}
 
@@ -138,14 +122,13 @@ public class JobangebotDAO {
 	 * @throws SQLException
 	 */
 	public void deleteJobangebot(int jid) throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("DELETE FROM Jobangebot WHERE JID = ?");
+		String sql = "DELETE FROM Jobangebot WHERE JID = ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setInt(1, jid);
 
 			preparedStatement.executeUpdate();
-		} finally {
-			close();
 		}
 	}
 
@@ -154,41 +137,45 @@ public class JobangebotDAO {
 	 * @throws SQLException
 	 */
 	public void changeJobangebot(Jobangebot jobangebot) throws SQLException {
-		try {
-			open();
-			List<String> sprachen = jobangebot.getSprachen();
+		List<String> sprachen = jobangebot.getSprachen();
+		String sql = "DELETE FROM sprachenzuordnungJA WHERE JID = ?";
 
-			preparedStatement = connect.prepareStatement("DELETE FROM sprachenzuordnungJA WHERE JID = ?");
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setInt(1, jobangebot.getJID());
+
 			preparedStatement.executeUpdate();
+		}
 
-			this.preparedStatement = this.connect.prepareStatement(
-					"UPDATE jobangebot SET GID = ?, EID = ?, jobTitle = ?, description = ?, deadline = ?, "
-							+ "salary = ?, weeklyHours = ? WHERE JID = ?");
+		sql = "UPDATE jobangebot SET GID = ?, EID = ?, jobTitle = ?, description = ?, deadline = ?, "
+				+ "salary = ?, weeklyHours = ? WHERE JID = ?";
 
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			int gid = new AbschlussDAO().getAbschluss(jobangebot.getAbschluss());
-			this.preparedStatement.setInt(1, gid);
+			preparedStatement.setInt(1, gid);
 			int eid = new ExpertiseDAO().getExpertise(jobangebot.getFachgebiet());
-			this.preparedStatement.setInt(2, eid);
-			this.preparedStatement.setString(3, jobangebot.getJobTitel());
-			this.preparedStatement.setString(4, jobangebot.getBeschreibung());
-			this.preparedStatement.setObject(5, jobangebot.getFrist());
-			this.preparedStatement.setInt(6, jobangebot.getGehalt());
-			this.preparedStatement.setInt(7, jobangebot.getWochenstunden());
-			this.preparedStatement.setInt(8, jobangebot.getJID());
-			this.preparedStatement.executeUpdate();
+			preparedStatement.setInt(2, eid);
+			preparedStatement.setString(3, jobangebot.getJobTitel());
+			preparedStatement.setString(4, jobangebot.getBeschreibung());
+			preparedStatement.setObject(5, jobangebot.getFrist());
+			preparedStatement.setInt(6, jobangebot.getGehalt());
+			preparedStatement.setInt(7, jobangebot.getWochenstunden());
+			preparedStatement.setInt(8, jobangebot.getJID());
+
+			preparedStatement.executeUpdate();
 
 			for (int i = 0; i < sprachen.size(); i++) {
 				int sid = new SpracheDAO().getSID(sprachen.get(i));
 
-				preparedStatement = connect.prepareStatement("INSERT INTO SprachenzuordnungJA values (?, ?)");
-				preparedStatement.setInt(1, jobangebot.getJID());
-				preparedStatement.setInt(2, sid);
+				String sql2 = "INSERT INTO SprachenzuordnungJA values (?, ?)";
+				try (PreparedStatement preparedStatement2 = connect.prepareStatement(sql2)) {
+					preparedStatement.setInt(1, jobangebot.getJID());
+					preparedStatement.setInt(2, sid);
 
-				preparedStatement.executeUpdate();
+					preparedStatement.executeUpdate();
+				}
 			}
-		} finally {
-			close();
 		}
 	}
 
@@ -222,90 +209,83 @@ public class JobangebotDAO {
 
 	private List<String> getLanguageInJobangebot(int jid) throws SQLException {
 		List<String> result = new LinkedList<>();
-		ResultSet resultSetSprache = null;
-		try {
-			preparedStatement = connect.prepareStatement("SELECT SID FROM SprachenzuordnungJA WHERE JID = ?");
+		String sql = "SELECT SID FROM SprachenzuordnungJA WHERE JID = ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setInt(1, jid);
-			resultSetSprache = preparedStatement.executeQuery();
-
-			while (resultSetSprache.next()) {
-				int sid = resultSetSprache.getInt("SID");
-
-				String sprache = new SpracheDAO().getSprache(sid);
-				result.add(sprache);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					int sid = resultSet.getInt("SID");
+					String sprache = new SpracheDAO().getSprache(sid);
+					result.add(sprache);
+				}
 			}
-		} finally {
-			resultSetSprache.close();
 		}
 		return result;
 	}
 
 	public List<Jobangebot> searchForName(String aName) throws SQLException {
 		List<Jobangebot> result = new LinkedList<>();
-		try {
-			open();
-			String name = aName.replace("!", "!!").replace("%", "!%").replace("_", "!_").replace("[", "![").replace("*",
-					"%");
-			preparedStatement = connect.prepareStatement("SELECT jobangebot.JID FROM jobangebot "
-					+ "INNER JOIN unternehmensprofil ON jobangebot.UID=unternehmensprofil.UID "
-					+ "WHERE unternehmensprofil.name LIKE ?");
+		String name = aName.replace("!", "!!").replace("%", "!%").replace("_", "!_").replace("[", "![").replace("*",
+				"%");
+		String sql = "SELECT jobangebot.JID FROM jobangebot "
+				+ "INNER JOIN unternehmensprofil ON jobangebot.UID=unternehmensprofil.UID "
+				+ "WHERE unternehmensprofil.name LIKE ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setString(1, name);
-			resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				int jid = resultSet.getInt("jobangebot.JID");
-				result.add(new JobangebotDAO().getJobangebot(jid));
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					int jid = resultSet.getInt("jobangebot.JID");
+					result.add(new JobangebotDAO().getJobangebot(jid));
+				}
 			}
-		} finally {
-			close();
 		}
 		return result;
 	}
 
 	public List<Jobangebot> searchForBranche(String aBranche) throws SQLException {
 		List<Jobangebot> result = new LinkedList<>();
-		try {
-			open();
-			String branche = aBranche.replace("!", "!!").replace("%", "!%").replace("_", "!_").replace("[", "![")
-					.replace("*", "%");
-			preparedStatement = connect.prepareStatement("SELECT jobangebot.JID FROM jobangebot "
-					+ "INNER JOIN unternehmensprofil ON jobangebot.UID = unternehmensprofil.UID "
-					+ "INNER JOIN branche ON unternehmensprofil.BID = branche.BID WHERE branche.branche LIKE ?");
+		String branche = aBranche.replace("!", "!!").replace("%", "!%").replace("_", "!_").replace("[", "![")
+				.replace("*", "%");
+		String sql = "SELECT jobangebot.JID FROM jobangebot "
+				+ "INNER JOIN unternehmensprofil ON jobangebot.UID = unternehmensprofil.UID "
+				+ "INNER JOIN branche ON unternehmensprofil.BID = branche.BID WHERE branche.branche LIKE ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setString(1, branche);
-			resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				int jid = resultSet.getInt("jobangebot.JID");
-				result.add(new JobangebotDAO().getJobangebot(jid));
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					int jid = resultSet.getInt("jobangebot.JID");
+					result.add(new JobangebotDAO().getJobangebot(jid));
+				}
 			}
-		} finally {
-			close();
 		}
 		return result;
 	}
 
 	public List<Jobangebot> searchForAbschluss(String aAbschluss, String aExpertise) throws SQLException {
 		List<Jobangebot> result = new LinkedList<>();
-		try {
-			open();
+		int hierarchy = new AbschlussDAO().getHierarchy(aAbschluss);
+		String expertise = aExpertise.replace("!", "!!").replace("%", "!%").replace("_", "!_").replace("[", "![")
+				.replace("*", "%");
+		String sql = "SELECT jobangebot.JID FROM jobangebot INNER JOIN expertise ON jobangebot.EID = expertise.EID "
+				+ "INNER JOIN graduation ON jobangebot.GID = graduation.GID "
+				+ "WHERE expertise.expertise LIKE ? AND graduation.hierarchy <= ?";
 
-			String expertise = aExpertise.replace("!", "!!").replace("%", "!%").replace("_", "!_").replace("[", "![")
-					.replace("*", "%");
-
-			int hierarchy = new AbschlussDAO().getHierarchy(aAbschluss);
-
-			preparedStatement = connect.prepareStatement(
-					"SELECT jobangebot.JID FROM jobangebot INNER JOIN expertise ON jobangebot.EID = expertise.EID "
-							+ "INNER JOIN graduation ON jobangebot.GID = graduation.GID "
-							+ "WHERE expertise.expertise LIKE ? AND graduation.hierarchy <= ?");
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setString(1, expertise);
 			preparedStatement.setInt(2, hierarchy);
-
-			resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				int jid = resultSet.getInt("jobangebot.JID");
-				result.add(new JobangebotDAO().getJobangebot(jid));
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					int jid = resultSet.getInt("jobangebot.JID");
+					result.add(new JobangebotDAO().getJobangebot(jid));
+				}
 			}
-		} finally {
-			close();
 		}
 		return result;
 	}
@@ -318,108 +298,38 @@ public class JobangebotDAO {
 	 */
 	public List<Jobangebot> searchForGehalt(int aGehalt) throws SQLException {
 		List<Jobangebot> result = new LinkedList<>();
-		try {
-			open();
-			preparedStatement = connect
-					.prepareStatement("SELECT jobangebot.JID FROM jobangebot WHERE jobangebot.salary >= ?");
+		String sql = "SELECT jobangebot.JID FROM jobangebot WHERE jobangebot.salary >= ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setInt(1, aGehalt);
-			resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				int jid = resultSet.getInt("jobangebot.JID");
-				result.add(new JobangebotDAO().getJobangebot(jid));
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					int jid = resultSet.getInt("jobangebot.JID");
+					result.add(new JobangebotDAO().getJobangebot(jid));
+				}
 			}
-		} finally {
-			close();
 		}
 		return result;
 	}
 
 	public List<Jobangebot> searchForMitarbeiter(int min, int max) throws SQLException {
 		List<Jobangebot> result = new LinkedList<>();
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT jobangebot.JID FROM jobangebot "
-					+ "INNER JOIN unternehmensprofil ON jobangebot.UID = unternehmensprofil.UID "
-					+ "WHERE unternehmensprofil.employees >= ? AND unternehmensprofil.employees <= ?");
+		String sql = "SELECT jobangebot.JID FROM jobangebot "
+				+ "INNER JOIN unternehmensprofil ON jobangebot.UID = unternehmensprofil.UID "
+				+ "WHERE unternehmensprofil.employees >= ? AND unternehmensprofil.employees <= ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setInt(1, min);
 			preparedStatement.setInt(2, max);
-			resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				int jid = resultSet.getInt("jobangebot.JID");
-				result.add(new JobangebotDAO().getJobangebot(jid));
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					int jid = resultSet.getInt("jobangebot.JID");
+					result.add(new JobangebotDAO().getJobangebot(jid));
+				}
 			}
-		} finally {
-			close();
 		}
 		return result;
 	}
-
-	// public List<Jobangebot> searchForName(String aName) {
-	// List<Jobangebot> list = new LinkedList<>();
-	// try {
-	// Jobangebot[] jA = new Jobangebot[4];
-	// for (int i = 0; i < 4; i++) {
-	// jA[i] = new Jobangebot("sdf", "sdf", new LinkedList<String>(), "sdf",
-	// LocalDate.of(1999, 12, 1), 1, 3,
-	// null);
-	// jA[i].setId(i * 2);
-	// }
-	// list = Arrays.asList(jA);
-	// } catch (ValidateConstrArgsException e) {
-	// e.printStackTrace();
-	// }
-	// return list;
-	// }
-	//
-	// public List<Jobangebot> searchForAbschluss(String abschluss, String branche)
-	// {
-	// List<Jobangebot> list = new LinkedList<>();
-	// try {
-	// Jobangebot[] jA = new Jobangebot[4];
-	// for (int i = 0; i < 4; i++) {
-	// jA[i] = new Jobangebot("sdf", "sdf", new LinkedList<String>(), "sdf",
-	// LocalDate.of(1999, 12, 1), 1, 3,
-	// null);
-	// jA[i].setId(i * 2);
-	// }
-	// list = Arrays.asList(jA);
-	// } catch (ValidateConstrArgsException e) {
-	// e.printStackTrace();
-	// }
-	// return list;
-	// }
-	//
-	// public List<Jobangebot> searchForGehalt(int gehalt) {
-	// List<Jobangebot> list = new LinkedList<>();
-	// try {
-	// Jobangebot[] jA = new Jobangebot[4];
-	// for (int i = 0; i < 4; i++) {
-	// jA[i] = new Jobangebot("dg", "sdf", new LinkedList<String>(), "sdf",
-	// LocalDate.of(1999, 12, 1), 1, 3,
-	// null);
-	// jA[i].setId(i * 3);
-	// }
-	// list = Arrays.asList(jA);
-	// } catch (ValidateConstrArgsException e) {
-	// e.printStackTrace();
-	// }
-	// return list;
-	// }
-	//
-	// public List<Jobangebot> searchForMitarbeiter(int min, int max) {
-	// List<Jobangebot> list = new LinkedList<>();
-	// try {
-	// Jobangebot[] jA = new Jobangebot[4];
-	// for (int i = 0; i < 4; i++) {
-	// jA[i] = new Jobangebot(Integer.toString(i), "sdf", new LinkedList<String>(),
-	// "sdf",
-	// LocalDate.of(1999, 12, 1), 1, 3, null);
-	// jA[i].setId(4 - i);
-	// }
-	// list = Arrays.asList(jA);
-	// } catch (ValidateConstrArgsException e) {
-	// e.printStackTrace();
-	// }
-	// return list;
-	// }
 }

@@ -3,8 +3,6 @@
  */
 package persistence;
 
-import static org.junit.Assert.fail;
-
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
@@ -93,7 +91,12 @@ public class JobangebotDAOTest {
 	@Ignore
 	@Test
 	public void testDeleteJobangebot() {
-		fail("Not yet implemented");
+		try {
+			new JobangebotDAO().deleteJobangebot(10);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -106,15 +109,11 @@ public class JobangebotDAOTest {
 		List<String> sprachen = new LinkedList<>();
 		sprachen.add("Deutsch");
 		try {
-			for (int i = 1; i < 10; i++) {
-				Jobangebot j = new JobangebotDAO().getJobangebot(i);
-				String branche = new BrancheDAO().getBranche(i % 5 + 1);
-				String abschluss = new AbschlussDAO().getAbschluss((i % 4) + 4);
-				Jobangebot j2 = new Jobangebot(abschluss, branche, sprachen, j.getJobTitel(), j.getBeschreibung(),
-						j.getFrist(), 2000, j.getWochenstunden(), j.getUnternehmensprofil());
-				j2.setId(j.getJID());
-				new JobangebotDAO().changeJobangebot(j2);
-			}
+			Jobangebot j = new JobangebotDAO().getJobangebot(11);
+			Jobangebot j2 = new Jobangebot("Master", "Chemie", j.getSprachen(), j.getJobTitel(), j.getBeschreibung(),
+					j.getFrist(), 5000, j.getWochenstunden(), j.getUnternehmensprofil());
+			j2.setId(j.getJID());
+			new JobangebotDAO().changeJobangebot(j2);
 		} catch (ValidateConstrArgsException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -145,6 +144,7 @@ public class JobangebotDAOTest {
 	 * Test method for
 	 * {@link persistence.JobangebotDAO#searchForBranche(java.lang.String)}.
 	 */
+	@Ignore
 	@Test
 	public void testSearchForBranche() {
 		List<Jobangebot> list;
@@ -184,7 +184,6 @@ public class JobangebotDAOTest {
 	/**
 	 * Test method for {@link persistence.JobangebotDAO#searchForGehalt(int)}.
 	 */
-	@Ignore
 	@Test
 	public void testSearchForGehalt() {
 		List<Jobangebot> list;

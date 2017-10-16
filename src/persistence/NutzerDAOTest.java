@@ -11,6 +11,7 @@ import org.junit.Test;
 import model.Adresse;
 import model.Nutzer;
 import model.Status;
+import util.exception.DuplicateEntryException;
 import util.exception.ValidateConstrArgsException;
 
 /**
@@ -25,25 +26,39 @@ public class NutzerDAOTest {
 	@Ignore
 	@Test
 	public void testAddNutzer() {
-		fail("Not yet implemented");
+		try {
+			Nutzer n = new Nutzer("Manuel", "Schmidt", "Männlich", LocalDate.of(2000, 6, 3), "manuel.kuenkele@live.de",
+					"pass", new Adresse("77772", "Stuttgart", "Strasse", "20"), Status.U);
+			new NutzerDAO().addNutzer(n);
+		} catch (ValidateConstrArgsException | DuplicateEntryException | SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * Test method for {@link persistence.NutzerDAO#getNutzer(String)}.
 	 */
-	@Ignore
 	@Test
 	public void testGetNutzerString() {
-		fail("Not yet implemented");
+		try {
+			System.out.println(new NutzerDAO().getNutzer("dominik.kuenkele@outlook.com"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * Test method for {@link persistence.NutzerDAO#getNutzer(int)}.
 	 */
-	@Ignore
 	@Test
 	public void testGetNutzerInt() {
-		fail("Not yet implemented");
+		try {
+			System.out.println(new NutzerDAO().getNutzer(22));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -63,9 +78,9 @@ public class NutzerDAOTest {
 	public void testChangeNutzer() {
 		Nutzer test;
 		try {
-			test = new Nutzer("Manuel", "Schmidt", "f", LocalDate.of(2000, 6, 3), "manuel.kuenkele@live.de", "pass",
-					new Adresse("77772", "Stuttgart", "Strasse", "20"), Status.U);
-			test.setNID(6);
+			test = new Nutzer("Manuel", "Schmidt", "Weiblich", LocalDate.of(2000, 6, 3), "manuel.kuenkele@live.de",
+					"pass", new Adresse("77772", "Stuttgart", "Strasse", "20"), Status.U);
+			test.setNID(35);
 			new NutzerDAO().changeNutzer(test);
 		} catch (ValidateConstrArgsException | SQLException e) {
 			e.printStackTrace();
@@ -77,10 +92,14 @@ public class NutzerDAOTest {
 	/**
 	 * Test method for {@link persistence.NutzerDAO#deleteNutzer(String)}.
 	 */
-	@Ignore
 	@Test
 	public void testDeleteNutzer() {
-		fail("Not yet implemented");
+		try {
+			new NutzerDAO().deleteNutzer(35);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

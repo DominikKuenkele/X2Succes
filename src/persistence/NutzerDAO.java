@@ -20,30 +20,7 @@ import util.exception.ValidateConstrArgsException;
  *
  */
 public class NutzerDAO {
-	private Connection connect = null;
-	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet = null;
-
-	private void open() throws SQLException {
-		final DataSource dbconnection = new DataSource();
-		this.connect = dbconnection.getConnection();
-	}
-
-	// You need to close the resultSet
-	private void close() throws SQLException {
-		if (this.resultSet != null) {
-			this.resultSet.close();
-		}
-
-		if (this.preparedStatement != null) {
-			this.preparedStatement.close();
-		}
-
-		if (this.connect != null) {
-			this.connect.close();
-		}
-
-	}
+	private DataSource datasource = DataSource.getInstance();
 
 	/**
 	 * @param nutzer
@@ -57,32 +34,35 @@ public class NutzerDAO {
 		if (getNutzer(nutzer.geteMail()) != null) {
 			throw new DuplicateEntryException("E-Mail wird schon verwendet!");
 		}
-		try {
-			open();
 
-			this.preparedStatement = this.connect
-					.prepareStatement("INSERT INTO Nutzer values (default, ?, ?, ?, ? , ?, ?, ?, ?, ?, ?, ?)");
-			this.preparedStatement.setString(1, nutzer.getFirstName());
-			this.preparedStatement.setString(2, nutzer.getLastName());
+		String sql = "INSERT INTO Nutzer values (default, ?, ?, ?, ? , ?, ?, ?, ?, ?, ?, ?)";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setString(1, nutzer.getFirstName());
+			preparedStatement.setString(2, nutzer.getLastName());
 			int sexId = new SexDAO().getSex(nutzer.getSex());
-			this.preparedStatement.setInt(3, sexId);
-			this.preparedStatement.setObject(4, nutzer.getBirthdate());
-			this.preparedStatement.setString(5, nutzer.geteMail());
-			this.preparedStatement.setString(6, nutzer.getPassword());
-			this.preparedStatement.setString(7, address.getPlz());
-			this.preparedStatement.setString(8, address.getCity());
-			this.preparedStatement.setString(9, address.getStrasse());
-			this.preparedStatement.setString(10, address.getNumber());
-			this.preparedStatement.setString(11, nutzer.getStatus().getText());
-			this.preparedStatement.executeUpdate();
+			preparedStatement.setInt(3, sexId);
+			preparedStatement.setObject(4, nutzer.getBirthdate());
+			preparedStatement.setString(5, nutzer.geteMail());
+			preparedStatement.setString(6, nutzer.getPassword());
+			preparedStatement.setString(7, address.getPlz());
+			preparedStatement.setString(8, address.getCity());
+			preparedStatement.setString(9, address.getStrasse());
+			preparedStatement.setString(10, address.getNumber());
+			preparedStatement.setString(11, nutzer.getStatus().getText());
 
-			this.preparedStatement = this.connect.prepareStatement("SELECT LAST_INSERT_ID()");
-			this.resultSet = this.preparedStatement.executeQuery();
-			while (this.resultSet.next()) {
-				nid = this.resultSet.getInt("last_insert_id()");
+			preparedStatement.executeUpdate();
+		}
+
+		sql = "SELECT LAST_INSERT_ID()";
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					nid = resultSet.getInt("last_insert_id()");
+				}
 			}
-		} finally {
-			close();
 		}
 		return nid;
 	}
@@ -123,20 +103,19 @@ public class NutzerDAO {
 	 * @throws SQLException
 	 */
 	public Nutzer getNutzer(final String eMail) throws SQLException {
-		try {
-			open();
-			this.preparedStatement = this.connect.prepareStatement("SELECT * FROM Nutzer WHERE eMail = ?");
-			this.preparedStatement.setString(1, eMail);
+		String sql = "SELECT * FROM Nutzer WHERE eMail = ?";
 
-			this.resultSet = this.preparedStatement.executeQuery();
-			final List<Nutzer> result = getNutzerFromResultSet(this.resultSet);
-			if (result.isEmpty()) {
-				return null;
-			} else {
-				return result.get(0);
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setString(1, eMail);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				final List<Nutzer> result = getNutzerFromResultSet(resultSet);
+				if (result.isEmpty()) {
+					return null;
+				} else {
+					return result.get(0);
+				}
 			}
-		} finally {
-			close();
 		}
 	}
 
@@ -146,15 +125,19 @@ public class NutzerDAO {
 	 * @throws SQLException
 	 */
 	public Nutzer getNutzer(final int id) throws SQLException {
-		try {
-			open();
-			this.preparedStatement = this.connect.prepareStatement("SELECT * FROM Nutzer WHERE NID = ?");
-			this.preparedStatement.setInt(1, id);
+		String sql = "SELECT * FROM Nutzer WHERE NID = ?";
 
-			this.resultSet = this.preparedStatement.executeQuery();
-			return getNutzerFromResultSet(this.resultSet).get(0);
-		} finally {
-			close();
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setInt(1, id);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				final List<Nutzer> result = getNutzerFromResultSet(resultSet);
+				if (result.isEmpty()) {
+					return null;
+				} else {
+					return result.get(0);
+				}
+			}
 		}
 	}
 
@@ -163,13 +146,13 @@ public class NutzerDAO {
 	 * @throws SQLException
 	 */
 	public List<Nutzer> getAllNutzer() throws SQLException {
-		try {
-			open();
-			this.preparedStatement = this.connect.prepareStatement("SELECT * FROM Nutzer");
-			this.resultSet = this.preparedStatement.executeQuery();
-			return getNutzerFromResultSet(this.resultSet);
-		} finally {
-			close();
+		String sql = "SELECT * FROM Nutzer";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				return getNutzerFromResultSet(resultSet);
+			}
 		}
 	}
 
@@ -179,27 +162,26 @@ public class NutzerDAO {
 	 */
 	public void changeNutzer(Nutzer nutzer) throws SQLException {
 		final Adresse address = nutzer.getAddress();
-		try {
-			open();
-			this.preparedStatement = this.connect.prepareStatement(
-					"UPDATE Nutzer SET eMail = ?, password = ?, firstName = ?, lastName = ?, sexId = ?, birthdate = ?, "
-							+ "plz = ?, city = ?, street = ?, number = ?, status = ? WHERE NID = ?");
-			this.preparedStatement.setString(1, nutzer.geteMail());
-			this.preparedStatement.setString(2, nutzer.getPassword());
-			this.preparedStatement.setString(3, nutzer.getFirstName());
-			this.preparedStatement.setString(4, nutzer.getLastName());
+		String sql = "UPDATE Nutzer SET eMail = ?, password = ?, firstName = ?, lastName = ?, sexId = ?, birthdate = ?, "
+				+ "plz = ?, city = ?, street = ?, number = ?, status = ? WHERE NID = ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setString(1, nutzer.geteMail());
+			preparedStatement.setString(2, nutzer.getPassword());
+			preparedStatement.setString(3, nutzer.getFirstName());
+			preparedStatement.setString(4, nutzer.getLastName());
 			int sexId = new SexDAO().getSex(nutzer.getSex());
-			this.preparedStatement.setInt(5, sexId);
-			this.preparedStatement.setObject(6, nutzer.getBirthdate());
-			this.preparedStatement.setString(7, address.getPlz());
-			this.preparedStatement.setString(8, address.getCity());
-			this.preparedStatement.setString(9, address.getStrasse());
-			this.preparedStatement.setString(10, address.getNumber());
-			this.preparedStatement.setString(11, nutzer.getStatus().getText());
-			this.preparedStatement.setInt(12, nutzer.getNID());
-			this.preparedStatement.executeUpdate();
-		} finally {
-			close();
+			preparedStatement.setInt(5, sexId);
+			preparedStatement.setObject(6, nutzer.getBirthdate());
+			preparedStatement.setString(7, address.getPlz());
+			preparedStatement.setString(8, address.getCity());
+			preparedStatement.setString(9, address.getStrasse());
+			preparedStatement.setString(10, address.getNumber());
+			preparedStatement.setString(11, nutzer.getStatus().getText());
+			preparedStatement.setInt(12, nutzer.getNID());
+
+			preparedStatement.executeUpdate();
 		}
 	}
 
@@ -208,14 +190,13 @@ public class NutzerDAO {
 	 * @throws SQLException
 	 */
 	public void deleteNutzer(final int nid) throws SQLException {
-		try {
-			open();
-			this.preparedStatement = this.connect.prepareStatement("DELETE FROM Nutzer WHERE NID = ?");
-			this.preparedStatement.setInt(1, nid);
+		String sql = "DELETE FROM Nutzer WHERE NID = ?";
 
-			this.preparedStatement.executeUpdate();
-		} finally {
-			close();
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setInt(1, nid);
+
+			preparedStatement.executeUpdate();
 		}
 	}
 }
