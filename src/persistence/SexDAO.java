@@ -15,29 +15,7 @@ import java.util.List;
  *
  */
 public class SexDAO {
-	private Connection connect = null;
-	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet = null;
-
-	private void open() throws SQLException {
-		DataSource dbconnection = new DataSource();
-		connect = dbconnection.getConnection();
-	}
-
-	private void close() throws SQLException {
-		if (resultSet != null) {
-			resultSet.close();
-		}
-
-		if (preparedStatement != null) {
-			preparedStatement.close();
-		}
-
-		if (connect != null) {
-			connect.close();
-		}
-
-	}
+	private DataSource datasource = DataSource.getInstance();
 
 	/**
 	 * @param sexId
@@ -45,15 +23,14 @@ public class SexDAO {
 	 * @throws SQLException
 	 */
 	public String getSex(int sexId) throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT sex FROM sex WHERE sexID = ?");
-			preparedStatement.setInt(1, sexId);
+		String sql = "SELECT sex FROM sex WHERE sexID = ?";
 
-			resultSet = preparedStatement.executeQuery();
-			return getSexFromResultSet(resultSet).get(0);
-		} finally {
-			close();
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setInt(1, sexId);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				return getSexFromResultSet(resultSet).get(0);
+			}
 		}
 	}
 
@@ -64,18 +41,18 @@ public class SexDAO {
 	 */
 	public int getSex(String sex) throws SQLException {
 		int sexId = -1;
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT sexID FROM sex WHERE sex = ?");
-			preparedStatement.setString(1, sex);
+		String sql = "SELECT sexID FROM sex WHERE sex = ?";
 
-			resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				sexId = resultSet.getInt("sexID");
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setString(1, sex);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					sexId = resultSet.getInt("sexID");
+				}
 			}
-		} finally {
-			close();
 		}
+
 		return sexId;
 	}
 
@@ -84,13 +61,13 @@ public class SexDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllSex() throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT sex FROM sex");
-			resultSet = preparedStatement.executeQuery();
-			return getSexFromResultSet(resultSet);
-		} finally {
-			close();
+		String sql = "SELECT sex FROM sex";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				return getSexFromResultSet(resultSet);
+			}
 		}
 	}
 

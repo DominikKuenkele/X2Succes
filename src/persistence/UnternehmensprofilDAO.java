@@ -57,7 +57,7 @@ public class UnternehmensprofilDAO {
 					"INSERT INTO Unternehmensprofil values (default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			int nutzerId = unternehmen.getNutzer().getNID();
 			preparedStatement.setInt(1, nutzerId);
-			int bid = new BrancheDAO().getBranche(unternehmen.getBranche());
+			int bid = new BrancheDAO().getBID(unternehmen.getBranche());
 			preparedStatement.setInt(2, bid);
 			preparedStatement.setString(3, unternehmen.getName());
 			preparedStatement.setString(4, unternehmen.getLegalForm());
@@ -189,7 +189,7 @@ public class UnternehmensprofilDAO {
 							+ " number = ? WHERE UID = ?");
 			int nutzerId = aUnternehmen.getNutzer().getNID();
 			preparedStatement.setInt(1, nutzerId);
-			int bid = new BrancheDAO().getBranche(aUnternehmen.getBranche());
+			int bid = new BrancheDAO().getBID(aUnternehmen.getBranche());
 			preparedStatement.setInt(2, bid);
 			preparedStatement.setString(3, aUnternehmen.getName());
 			preparedStatement.setString(4, aUnternehmen.getLegalForm());

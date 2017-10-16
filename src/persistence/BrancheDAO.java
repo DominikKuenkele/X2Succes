@@ -41,7 +41,7 @@ public class BrancheDAO {
 	 * @return the id of the branche with given name
 	 * @throws SQLException
 	 */
-	public int getBranche(String branche) throws SQLException {
+	public int getBID(String branche) throws SQLException {
 		int bid = -1;
 		String sql = "SELECT BID FROM branche WHERE branche=?";
 

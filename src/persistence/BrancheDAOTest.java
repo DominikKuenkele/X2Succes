@@ -35,12 +35,12 @@ public class BrancheDAOTest {
 	}
 
 	/**
-	 * Test method for {@link persistence.BrancheDAO#getBranche(java.lang.String)}.
+	 * Test method for {@link persistence.BrancheDAO#getBID(java.lang.String)}.
 	 */
 	@Test
 	public void testGetBrancheString() {
 		try {
-			System.out.println(new BrancheDAO().getBranche("Chemie"));
+			System.out.println(new BrancheDAO().getBID("Chemie"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

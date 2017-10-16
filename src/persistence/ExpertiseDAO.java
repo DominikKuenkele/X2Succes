@@ -17,29 +17,7 @@ import java.util.List;
  *
  */
 public class ExpertiseDAO {
-	private Connection connect = null;
-	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet = null;
-
-	private void open() throws SQLException {
-		DataSource dbconnection = new DataSource();
-		connect = dbconnection.getConnection();
-	}
-
-	private void close() throws SQLException {
-		if (resultSet != null) {
-			resultSet.close();
-		}
-
-		if (preparedStatement != null) {
-			preparedStatement.close();
-		}
-
-		if (connect != null) {
-			connect.close();
-		}
-
-	}
+	private DataSource datasource = DataSource.getInstance();
 
 	/**
 	 * @param eid
@@ -47,15 +25,14 @@ public class ExpertiseDAO {
 	 * @throws SQLException
 	 */
 	public String getExpertise(int eid) throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT expertise FROM expertise WHERE EID=?");
-			preparedStatement.setInt(1, eid);
+		String sql = "SELECT expertise FROM expertise WHERE EID=?";
 
-			resultSet = preparedStatement.executeQuery();
-			return getExpertiseFromResultSet(resultSet).get(0);
-		} finally {
-			close();
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setInt(1, eid);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				return getExpertiseFromResultSet(resultSet).get(0);
+			}
 		}
 	}
 
@@ -66,18 +43,18 @@ public class ExpertiseDAO {
 	 */
 	public int getExpertise(String expertise) throws SQLException {
 		int eid = -1;
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT EID FROM expertise WHERE expertise=?");
-			preparedStatement.setString(1, expertise);
+		String sql = "SELECT EID FROM expertise WHERE expertise=?";
 
-			resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				eid = resultSet.getInt("EID");
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setString(1, expertise);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					eid = resultSet.getInt("EID");
+				}
 			}
-		} finally {
-			close();
 		}
+
 		return eid;
 	}
 
@@ -86,13 +63,13 @@ public class ExpertiseDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllExpertises() throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT expertise FROM expertise");
-			resultSet = preparedStatement.executeQuery();
-			return getExpertiseFromResultSet(resultSet);
-		} finally {
-			close();
+		String sql = "SELECT expertise FROM expertise";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				return getExpertiseFromResultSet(resultSet);
+			}
 		}
 	}
 

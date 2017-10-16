@@ -12,28 +12,7 @@ import java.util.List;
  *
  */
 public class SpracheDAO {
-	private Connection connect = null;
-	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet = null;
-
-	private void open() throws SQLException {
-		DataSource dbconnection = new DataSource();
-		connect = dbconnection.getConnection();
-	}
-
-	private void close() throws SQLException {
-		if (resultSet != null) {
-			resultSet.close();
-		}
-
-		if (preparedStatement != null) {
-			preparedStatement.close();
-		}
-
-		if (connect != null) {
-			connect.close();
-		}
-	}
+	private DataSource datasource = DataSource.getInstance();
 
 	/**
 	 * @param sprache
@@ -42,19 +21,17 @@ public class SpracheDAO {
 	 */
 	public int getSID(String sprache) throws SQLException {
 		int result = 0;
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT SID FROM Sprachen WHERE sprache = ?");
+		String sql = "SELECT SID FROM Sprachen WHERE sprache = ?";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setString(1, sprache);
-
-			resultSet = preparedStatement.executeQuery();
-
-			while (resultSet.next()) {
-				int sid = resultSet.getInt("SID");
-				result = sid;
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					int sid = resultSet.getInt("SID");
+					result = sid;
+				}
 			}
-		} finally {
-			close();
 		}
 		return result;
 	}
@@ -66,15 +43,14 @@ public class SpracheDAO {
 	 */
 	public String getSprache(int sid) throws SQLException {
 		String result = "";
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT * FROM Sprachen WHERE SID = ?");
-			preparedStatement.setInt(1, sid);
+		String sql = "SELECT * FROM Sprachen WHERE SID = ?";
 
-			resultSet = preparedStatement.executeQuery();
-			result = getSpracheFromResultSet(resultSet).get(0);
-		} finally {
-			close();
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setInt(1, sid);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				result = getSpracheFromResultSet(resultSet).get(0);
+			}
 		}
 		return result;
 	}
@@ -85,13 +61,13 @@ public class SpracheDAO {
 	 */
 	public List<String> getAllSprachen() throws SQLException {
 		List<String> result = new LinkedList<>();
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT * FROM Sprachen");
-			resultSet = preparedStatement.executeQuery();
-			result = getSpracheFromResultSet(resultSet);
-		} finally {
-			close();
+		String sql = "SELECT * FROM Sprachen";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				result = getSpracheFromResultSet(resultSet);
+			}
 		}
 		return result;
 	}
