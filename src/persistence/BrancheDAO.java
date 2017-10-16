@@ -17,29 +17,7 @@ import java.util.List;
  *
  */
 public class BrancheDAO {
-	private Connection connect = null;
-	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet = null;
-
-	private void open() throws SQLException {
-		DBConnection dbconnection = new DBConnection();
-		connect = dbconnection.getConnection();
-	}
-
-	private void close() throws SQLException {
-		if (resultSet != null) {
-			resultSet.close();
-		}
-
-		if (preparedStatement != null) {
-			preparedStatement.close();
-		}
-
-		if (connect != null) {
-			connect.close();
-		}
-
-	}
+	private DataSource datasource = DataSource.getInstance();
 
 	/**
 	 * @param bid
@@ -47,15 +25,14 @@ public class BrancheDAO {
 	 * @throws SQLException
 	 */
 	public String getBranche(int bid) throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT branche FROM branche WHERE BID=?");
-			preparedStatement.setInt(1, bid);
+		String sql = "SELECT branche FROM branche WHERE BID=?";
 
-			resultSet = preparedStatement.executeQuery();
-			return getBrancheFromResultSet(resultSet).get(0);
-		} finally {
-			close();
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setInt(1, bid);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				return getBrancheFromResultSet(resultSet).get(0);
+			}
 		}
 	}
 
@@ -66,17 +43,16 @@ public class BrancheDAO {
 	 */
 	public int getBranche(String branche) throws SQLException {
 		int bid = -1;
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT BID FROM branche WHERE branche=?");
-			preparedStatement.setString(1, branche);
+		String sql = "SELECT BID FROM branche WHERE branche=?";
 
-			resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				bid = resultSet.getInt("BID");
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			preparedStatement.setString(1, branche);
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					bid = resultSet.getInt("BID");
+				}
 			}
-		} finally {
-			close();
 		}
 		return bid;
 	}
@@ -86,13 +62,13 @@ public class BrancheDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllBranchen() throws SQLException {
-		try {
-			open();
-			preparedStatement = connect.prepareStatement("SELECT branche FROM branche");
-			resultSet = preparedStatement.executeQuery();
-			return getBrancheFromResultSet(resultSet);
-		} finally {
-			close();
+		String sql = "SELECT branche FROM branche";
+
+		try (Connection connect = datasource.getConnection();
+				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				return getBrancheFromResultSet(resultSet);
+			}
 		}
 	}
 

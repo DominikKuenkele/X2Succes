@@ -20,7 +20,7 @@ public class SexDAO {
 	private ResultSet resultSet = null;
 
 	private void open() throws SQLException {
-		DBConnection dbconnection = new DBConnection();
+		DataSource dbconnection = new DataSource();
 		connect = dbconnection.getConnection();
 	}
 

@@ -25,7 +25,7 @@ public class NutzerDAO {
 	private ResultSet resultSet = null;
 
 	private void open() throws SQLException {
-		final DBConnection dbconnection = new DBConnection();
+		final DataSource dbconnection = new DataSource();
 		this.connect = dbconnection.getConnection();
 	}
 
