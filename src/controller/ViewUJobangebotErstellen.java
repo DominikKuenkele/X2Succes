@@ -10,7 +10,6 @@ import java.util.ResourceBundle;
 import application.Verwaltung;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -30,7 +29,7 @@ import model.Unternehmensprofil;
 import persistence.AbschlussDAO;
 import persistence.ExpertiseDAO;
 import util.exception.DBException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 public class ViewUJobangebotErstellen implements Initializable {
 
@@ -73,27 +72,35 @@ public class ViewUJobangebotErstellen implements Initializable {
 	@FXML
 	private TextField contactphone;
 
+	private Verwaltung verwaltung;
+
+	private Jobangebot gatherData() throws ValidateArgsException {
+		Jobangebot jobangebot;
+
+		String jobTitle = jobtitel.getText();
+		String description = jobdescription.getText();
+		int weeklyworktime;
+		int monthlysalary;
+		weeklyworktime = Integer.parseInt(worktime.getText());
+		monthlysalary = Integer.parseInt(salary.getText());
+		String degree = necessarydegree.getValue();
+		String topic1 = topic.getValue();
+		String cname = contactname.getText();
+		String cmail = contactemail.getText();
+
+		jobangebot = new Jobangebot(degree, topic1, new LinkedList<String>(), jobTitle, description,
+				LocalDate.of(1050, 12, 31), monthlysalary, weeklyworktime,
+				(Unternehmensprofil) verwaltung.getCurrentProfil());
+		return jobangebot;
+	}
+
 	@FXML
 	void createoffer(MouseEvent event) {
-		Verwaltung verwaltung = Verwaltung.getInstance();
+		verwaltung = Verwaltung.getInstance();
 
 		try {
-
-			String jobTitle = jobtitel.getText();
-			String description = jobdescription.getText();
-			int weeklyworktime;
-			int monthlysalary;
-			weeklyworktime = Integer.parseInt(worktime.getText());
-			monthlysalary = Integer.parseInt(salary.getText());
-			String degree = necessarydegree.getValue();
-			String topic1 = topic.getValue();
-			String cname = contactname.getText();
-			String cmail = contactemail.getText();
-
 			try {
-				Jobangebot jobangebot = new Jobangebot(degree, topic1, new LinkedList<String>(), jobTitle, description,
-						LocalDate.of(1050, 12, 31), monthlysalary, weeklyworktime,
-						(Unternehmensprofil) verwaltung.getCurrentProfil());
+				Jobangebot jobangebot = gatherData();
 				jobangebot.saveToDatabase();
 
 				Alert alert = new Alert(AlertType.INFORMATION);
@@ -101,7 +108,7 @@ public class ViewUJobangebotErstellen implements Initializable {
 				alert.setHeaderText("Jobangebot erstellt");
 				alert.setContentText("Das Jobangebot wurde erfolgreich erstellt!");
 				alert.showAndWait();
-			} catch (ValidateConstrArgsException | DBException e) {
+			} catch (ValidateArgsException | DBException e) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Error");
 				alert.setHeaderText("Registrierung fehlgeschlagen");
@@ -139,23 +146,33 @@ public class ViewUJobangebotErstellen implements Initializable {
 	}
 
 	@FXML
-	void seeoffer(ActionEvent event) throws IOException {
-		// FXMLLoader loader = new
-		// FXMLLoader(getClass().getResource("/view/FJobangebot.fxml"));
-		// Pane myPane = loader.load();
-		// ViewFJobangebot controller = loader.getController();
-		// controller.setJobangebot(((JobangebotAnzeige) source).getJobangebot());
-		//
-		// Stage stage = new Stage();
-		// stage.setTitle("X2Success");
-		//
-		// Scene scene = new Scene(myPane);
-		// stage.setScene(scene);
-		// stage.show();
+	void seeoffer(MouseEvent event) throws IOException {
+		try {
+			Jobangebot jobangebot = gatherData();
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/FJobangebot.fxml"));
+			Pane myPane = loader.load();
+			ViewFJobangebot controller = loader.getController();
+			controller.setJobangebot(jobangebot);
+
+			Stage stage = new Stage();
+			stage.setTitle("X2Success");
+
+			Scene scene = new Scene(myPane);
+			stage.setScene(scene);
+			stage.show();
+		} catch (ValidateArgsException e) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error");
+			alert.setHeaderText("Registrierung fehlgeschlagen");
+			alert.setContentText(e.getMessage());
+			alert.showAndWait();
+		}
 	}
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		verwaltung = Verwaltung.getInstance();
+
 		try {
 			ObservableList<String> expertises = FXCollections
 					.observableArrayList(new ExpertiseDAO().getAllExpertises());
@@ -167,6 +184,12 @@ public class ViewUJobangebotErstellen implements Initializable {
 			necessarydegree.setValue(graduation.get(0));
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} catch (NumberFormatException e) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error");
+			alert.setHeaderText("Ungültige Eingabe");
+			alert.setContentText("Das ist keine Zahl!");
+			alert.showAndWait();
 		}
 	}
 }

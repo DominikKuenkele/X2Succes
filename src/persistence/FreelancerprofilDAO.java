@@ -14,7 +14,7 @@ import com.google.gson.GsonBuilder;
 
 import model.Freelancerprofil;
 import model.Nutzer;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * Class is a DAO for the table 'freelancerprofil'
@@ -114,7 +114,12 @@ public class FreelancerprofilDAO {
 				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			preparedStatement.setInt(1, fid);
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				return getFreelancerprofilFromResultSet(resultSet).get(0);
+				List<Freelancerprofil> tempList = getFreelancerprofilFromResultSet(resultSet);
+				if (tempList.size() > 0) {
+					return tempList.get(0);
+				} else {
+					return null;
+				}
 			}
 		}
 	}
@@ -230,7 +235,7 @@ public class FreelancerprofilDAO {
 				Freelancerprofil tempFreelancer = new Freelancerprofil(freelancerId, graduation, expertise, description,
 						skills, career, sprachen, nutzer);
 				result.add(tempFreelancer);
-			} catch (ValidateConstrArgsException e) {
+			} catch (ValidateArgsException e) {
 				throw new SQLException("Datenbank ist inkonsistent!", e);
 			}
 		}
@@ -272,7 +277,10 @@ public class FreelancerprofilDAO {
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				while (resultSet.next()) {
 					int fid = resultSet.getInt("freelancerprofil.FID");
-					result.add(new FreelancerprofilDAO().getFreelancerprofil(fid));
+					Freelancerprofil tempFreelancer = new FreelancerprofilDAO().getFreelancerprofil(fid);
+					if (tempFreelancer != null) {
+						result.add(tempFreelancer);
+					}
 				}
 			}
 		}
@@ -297,7 +305,10 @@ public class FreelancerprofilDAO {
 					try (ResultSet resultSet = preparedStatement.executeQuery()) {
 						while (resultSet.next()) {
 							int fid = resultSet.getInt("freelancerprofil.FID");
-							result.add(new FreelancerprofilDAO().getFreelancerprofil(fid));
+							Freelancerprofil tempFreelancer = new FreelancerprofilDAO().getFreelancerprofil(fid);
+							if (tempFreelancer != null) {
+								result.add(tempFreelancer);
+							}
 						}
 					}
 				}
@@ -336,7 +347,10 @@ public class FreelancerprofilDAO {
 		}
 		for (Entry<Integer, Integer> entry : tempList.entrySet()) {
 			if (entry.getValue() == aSprachen.size()) {
-				result.add(new FreelancerprofilDAO().getFreelancerprofil(entry.getKey()));
+				Freelancerprofil tempFreelancer = new FreelancerprofilDAO().getFreelancerprofil(entry.getKey());
+				if (tempFreelancer != null) {
+					result.add(tempFreelancer);
+				}
 			}
 		}
 		return result;

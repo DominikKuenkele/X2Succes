@@ -1,7 +1,7 @@
 package model;
 
 import util.Validate;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -18,10 +18,10 @@ public class Adresse {
 	 * @param number
 	 * @param city
 	 * @param plz
-	 * @throws ValidateConstrArgsException
+	 * @throws ValidateArgsException
 	 */
 	public Adresse(final String plz, final String city, final String street, final String number)
-			throws ValidateConstrArgsException {
+			throws ValidateArgsException {
 		this.street = street;
 		this.number = number;
 		this.city = city;
@@ -58,7 +58,7 @@ public class Adresse {
 		return plz;
 	}
 
-	private void validateState() throws ValidateConstrArgsException {
+	private void validateState() throws ValidateArgsException {
 		String message = "";
 		try {
 			Validate.checkForAlpha(street);
@@ -82,10 +82,10 @@ public class Adresse {
 		}
 		try {
 		} catch (IllegalArgumentException e) {
-			throw new ValidateConstrArgsException(e.getMessage());
+			throw new ValidateArgsException(e.getMessage());
 		}
 		if (message != "") {
-			throw new ValidateConstrArgsException(message);
+			throw new ValidateArgsException(message);
 		}
 	}
 }

@@ -9,7 +9,7 @@ import java.util.Objects;
 import persistence.JobangebotDAO;
 import util.Validate;
 import util.exception.DBException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -37,11 +37,11 @@ public class Jobangebot {
 	 * @param gehalt
 	 * @param wochenstunden
 	 * @param unternehmensprofil
-	 * @throws ValidateConstrArgsException
+	 * @throws ValidateArgsException
 	 */
 	public Jobangebot(String abschluss, String fachgebiet, List<String> sprachen, String jobTitel, String beschreibung,
 			LocalDate frist, int gehalt, int wochenstunden, Unternehmensprofil unternehmensprofil)
-			throws ValidateConstrArgsException {
+			throws ValidateArgsException {
 		this.abschluss = abschluss;
 		this.fachgebiet = fachgebiet;
 		this.sprachen = sprachen;
@@ -66,11 +66,11 @@ public class Jobangebot {
 	 * @param gehalt
 	 * @param wochenstunden
 	 * @param unternehmensprofil
-	 * @throws ValidateConstrArgsException
+	 * @throws ValidateArgsException
 	 */
 	public Jobangebot(int jid, String abschluss, String fachgebiet, List<String> sprachen, String jobTitel,
 			String beschreibung, LocalDate frist, int gehalt, int wochenstunden, Unternehmensprofil unternehmensprofil)
-			throws ValidateConstrArgsException {
+			throws ValidateArgsException {
 		this(abschluss, fachgebiet, sprachen, jobTitel, beschreibung, frist, gehalt, wochenstunden, unternehmensprofil);
 		this.jid = jid;
 
@@ -219,18 +219,33 @@ public class Jobangebot {
 		this.unternehmensprofil = aUnternehmensproflil;
 	}
 
-	private void validateState() throws ValidateConstrArgsException {
+	private void validateState() throws ValidateArgsException {
 		String message = "";
 
 		try {
-			Validate.checkForAlphaNumeric(jobTitel);
+			Validate.validateAbschluss(abschluss);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nAbschluss: " + e.getMessage();
+		}
+		try {
+			Validate.validateFachgebiet(fachgebiet);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nAbschluss: " + e.getMessage();
+		}
+		try {
+			Validate.validateSprachen(sprachen);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nSprachen: " + e.getMessage();
+		}
+		try {
+			Validate.checkForContent(jobTitel);
 		} catch (IllegalArgumentException e) {
 			message = message + "\nJobtitel: " + e.getMessage();
 		}
 		try {
-			Validate.checkForAlphaNumeric(beschreibung);
+			Validate.checkForDateInFuture(frist);
 		} catch (IllegalArgumentException e) {
-			message = message + "\nJobbeschreibung: " + e.getMessage();
+			message = message + "\nFrist: " + e.getMessage();
 		}
 		try {
 			Validate.checkForPositive(gehalt);
@@ -244,7 +259,7 @@ public class Jobangebot {
 		}
 
 		if (message != "") {
-			throw new ValidateConstrArgsException(message);
+			throw new ValidateArgsException(message);
 		}
 	}
 

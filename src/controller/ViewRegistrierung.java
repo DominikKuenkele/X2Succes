@@ -29,7 +29,7 @@ import model.Status;
 import persistence.SexDAO;
 import util.exception.DBException;
 import util.exception.UserInputException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 public class ViewRegistrierung implements Initializable {
 
@@ -92,7 +92,7 @@ public class ViewRegistrierung implements Initializable {
 
 	}
 
-	private void nutzerAnlegen(Status status) throws UserInputException, DBException, ValidateConstrArgsException {
+	private void nutzerAnlegen(Status status) throws UserInputException, DBException, ValidateArgsException {
 		if (UserPW.getText().equals(UserPW2.getText())) {
 			String vorname = UserVorname.getText();
 			String nachname = UserNachname.getText();
@@ -119,7 +119,7 @@ public class ViewRegistrierung implements Initializable {
 		try {
 			nutzerAnlegen(Status.U);
 			changescene("/view/UProfilErstellen.fxml");
-		} catch (UserInputException | DBException | ValidateConstrArgsException e) {
+		} catch (UserInputException | DBException | ValidateArgsException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Registrierung fehlgeschlagen");
@@ -133,7 +133,7 @@ public class ViewRegistrierung implements Initializable {
 		try {
 			nutzerAnlegen(Status.F);
 			changescene("/view/FProfilErstellen.fxml");
-		} catch (UserInputException | DBException | ValidateConstrArgsException e) {
+		} catch (UserInputException | DBException | ValidateArgsException e) {
 			Alert alert = new Alert(AlertType.ERROR); // Statt .Error geht auch .Warning etc
 			alert.setTitle("Error"); // Fenstername
 			alert.setHeaderText("Registrierung fehlgeschlagen");

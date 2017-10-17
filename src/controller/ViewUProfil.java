@@ -22,7 +22,7 @@ import model.Adresse;
 import model.Unternehmensprofil;
 import persistence.BrancheDAO;
 import util.exception.DBException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 public class ViewUProfil implements Initializable {
 
@@ -107,7 +107,7 @@ public class ViewUProfil implements Initializable {
 				alert.setContentText("Das Unternehmensprofil wurde erfolgreich geändert!");
 				alert.showAndWait();
 
-			} catch (ValidateConstrArgsException e) {
+			} catch (ValidateArgsException e) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Error");
 				alert.setHeaderText("Änderung fehlgeschlagen");

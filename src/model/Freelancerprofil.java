@@ -16,7 +16,7 @@ import persistence.FreelancerprofilDAO;
 import persistence.JobangebotDAO;
 import util.Validate;
 import util.exception.DBException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -42,11 +42,13 @@ public class Freelancerprofil implements Profil {
 	 * @param lebenslauf
 	 * @param sprachen
 	 * @param nutzer
-	 * @throws ValidateConstrArgsException
+	 * @throws ValidateArgsException
+	 * @throws SQLException
+	 * @throws DBException
 	 */
 	public Freelancerprofil(final String abschluss, final String fachgebiet, final String beschreibung,
 			final String[] skills, final String lebenslauf, final List<String> sprachen, Nutzer nutzer)
-			throws ValidateConstrArgsException {
+			throws ValidateArgsException {
 		this.abschluss = abschluss;
 		this.fachgebiet = fachgebiet;
 		this.beschreibung = beschreibung;
@@ -66,11 +68,13 @@ public class Freelancerprofil implements Profil {
 	 * @param lebenslauf
 	 * @param sprachen
 	 * @param nutzer
-	 * @throws ValidateConstrArgsException
+	 * @throws ValidateArgsException
+	 * @throws SQLException
+	 * @throws DBException
 	 */
 	public Freelancerprofil(int fid, final String abschluss, final String fachgebiet, final String beschreibung,
 			final String[] skills, final String lebenslauf, final List<String> sprachen, Nutzer nutzer)
-			throws ValidateConstrArgsException {
+			throws ValidateArgsException {
 		this(abschluss, fachgebiet, beschreibung, skills, lebenslauf, sprachen, nutzer);
 		this.fid = fid;
 		validateState();
@@ -202,45 +206,6 @@ public class Freelancerprofil implements Profil {
 		this.nutzer = aNutzer;
 	}
 
-	private void validateSkills(final String... skills) {
-		if (skills.length > ANZAHL_STAERKEN) {
-			throw new IllegalArgumentException("Es dürfen nur drei Skills angegeben werden.");
-		}
-		for (int i = 0; i < skills.length; i++) {
-			Validate.checkForContent(skills[i]);
-		}
-	}
-
-	private void validateState() throws ValidateConstrArgsException {
-		String message = "";
-
-		try {
-			Validate.checkForContent(abschluss);
-		} catch (IllegalArgumentException e) {
-			message = message + "\nAbschluss: " + e.getMessage();
-		}
-		try {
-			Validate.checkForContent(beschreibung);
-		} catch (IllegalArgumentException e) {
-			message = message + "\nBeschreibung: " + e.getMessage();
-		}
-		try {
-			validateSkills(skills);
-		} catch (IllegalArgumentException e) {
-			message = message + "\nSkills: " + e.getMessage();
-		}
-
-		try {
-			Validate.checkForContent(lebenslauf);
-		} catch (IllegalArgumentException e) {
-			message = message + "\nLebenslauf: " + e.getMessage();
-		}
-
-		if (message != "") {
-			throw new ValidateConstrArgsException(message);
-		}
-	}
-
 	public void saveToDatabase() throws DBException {
 		try {
 			final FreelancerprofilDAO freelancerprofilDao = new FreelancerprofilDAO();
@@ -313,6 +278,40 @@ public class Freelancerprofil implements Profil {
 			}
 		}
 		return prioList.entrySet();
+	}
+
+	private void validateSkills(final String... skills) {
+		if (skills.length > ANZAHL_STAERKEN) {
+			throw new IllegalArgumentException("Es dürfen nur drei Skills angegeben werden.");
+		}
+	}
+
+	private void validateState() throws ValidateArgsException {
+		String message = "";
+
+		try {
+			Validate.validateAbschluss(abschluss);
+		} catch (ValidateArgsException e) {
+			message = message + "\nAbschluss: " + e.getMessage();
+		}
+		try {
+			Validate.validateFachgebiet(fachgebiet);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nFachgebiet: " + e.getMessage();
+		}
+		try {
+			Validate.validateSprachen(sprachen);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nSprachen: " + e.getMessage();
+		}
+		try {
+			validateSkills(skills);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nSkills: " + e.getMessage();
+		}
+		if (message != "") {
+			throw new ValidateArgsException(message);
+		}
 	}
 
 	@Override

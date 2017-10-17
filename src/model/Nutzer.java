@@ -9,7 +9,7 @@ import util.Validate;
 import util.exception.DBException;
 import util.exception.DuplicateEntryException;
 import util.exception.UserInputException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -35,10 +35,10 @@ public class Nutzer {
 	 * @param password
 	 * @param address
 	 * @param status
-	 * @throws ValidateConstrArgsException
+	 * @throws ValidateArgsException
 	 */
 	public Nutzer(String firstName, String lastName, String sex, LocalDate birthdate, String eMail, String password,
-			Adresse address, Status status) throws ValidateConstrArgsException {
+			Adresse address, Status status) throws ValidateArgsException {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.sex = sex;
@@ -61,10 +61,10 @@ public class Nutzer {
 	 * @param password
 	 * @param address
 	 * @param status
-	 * @throws ValidateConstrArgsException
+	 * @throws ValidateArgsException
 	 */
 	public Nutzer(int nid, String firstName, String lastName, String sex, LocalDate birthdate, String eMail,
-			String password, Adresse address, Status status) throws ValidateConstrArgsException {
+			String password, Adresse address, Status status) throws ValidateArgsException {
 		this(firstName, lastName, sex, birthdate, eMail, password, address, status);
 
 		this.nid = nid;
@@ -143,21 +143,21 @@ public class Nutzer {
 		this.status = status;
 	}
 
-	private void validateState() throws ValidateConstrArgsException {
+	private void validateState() throws ValidateArgsException {
 		String message = "";
 
 		try {
-			Validate.checkForAlpha(firstName);
+			Validate.checkForName(firstName);
 		} catch (IllegalArgumentException e) {
 			message = message + "\nVorname: " + e.getMessage();
 		}
 		try {
-			Validate.checkForAlpha(lastName);
+			Validate.checkForName(lastName);
 		} catch (IllegalArgumentException e) {
 			message = message + "\nNachname: " + e.getMessage();
 		}
 		try {
-			Validate.checkForAlpha(sex);
+			Validate.validateSex(sex);
 		} catch (IllegalArgumentException e) {
 			message = message + "\nGeschlecht: " + e.getMessage();
 		}
@@ -176,7 +176,7 @@ public class Nutzer {
 		}
 
 		if (message != "") {
-			throw new ValidateConstrArgsException(message);
+			throw new ValidateArgsException(message);
 		}
 	}
 

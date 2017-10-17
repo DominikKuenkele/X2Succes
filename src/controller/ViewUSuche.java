@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
-import application.Verwaltung;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -66,8 +65,6 @@ public class ViewUSuche implements Initializable, EventHandler<MouseEvent> {
 
 	@FXML
 	void searchoffers(ActionEvent event) throws IOException {
-		Verwaltung v = Verwaltung.getInstance();
-
 		String fName;
 		if (searchfreelancername.getText().equals("")) {
 			fName = "*";
@@ -108,8 +105,7 @@ public class ViewUSuche implements Initializable, EventHandler<MouseEvent> {
 		try {
 			GridPane searchGrid = new GridPane();
 
-			Unternehmensprofil unternehmensprofil = (Unternehmensprofil) v.getCurrentProfil();
-			searchList = unternehmensprofil.sucheFreelancer(fName, graduation, expertise, sprachen);
+			searchList = Unternehmensprofil.sucheFreelancer(fName, graduation, expertise, sprachen);
 
 			fA = new FreelancerprofilAnzeige[searchList.size()];
 
@@ -126,18 +122,6 @@ public class ViewUSuche implements Initializable, EventHandler<MouseEvent> {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private EventHandler<? super MouseEvent> jAoeffnen() throws IOException {
-		Stage stage = new Stage();
-		stage.setTitle("X2Success");
-		Pane myPane = null;
-		myPane = FXMLLoader.load(getClass().getResource("/view/Freelancerprofil.fxml"));
-		Scene scene = new Scene(myPane);
-		stage.setScene(scene);
-		stage.show();
-
-		return null;
 	}
 
 	@Override
@@ -172,6 +156,7 @@ public class ViewUSuche implements Initializable, EventHandler<MouseEvent> {
 	@Override
 	public void handle(MouseEvent aArg0) {
 		Object source = aArg0.getSource();
+
 		if (Arrays.asList(fA).contains(source)) {
 			try {
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UFreelancerprofil.fxml"));
@@ -191,5 +176,4 @@ public class ViewUSuche implements Initializable, EventHandler<MouseEvent> {
 			}
 		}
 	}
-
 }

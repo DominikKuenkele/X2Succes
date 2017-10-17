@@ -12,7 +12,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import model.Freelancerprofil;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -42,7 +42,7 @@ public class FreelancerprofilDAOTest {
 			Freelancerprofil f = new Freelancerprofil("Ausbildung", "Chemie", "beschreibung", skills, "lebenslauf",
 					sprachen, new NutzerDAO().getNutzer(22));
 			System.out.println(new FreelancerprofilDAO().addFreelancerprofil(f));
-		} catch (ValidateConstrArgsException | SQLException e) {
+		} catch (ValidateArgsException | SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -120,7 +120,7 @@ public class FreelancerprofilDAOTest {
 			Freelancerprofil f2 = new Freelancerprofil(f.getFID(), f.getAbschluss(), f.getFachgebiet(),
 					f.getBeschreibung(), f.getSkills(), "career", sprachen, f.getNutzer());
 			new FreelancerprofilDAO().changeFreelancerprofil(f2);
-		} catch (ValidateConstrArgsException | SQLException e) {
+		} catch (ValidateArgsException | SQLException e) {
 			e.printStackTrace();
 		}
 	}

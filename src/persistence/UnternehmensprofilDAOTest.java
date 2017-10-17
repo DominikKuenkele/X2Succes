@@ -16,7 +16,7 @@ import org.junit.Test;
 import model.Adresse;
 import model.Freelancerprofil;
 import model.Unternehmensprofil;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -74,7 +74,7 @@ public class UnternehmensprofilDAOTest {
 
 				new UnternehmensprofilDAO().addUnternehmensprofil(u);
 			}
-		} catch (ValidateConstrArgsException | SQLException e) {
+		} catch (ValidateArgsException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -137,7 +137,7 @@ public class UnternehmensprofilDAOTest {
 					u.getFounding(), 50000, u.getDescription(), u.getBranche(), u.getWebsite(), "Olaf",
 					u.getCeoLastName(), u.getNutzer());
 			new UnternehmensprofilDAO().changeUnternehmen(u2);
-		} catch (ValidateConstrArgsException | SQLException e) {
+		} catch (ValidateArgsException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

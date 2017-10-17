@@ -1,10 +1,18 @@
 package util;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.validator.routines.UrlValidator;
+
+import persistence.AbschlussDAO;
+import persistence.ExpertiseDAO;
+import persistence.SexDAO;
+import persistence.SpracheDAO;
+import util.exception.ValidateArgsException;
 
 /**
  * Class is a Utility-class for the Validation of parameters.
@@ -18,6 +26,70 @@ public final class Validate {
 	 * Private constructor prevents instantiation of this Utility-class.
 	 */
 	private Validate() {
+	}
+
+	/**
+	 * Method validates a String, if it contains only letters and spaces.
+	 * 
+	 * @param text
+	 * @throws IllegalArgumentException
+	 */
+	public static void checkForName(final String text) throws IllegalArgumentException {
+		checkForContent(text);
+		if (!text.matches("[-A-Za-zäÄöÖüÜß ]+")) {
+			throw new IllegalArgumentException("Text \"" + text + "\" darf nur Buchstaben enthalten!");
+		}
+	}
+
+	public static void validateSex(String sex) throws ValidateArgsException {
+		try {
+			List<String> sexList = new SexDAO().getAllSex();
+			if (!sexList.contains(sex)) {
+				throw new ValidateArgsException("Dieses Geschlecht darf nicht ausgewählt werden");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void validateSprachen(List<String> sprachen) throws ValidateArgsException {
+		try {
+			String message = "";
+
+			List<String> sprachenList = new SpracheDAO().getAllSprachen();
+			for (String sprache : sprachen) {
+				if (!sprachenList.contains(sprache)) {
+					message = message + "\nDiese Sprache (" + sprache + ")darf nicht ausgewählt werden";
+				}
+			}
+			if (!message.equals("")) {
+				throw new ValidateArgsException(message);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void validateAbschluss(String abschluss) throws ValidateArgsException {
+		try {
+			List<String> abschlussList = new AbschlussDAO().getAllAbschluss();
+			if (!abschlussList.contains(abschluss)) {
+				throw new ValidateArgsException("Dieser Abschluss darf nicht ausgewählt werden");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void validateFachgebiet(String fachgebiet) throws ValidateArgsException {
+		try {
+			List<String> fachgebietList = new ExpertiseDAO().getAllExpertises();
+			if (!fachgebietList.contains(fachgebiet)) {
+				throw new ValidateArgsException("Dieses Fachgebiet darf nicht ausgewählt werden");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

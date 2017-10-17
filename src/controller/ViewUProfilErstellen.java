@@ -27,7 +27,7 @@ import model.Adresse;
 import model.Unternehmensprofil;
 import persistence.BrancheDAO;
 import util.exception.DBException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 public class ViewUProfilErstellen implements Initializable {
 
@@ -117,7 +117,7 @@ public class ViewUProfilErstellen implements Initializable {
 			verwaltung.setCurrentUnternehmensprofil(unternehmensprofil);
 
 			switchScene("/view/URahmen.fxml");
-		} catch (ValidateConstrArgsException | DBException e) {
+		} catch (ValidateArgsException | DBException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Registrierung fehlgeschlagen");

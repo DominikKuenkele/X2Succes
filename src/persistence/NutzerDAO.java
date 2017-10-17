@@ -13,7 +13,7 @@ import model.Adresse;
 import model.Nutzer;
 import model.Status;
 import util.exception.DuplicateEntryException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -88,7 +88,7 @@ public class NutzerDAO {
 						new Adresse(plz, city, street, number), Status.valueOf(status));
 				result.add(tempNutzer);
 
-			} catch (final ValidateConstrArgsException e) {
+			} catch (final ValidateArgsException e) {
 				throw new SQLException("Datenbank ist inkonsistent!", e);
 			}
 		}

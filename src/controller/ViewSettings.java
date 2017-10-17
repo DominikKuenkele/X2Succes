@@ -23,7 +23,7 @@ import model.Nutzer;
 import persistence.SexDAO;
 import util.exception.DBException;
 import util.exception.UserInputException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 public class ViewSettings implements Initializable {
 
@@ -133,7 +133,7 @@ public class ViewSettings implements Initializable {
 			alert.setHeaderText("Nutzerdaten geändert");
 			alert.setContentText("Die Nutzerdaten wurden erfolgreich geändert!");
 			alert.showAndWait();
-		} catch (ValidateConstrArgsException e) {
+		} catch (ValidateArgsException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Änderung fehlgeschlagen");

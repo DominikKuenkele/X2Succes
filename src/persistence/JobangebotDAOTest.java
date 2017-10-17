@@ -13,7 +13,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import model.Jobangebot;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -47,7 +47,7 @@ public class JobangebotDAOTest {
 				// j.setId(jid);
 				// System.out.println(j);
 			}
-		} catch (ValidateConstrArgsException | SQLException e) {
+		} catch (ValidateArgsException | SQLException e) {
 			e.printStackTrace();
 		}
 
@@ -111,7 +111,7 @@ public class JobangebotDAOTest {
 			Jobangebot j2 = new Jobangebot(j.getJID(), "Master", "Chemie", j.getSprachen(), j.getJobTitel(),
 					j.getBeschreibung(), j.getFrist(), 5000, j.getWochenstunden(), j.getUnternehmensprofil());
 			new JobangebotDAO().changeJobangebot(j2);
-		} catch (ValidateConstrArgsException | SQLException e) {
+		} catch (ValidateArgsException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

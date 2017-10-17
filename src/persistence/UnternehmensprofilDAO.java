@@ -12,7 +12,7 @@ import java.util.List;
 import model.Adresse;
 import model.Nutzer;
 import model.Unternehmensprofil;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -147,7 +147,7 @@ public class UnternehmensprofilDAO {
 						new Adresse(plz, city, street, number), founding, employees, description, branche, website,
 						ceoFirstName, ceoLastName, nutzer);
 				result.add(tempUnternehmen);
-			} catch (ValidateConstrArgsException e) {
+			} catch (ValidateArgsException e) {
 				throw new SQLException("Datenbank ist inkonsistent!", e);
 			}
 		}

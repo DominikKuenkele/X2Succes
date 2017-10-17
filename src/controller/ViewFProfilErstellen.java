@@ -27,7 +27,7 @@ import persistence.AbschlussDAO;
 import persistence.ExpertiseDAO;
 import persistence.SpracheDAO;
 import util.exception.DBException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 public class ViewFProfilErstellen implements Initializable {
 
@@ -97,7 +97,7 @@ public class ViewFProfilErstellen implements Initializable {
 			f.saveToDatabase();
 			verwaltung.setCurrentFreelancer(f);
 			switchScene("/view/FRahmen.fxml");
-		} catch (ValidateConstrArgsException | DBException e) {
+		} catch (ValidateArgsException | DBException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Registrierung fehlgeschlagen");

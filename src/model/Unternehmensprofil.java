@@ -15,7 +15,7 @@ import persistence.FreelancerprofilDAO;
 import persistence.UnternehmensprofilDAO;
 import util.Validate;
 import util.exception.DBException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -47,11 +47,11 @@ public class Unternehmensprofil implements Profil {
 	 * @param ceoFirstName
 	 * @param ceoLastName
 	 * @param nutzer
-	 * @throws ValidateConstrArgsException
+	 * @throws ValidateArgsException
 	 */
 	public Unternehmensprofil(String name, String legalForm, Adresse address, LocalDate founding, int employees,
 			String description, String branche, String website, String ceoFirstName, String ceoLastName, Nutzer nutzer)
-			throws ValidateConstrArgsException {
+			throws ValidateArgsException {
 		this.name = name;
 		this.legalForm = legalForm;
 		this.address = address;
@@ -79,11 +79,11 @@ public class Unternehmensprofil implements Profil {
 	 * @param ceoFirstName
 	 * @param ceoLastName
 	 * @param nutzer
-	 * @throws ValidateConstrArgsException
+	 * @throws ValidateArgsException
 	 */
 	public Unternehmensprofil(int uid, String name, String legalForm, Adresse address, LocalDate founding,
 			int employees, String description, String branche, String website, String ceoFirstName, String ceoLastName,
-			Nutzer nutzer) throws ValidateConstrArgsException {
+			Nutzer nutzer) throws ValidateArgsException {
 		this(name, legalForm, address, founding, employees, description, branche, website, ceoFirstName, ceoLastName,
 				nutzer);
 
@@ -264,7 +264,7 @@ public class Unternehmensprofil implements Profil {
 		this.nutzer = aNutzer;
 	}
 
-	private void validateState() throws ValidateConstrArgsException {
+	private void validateState() throws ValidateArgsException {
 		String message = "";
 
 		try {
@@ -289,7 +289,7 @@ public class Unternehmensprofil implements Profil {
 		}
 
 		if (message != "") {
-			throw new ValidateConstrArgsException(message);
+			throw new ValidateArgsException(message);
 		}
 	}
 

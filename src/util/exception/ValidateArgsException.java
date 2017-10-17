@@ -6,28 +6,28 @@ package util.exception;
  * @author domin
  *
  */
-public class ValidateConstrArgsException extends Exception {
+public class ValidateArgsException extends Exception {
 
 	private static final long serialVersionUID = 4732122161608535198L;
 
 	/**
 	 * 
 	 */
-	public ValidateConstrArgsException() {
+	public ValidateArgsException() {
 		super();
 	}
 
 	/**
 	 * @param message
 	 */
-	public ValidateConstrArgsException(String message) {
+	public ValidateArgsException(String message) {
 		super(message);
 	}
 
 	/**
 	 * @param cause
 	 */
-	public ValidateConstrArgsException(Throwable cause) {
+	public ValidateArgsException(Throwable cause) {
 		super(cause);
 	}
 
@@ -35,7 +35,7 @@ public class ValidateConstrArgsException extends Exception {
 	 * @param message
 	 * @param cause
 	 */
-	public ValidateConstrArgsException(String message, Throwable cause) {
+	public ValidateArgsException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
@@ -45,7 +45,7 @@ public class ValidateConstrArgsException extends Exception {
 	 * @param enableSuppression
 	 * @param writableStackTrace
 	 */
-	public ValidateConstrArgsException(String message, Throwable cause, boolean enableSuppression,
+	public ValidateArgsException(String message, Throwable cause, boolean enableSuppression,
 			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}

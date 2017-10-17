@@ -11,7 +11,7 @@ import java.util.List;
 
 import model.Jobangebot;
 import model.Unternehmensprofil;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -196,7 +196,7 @@ public class JobangebotDAO {
 						description, deadline, salary, weeklyHours, unternehmen);
 				result.add(tempJobangebot);
 
-			} catch (ValidateConstrArgsException e) {
+			} catch (ValidateArgsException e) {
 				throw new SQLException("Datenbank ist inkonsistent!", e);
 			}
 		}
@@ -236,6 +236,10 @@ public class JobangebotDAO {
 				while (resultSet.next()) {
 					int jid = resultSet.getInt("jobangebot.JID");
 					result.add(new JobangebotDAO().getJobangebot(jid));
+					Jobangebot tempJobangebot = new JobangebotDAO().getJobangebot(jid);
+					if (tempJobangebot != null) {
+						result.add(tempJobangebot);
+					}
 				}
 			}
 		}
@@ -256,7 +260,10 @@ public class JobangebotDAO {
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				while (resultSet.next()) {
 					int jid = resultSet.getInt("jobangebot.JID");
-					result.add(new JobangebotDAO().getJobangebot(jid));
+					Jobangebot tempJobangebot = new JobangebotDAO().getJobangebot(jid);
+					if (tempJobangebot != null) {
+						result.add(tempJobangebot);
+					}
 				}
 			}
 		}
@@ -279,7 +286,10 @@ public class JobangebotDAO {
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				while (resultSet.next()) {
 					int jid = resultSet.getInt("jobangebot.JID");
-					result.add(new JobangebotDAO().getJobangebot(jid));
+					Jobangebot tempJobangebot = new JobangebotDAO().getJobangebot(jid);
+					if (tempJobangebot != null) {
+						result.add(tempJobangebot);
+					}
 				}
 			}
 		}
@@ -302,7 +312,10 @@ public class JobangebotDAO {
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				while (resultSet.next()) {
 					int jid = resultSet.getInt("jobangebot.JID");
-					result.add(new JobangebotDAO().getJobangebot(jid));
+					Jobangebot tempJobangebot = new JobangebotDAO().getJobangebot(jid);
+					if (tempJobangebot != null) {
+						result.add(tempJobangebot);
+					}
 				}
 			}
 		}
@@ -322,7 +335,10 @@ public class JobangebotDAO {
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				while (resultSet.next()) {
 					int jid = resultSet.getInt("jobangebot.JID");
-					result.add(new JobangebotDAO().getJobangebot(jid));
+					Jobangebot tempJobangebot = new JobangebotDAO().getJobangebot(jid);
+					if (tempJobangebot != null) {
+						result.add(tempJobangebot);
+					}
 				}
 			}
 		}

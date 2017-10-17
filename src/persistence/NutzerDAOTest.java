@@ -10,7 +10,7 @@ import model.Adresse;
 import model.Nutzer;
 import model.Status;
 import util.exception.DuplicateEntryException;
-import util.exception.ValidateConstrArgsException;
+import util.exception.ValidateArgsException;
 
 /**
  * @author domin
@@ -28,7 +28,7 @@ public class NutzerDAOTest {
 			Nutzer n = new Nutzer("Manuel", "Schmidt", "Männlich", LocalDate.of(2000, 6, 3), "manuel.kuenkele@live.de",
 					"pass", new Adresse("77772", "Stuttgart", "Strasse", "20"), Status.U);
 			new NutzerDAO().addNutzer(n);
-		} catch (ValidateConstrArgsException | DuplicateEntryException | SQLException e) {
+		} catch (ValidateArgsException | DuplicateEntryException | SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -83,7 +83,7 @@ public class NutzerDAOTest {
 			test = new Nutzer(35, "Manuel", "Schmidt", "Weiblich", LocalDate.of(2000, 6, 3), "manuel.kuenkele@live.de",
 					"pass", new Adresse("77772", "Stuttgart", "Strasse", "20"), Status.U);
 			new NutzerDAO().changeNutzer(test);
-		} catch (ValidateConstrArgsException | SQLException e) {
+		} catch (ValidateArgsException | SQLException e) {
 			e.printStackTrace();
 		}
 
