@@ -41,20 +41,16 @@ public class FreelancerprofilDAOTest {
 			sprachen.add("Englisch");
 			Freelancerprofil f = new Freelancerprofil("Ausbildung", "Chemie", "beschreibung", skills, "lebenslauf",
 					sprachen, new NutzerDAO().getNutzer(22));
-			int fid = new FreelancerprofilDAO().addFreelancerprofil(f);
-			f.setId(fid);
-			System.out.println(f);
+			System.out.println(new FreelancerprofilDAO().addFreelancerprofil(f));
 		} catch (ValidateConstrArgsException | SQLException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
 	 * Test method for
 	 * {@link persistence.FreelancerprofilDAO#getFreelancerprofil(int)}.
 	 */
-	@Ignore
 	@Test
 	public void testGetFreelancerprofil() {
 		Freelancerprofil f;
@@ -71,7 +67,6 @@ public class FreelancerprofilDAOTest {
 	 * Test method for
 	 * {@link persistence.FreelancerprofilDAO#getFreelancerprofilByNutzer(int)}.
 	 */
-	@Ignore
 	@Test
 	public void testGetFreelancerprofilByNutzer() {
 		try {
@@ -86,7 +81,6 @@ public class FreelancerprofilDAOTest {
 	/**
 	 * Test method for {@link persistence.FreelancerprofilDAO#getAllFreelancer()}.
 	 */
-	@Ignore
 	@Test
 	public void testGetAllFreelancer() {
 		try {
@@ -101,6 +95,7 @@ public class FreelancerprofilDAOTest {
 	 * Test method for
 	 * {@link persistence.FreelancerprofilDAO#deleteFreelancerprofil(int)}.
 	 */
+	@Ignore
 	@Test
 	public void testDeleteFreelancerprofil() {
 		try {
@@ -122,9 +117,8 @@ public class FreelancerprofilDAOTest {
 		sprachen.add("Deutsch");
 		try {
 			Freelancerprofil f = new FreelancerprofilDAO().getFreelancerprofil(27);
-			Freelancerprofil f2 = new Freelancerprofil(f.getAbschluss(), f.getFachgebiet(), f.getBeschreibung(),
-					f.getSkills(), "career", sprachen, f.getNutzer());
-			f2.setId(f.getFID());
+			Freelancerprofil f2 = new Freelancerprofil(f.getFID(), f.getAbschluss(), f.getFachgebiet(),
+					f.getBeschreibung(), f.getSkills(), "career", sprachen, f.getNutzer());
 			new FreelancerprofilDAO().changeFreelancerprofil(f2);
 		} catch (ValidateConstrArgsException | SQLException e) {
 			e.printStackTrace();
@@ -172,6 +166,7 @@ public class FreelancerprofilDAOTest {
 	/**
 	 * Test method for {@link persistence.FreelancerprofilDAO#searchForGehalt(int)}.
 	 */
+	@Ignore
 	@Test
 	public void testSearchForSprache() {
 		List<Freelancerprofil> list;

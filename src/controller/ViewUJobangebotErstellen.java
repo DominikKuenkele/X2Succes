@@ -25,10 +25,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import model.Jobangebot;
+import model.Unternehmensprofil;
 import persistence.AbschlussDAO;
 import persistence.ExpertiseDAO;
 import util.exception.DBException;
-import util.exception.UserInputException;
+import util.exception.ValidateConstrArgsException;
 
 public class ViewUJobangebotErstellen implements Initializable {
 
@@ -89,14 +91,17 @@ public class ViewUJobangebotErstellen implements Initializable {
 			String cmail = contactemail.getText();
 
 			try {
-				verwaltung.createJobangebot(degree, topic1, new LinkedList<String>(), jobTitle, description,
-						LocalDate.of(1050, 12, 31), monthlysalary, weeklyworktime);
+				Jobangebot jobangebot = new Jobangebot(degree, topic1, new LinkedList<String>(), jobTitle, description,
+						LocalDate.of(1050, 12, 31), monthlysalary, weeklyworktime,
+						(Unternehmensprofil) verwaltung.getCurrentProfil());
+				jobangebot.saveToDatabase();
+
 				Alert alert = new Alert(AlertType.INFORMATION);
 				alert.setTitle("Info");
 				alert.setHeaderText("Jobangebot erstellt");
 				alert.setContentText("Das Jobangebot wurde erfolgreich erstellt!");
 				alert.showAndWait();
-			} catch (UserInputException | DBException e) {
+			} catch (ValidateConstrArgsException | DBException e) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Error");
 				alert.setHeaderText("Registrierung fehlgeschlagen");
@@ -135,15 +140,18 @@ public class ViewUJobangebotErstellen implements Initializable {
 
 	@FXML
 	void seeoffer(ActionEvent event) throws IOException {
-
-		Stage stage = new Stage();
-		stage.setTitle("X2Success");
-		Pane myPane = null;
-		myPane = FXMLLoader.load(getClass().getResource("Jobangebot.fxml"));
-		Scene scene = new Scene(myPane);
-		stage.setScene(scene);
-		stage.show();
-
+		// FXMLLoader loader = new
+		// FXMLLoader(getClass().getResource("/view/FJobangebot.fxml"));
+		// Pane myPane = loader.load();
+		// ViewFJobangebot controller = loader.getController();
+		// controller.setJobangebot(((JobangebotAnzeige) source).getJobangebot());
+		//
+		// Stage stage = new Stage();
+		// stage.setTitle("X2Success");
+		//
+		// Scene scene = new Scene(myPane);
+		// stage.setScene(scene);
+		// stage.show();
 	}
 
 	@Override

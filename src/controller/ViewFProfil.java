@@ -28,7 +28,6 @@ import persistence.AbschlussDAO;
 import persistence.ExpertiseDAO;
 import persistence.SpracheDAO;
 import util.exception.DBException;
-import util.exception.UserInputException;
 
 public class ViewFProfil implements Initializable {
 
@@ -102,21 +101,21 @@ public class ViewFProfil implements Initializable {
 		}
 
 		try {
-			verwaltung.changeFreelancer(abschluss, expertise, beschreibung, skills, lebenslauf, sprachen);
+			Freelancerprofil freelancerprofil = (Freelancerprofil) verwaltung.getCurrentProfil();
+			freelancerprofil.setAbschluss(abschluss);
+			freelancerprofil.setFachgebiet(expertise);
+			freelancerprofil.setBeschreibung(beschreibung);
+			freelancerprofil.setSkills(skills);
+			freelancerprofil.setLebenslauf(lebenslauf);
+			freelancerprofil.setSprachen(sprachen);
+			freelancerprofil.saveToDatabase();
+
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Info");
 			alert.setHeaderText("Freelancerprofil geändert");
 			alert.setContentText("Das Freelancerprofil wurde erfolgreich geändert!");
 			alert.showAndWait();
 
-		} catch (UserInputException e) {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Error");
-			alert.setHeaderText("Änderung fehlgeschlagen");
-			alert.setContentText(e.getMessage());
-			alert.showAndWait();
-
-			e.printStackTrace();
 		} catch (DBException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");

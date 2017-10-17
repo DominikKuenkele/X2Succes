@@ -23,10 +23,13 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import model.Adresse;
+import model.Nutzer;
 import model.Status;
 import persistence.SexDAO;
 import util.exception.DBException;
 import util.exception.UserInputException;
+import util.exception.ValidateConstrArgsException;
 
 public class ViewRegistrierung implements Initializable {
 
@@ -89,7 +92,7 @@ public class ViewRegistrierung implements Initializable {
 
 	}
 
-	private void nutzerAnlegen(Status status) throws UserInputException, DBException {
+	private void nutzerAnlegen(Status status) throws UserInputException, DBException, ValidateConstrArgsException {
 		if (UserPW.getText().equals(UserPW2.getText())) {
 			String vorname = UserVorname.getText();
 			String nachname = UserNachname.getText();
@@ -98,13 +101,17 @@ public class ViewRegistrierung implements Initializable {
 			String plz = UserPlz.getText();
 			String strasse = UserStraﬂe.getText();
 			String hausnummer = UserNr.getText();
-			LocalDate localDate = UserDatum.getValue();
+			LocalDate birthdate = UserDatum.getValue();
 			String eMail = UserMail.getText();
 			String passwort = UserPW.getText();
-			verwaltung.register(vorname, nachname, geschlecht, plz, stadt, strasse, hausnummer, localDate, eMail,
-					passwort, status);
-		}
 
+			Nutzer nutzer;
+			nutzer = new Nutzer(vorname, nachname, geschlecht, birthdate, eMail, passwort,
+					new Adresse(plz, stadt, strasse, hausnummer), status);
+			nutzer.setAndHashPassword(passwort);
+			nutzer.saveToDatabase();
+			verwaltung.setCurrentNutzer(nutzer);
+		}
 	}
 
 	@FXML
@@ -112,7 +119,7 @@ public class ViewRegistrierung implements Initializable {
 		try {
 			nutzerAnlegen(Status.U);
 			changescene("/view/UProfilErstellen.fxml");
-		} catch (UserInputException | DBException e) {
+		} catch (UserInputException | DBException | ValidateConstrArgsException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Registrierung fehlgeschlagen");
@@ -126,7 +133,7 @@ public class ViewRegistrierung implements Initializable {
 		try {
 			nutzerAnlegen(Status.F);
 			changescene("/view/FProfilErstellen.fxml");
-		} catch (UserInputException | DBException e) {
+		} catch (UserInputException | DBException | ValidateConstrArgsException e) {
 			Alert alert = new Alert(AlertType.ERROR); // Statt .Error geht auch .Warning etc
 			alert.setTitle("Error"); // Fenstername
 			alert.setHeaderText("Registrierung fehlgeschlagen");

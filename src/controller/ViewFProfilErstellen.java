@@ -22,11 +22,12 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import model.Freelancerprofil;
 import persistence.AbschlussDAO;
 import persistence.ExpertiseDAO;
 import persistence.SpracheDAO;
 import util.exception.DBException;
-import util.exception.UserInputException;
+import util.exception.ValidateConstrArgsException;
 
 public class ViewFProfilErstellen implements Initializable {
 
@@ -91,9 +92,12 @@ public class ViewFProfilErstellen implements Initializable {
 		}
 
 		try {
-			verwaltung.createFreelancer(abschluss, expertise, beschreibung, skills, lebenslauf, sprachen);
+			Freelancerprofil f = new Freelancerprofil(abschluss, expertise, beschreibung, skills, lebenslauf, sprachen,
+					Verwaltung.getInstance().getCurrentNutzer());
+			f.saveToDatabase();
+			verwaltung.setCurrentFreelancer(f);
 			switchScene("/view/FRahmen.fxml");
-		} catch (UserInputException | DBException e) {
+		} catch (ValidateConstrArgsException | DBException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Registrierung fehlgeschlagen");

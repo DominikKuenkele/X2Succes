@@ -18,10 +18,12 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import model.Adresse;
 import model.Nutzer;
 import persistence.SexDAO;
 import util.exception.DBException;
 import util.exception.UserInputException;
+import util.exception.ValidateConstrArgsException;
 
 public class ViewSettings implements Initializable {
 
@@ -72,7 +74,8 @@ public class ViewSettings implements Initializable {
 		Verwaltung verwaltung = Verwaltung.getInstance();
 		if (newpassword.getText().equals(newpassword2.getText())) {
 			try {
-				verwaltung.changePassword(oldpassword.getText(), newpassword.getText());
+				Nutzer nutzer = verwaltung.getCurrentNutzer();
+				nutzer.changePassword(oldpassword.getText(), newpassword.getText());
 
 				oldpassword.clear();
 				newpassword.clear();
@@ -83,7 +86,7 @@ public class ViewSettings implements Initializable {
 				alert.setHeaderText("Änderung erfolgreich");
 				alert.setContentText("Password geändert!");
 				alert.showAndWait();
-			} catch (UserInputException | DBException e) {
+			} catch (UserInputException e) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Error");
 				alert.setHeaderText("Änderung fehlgeschlagen");
@@ -116,14 +119,21 @@ public class ViewSettings implements Initializable {
 		LocalDate newBirthdate = birthdate.getValue();
 
 		try {
-			verwaltung.changeNutzer(newFirstName, newLastName, newEmail, newSex, newPlz, newCity, newStreet, newNumber,
-					newBirthdate);
+			Nutzer nutzer = verwaltung.getCurrentNutzer();
+			nutzer.setFirstName(newFirstName);
+			nutzer.setLastName(newLastName);
+			nutzer.seteMail(newEmail);
+			nutzer.setSex(newSex);
+			nutzer.setBirthdate(newBirthdate);
+			nutzer.setAddress(new Adresse(newPlz, newCity, newStreet, newNumber));
+			nutzer.saveToDatabase();
+
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Info");
 			alert.setHeaderText("Nutzerdaten geändert");
 			alert.setContentText("Die Nutzerdaten wurden erfolgreich geändert!");
 			alert.showAndWait();
-		} catch (UserInputException e) {
+		} catch (ValidateConstrArgsException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Änderung fehlgeschlagen");
@@ -139,6 +149,9 @@ public class ViewSettings implements Initializable {
 					"Auf die Datenbank kann im Moment nicht zugegriffen werden. Versuchen Sie es später erneut.");
 			alert.showAndWait();
 
+			e.printStackTrace();
+		} catch (UserInputException e) {
+			// Cannot occure
 			e.printStackTrace();
 		}
 
@@ -160,7 +173,7 @@ public class ViewSettings implements Initializable {
 				e.printStackTrace();
 			}
 			city.setText(nutzer.getAddress().getCity());
-			street.setText(nutzer.getAddress().getStrasse());
+			street.setText(nutzer.getAddress().getStreet());
 			plz.setText(nutzer.getAddress().getPlz());
 			streetnumber.setText(nutzer.getAddress().getNumber());
 			email.setText(nutzer.geteMail());

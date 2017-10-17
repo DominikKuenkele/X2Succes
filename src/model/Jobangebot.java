@@ -1,11 +1,14 @@
 package model;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import persistence.JobangebotDAO;
 import util.Validate;
+import util.exception.DBException;
 import util.exception.ValidateConstrArgsException;
 
 /**
@@ -22,7 +25,7 @@ public class Jobangebot {
 	private LocalDate frist;
 	private int gehalt;
 	private int wochenstunden;
-	private Unternehmensprofil unternehmensproflil;
+	private Unternehmensprofil unternehmensprofil;
 
 	/**
 	 * @param abschluss
@@ -47,7 +50,29 @@ public class Jobangebot {
 		this.frist = frist;
 		this.gehalt = gehalt;
 		this.wochenstunden = wochenstunden;
-		this.unternehmensproflil = unternehmensprofil;
+		this.unternehmensprofil = unternehmensprofil;
+
+		validateState();
+	}
+
+	/**
+	 * @param jid
+	 * @param abschluss
+	 * @param fachgebiet
+	 * @param sprachen
+	 * @param jobTitel
+	 * @param beschreibung
+	 * @param frist
+	 * @param gehalt
+	 * @param wochenstunden
+	 * @param unternehmensprofil
+	 * @throws ValidateConstrArgsException
+	 */
+	public Jobangebot(int jid, String abschluss, String fachgebiet, List<String> sprachen, String jobTitel,
+			String beschreibung, LocalDate frist, int gehalt, int wochenstunden, Unternehmensprofil unternehmensprofil)
+			throws ValidateConstrArgsException {
+		this(abschluss, fachgebiet, sprachen, jobTitel, beschreibung, frist, gehalt, wochenstunden, unternehmensprofil);
+		this.jid = jid;
 
 		validateState();
 	}
@@ -116,18 +141,82 @@ public class Jobangebot {
 	}
 
 	/**
-	 * @return the unternehmensproflil
+	 * @return the unternehmensprofil
 	 */
 	public Unternehmensprofil getUnternehmensprofil() {
-		return unternehmensproflil;
+		return this.unternehmensprofil;
 	}
 
 	/**
-	 * @param jID
-	 *            the jID to set
+	 * @param aAbschluss
+	 *            the abschluss to set
 	 */
-	public void setId(int jID) {
-		this.jid = jID;
+	public void setAbschluss(String aAbschluss) {
+		this.abschluss = aAbschluss;
+	}
+
+	/**
+	 * @param aFachgebiet
+	 *            the fachgebiet to set
+	 */
+	public void setFachgebiet(String aFachgebiet) {
+		this.fachgebiet = aFachgebiet;
+	}
+
+	/**
+	 * @param aSprachen
+	 *            the sprachen to set
+	 */
+	public void setSprachen(List<String> aSprachen) {
+		this.sprachen = aSprachen;
+	}
+
+	/**
+	 * @param aJobTitel
+	 *            the jobTitel to set
+	 */
+	public void setJobTitel(String aJobTitel) {
+		this.jobTitel = aJobTitel;
+	}
+
+	/**
+	 * @param aBeschreibung
+	 *            the beschreibung to set
+	 */
+	public void setBeschreibung(String aBeschreibung) {
+		this.beschreibung = aBeschreibung;
+	}
+
+	/**
+	 * @param aFrist
+	 *            the frist to set
+	 */
+	public void setFrist(LocalDate aFrist) {
+		this.frist = aFrist;
+	}
+
+	/**
+	 * @param aGehalt
+	 *            the gehalt to set
+	 */
+	public void setGehalt(int aGehalt) {
+		this.gehalt = aGehalt;
+	}
+
+	/**
+	 * @param aWochenstunden
+	 *            the wochenstunden to set
+	 */
+	public void setWochenstunden(int aWochenstunden) {
+		this.wochenstunden = aWochenstunden;
+	}
+
+	/**
+	 * @param aUnternehmensproflil
+	 *            the unternehmensprofil to set
+	 */
+	public void setUnternehmensproflil(Unternehmensprofil aUnternehmensproflil) {
+		this.unternehmensprofil = aUnternehmensproflil;
 	}
 
 	private void validateState() throws ValidateConstrArgsException {
@@ -159,6 +248,21 @@ public class Jobangebot {
 		}
 	}
 
+	public void saveToDatabase() throws DBException {
+		try {
+			final JobangebotDAO jobangebotDAO = new JobangebotDAO();
+
+			if (jid == -1) {
+				this.jid = jobangebotDAO.addJobangebot(this);
+			} else {
+				jobangebotDAO.changeJobangebot(this);
+			}
+		} catch (SQLException e) {
+			throw new DBException(
+					"Auf die Datenbank kann im Moment nicht zugegriffen werden. Versuchen Sie es später erneut!");
+		}
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		boolean result = false;
@@ -184,6 +288,6 @@ public class Jobangebot {
 		return "Jobangebot [jid=" + this.jid + ", abschluss=" + this.abschluss + ", fachgebiet=" + this.fachgebiet
 				+ ", sprachen=" + this.sprachen + ", jobTitel=" + this.jobTitel + ", beschreibung=" + this.beschreibung
 				+ ", frist=" + this.frist + ", gehalt=" + this.gehalt + ", wochenstunden=" + this.wochenstunden
-				+ ", unternehmensproflil=" + this.unternehmensproflil + "]";
+				+ ", unternehmensprofil=" + this.unternehmensprofil + "]";
 	}
 }

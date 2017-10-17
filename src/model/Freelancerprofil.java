@@ -1,11 +1,21 @@
 package model;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 
+import persistence.FreelancerprofilDAO;
+import persistence.JobangebotDAO;
 import util.Validate;
+import util.exception.DBException;
 import util.exception.ValidateConstrArgsException;
 
 /**
@@ -45,6 +55,24 @@ public class Freelancerprofil implements Profil {
 		this.sprachen = sprachen;
 		this.nutzer = nutzer;
 
+		validateState();
+	}
+
+	/**
+	 * @param abschluss
+	 * @param fachgebiet
+	 * @param beschreibung
+	 * @param skills
+	 * @param lebenslauf
+	 * @param sprachen
+	 * @param nutzer
+	 * @throws ValidateConstrArgsException
+	 */
+	public Freelancerprofil(int fid, final String abschluss, final String fachgebiet, final String beschreibung,
+			final String[] skills, final String lebenslauf, final List<String> sprachen, Nutzer nutzer)
+			throws ValidateConstrArgsException {
+		this(abschluss, fachgebiet, beschreibung, skills, lebenslauf, sprachen, nutzer);
+		this.fid = fid;
 		validateState();
 	}
 
@@ -105,18 +133,73 @@ public class Freelancerprofil implements Profil {
 	}
 
 	/**
-	 * @param fid
-	 *            the fid to set
-	 */
-	public void setId(int fid) {
-		this.fid = fid;
-	}
-
-	/**
 	 * @return the nutzer
 	 */
 	public Nutzer getNutzer() {
 		return nutzer;
+	}
+
+	/**
+	 * @return the fid
+	 */
+	public int getFid() {
+		return this.fid;
+	}
+
+	/**
+	 * @param aAbschluss
+	 *            the abschluss to set
+	 */
+	public void setAbschluss(String aAbschluss) {
+		this.abschluss = aAbschluss;
+	}
+
+	/**
+	 * @param aFachgebiet
+	 *            the fachgebiet to set
+	 */
+	public void setFachgebiet(String aFachgebiet) {
+		this.fachgebiet = aFachgebiet;
+	}
+
+	/**
+	 * @param aBeschreibung
+	 *            the beschreibung to set
+	 */
+	public void setBeschreibung(String aBeschreibung) {
+		this.beschreibung = aBeschreibung;
+	}
+
+	/**
+	 * @param aSkills
+	 *            the skills to set
+	 */
+	public void setSkills(String[] aSkills) {
+		this.skills = aSkills;
+	}
+
+	/**
+	 * @param aLebenslauf
+	 *            the lebenslauf to set
+	 */
+	public void setLebenslauf(String aLebenslauf) {
+		this.lebenslauf = aLebenslauf;
+	}
+
+	/**
+	 * @param aSprachen
+	 *            the sprachen to set
+	 */
+	public void setSprachen(List<String> aSprachen) {
+		this.sprachen = aSprachen;
+	}
+
+	/**
+	 * @param aNutzer
+	 *            the nutzer to set
+	 */
+	public void setNutzer(Nutzer aNutzer) {
+		this.nutzer = aNutzer;
 	}
 
 	private void validateSkills(final String... skills) {
@@ -156,6 +239,80 @@ public class Freelancerprofil implements Profil {
 		if (message != "") {
 			throw new ValidateConstrArgsException(message);
 		}
+	}
+
+	public void saveToDatabase() throws DBException {
+		try {
+			final FreelancerprofilDAO freelancerprofilDao = new FreelancerprofilDAO();
+
+			if (fid == -1) {
+				this.fid = freelancerprofilDao.addFreelancerprofil(this);
+			} else {
+				freelancerprofilDao.changeFreelancerprofil(this);
+			}
+		} catch (SQLException e) {
+			throw new DBException(
+					"Auf die Datenbank kann im Moment nicht zugegriffen werden. Versuchen Sie es später erneut!");
+		}
+	}
+
+	/**
+	 * Searches for {@link model.Jobangebot Jobangebote} in database with given
+	 * parameters
+	 * 
+	 * @param name
+	 * @param abschluss
+	 * @param expertise
+	 * @param branche
+	 * @param minMitarbeiter
+	 * @param maxMitarbeiter
+	 * @param minGehalt
+	 * @return a List of {@link model.Jobangebot Jobangebote} with search-Priority
+	 * @throws SQLException
+	 */
+	public static List<Entry<Jobangebot, Integer>> sucheJobangebote(String name, String abschluss, String expertise,
+			String branche, int minMitarbeiter, int maxMitarbeiter, int minGehalt) throws SQLException {
+		JobangebotDAO jobangebotDao = new JobangebotDAO();
+
+		List<List<Jobangebot>> searchList = new LinkedList<>();
+		searchList.add(jobangebotDao.searchForName(name));
+		searchList.add(jobangebotDao.searchForAbschluss(abschluss, expertise));
+		searchList.add(jobangebotDao.searchForBranche(branche));
+		searchList.add(jobangebotDao.searchForMitarbeiter(minMitarbeiter, maxMitarbeiter));
+		searchList.add(jobangebotDao.searchForGehalt(minGehalt));
+
+		Set<Entry<Jobangebot, Integer>> prioList = prioritizeJobangebote(searchList);
+		List<Map.Entry<Jobangebot, Integer>> list = new LinkedList<>(prioList);
+		Collections.sort(list, new Comparator<Map.Entry<Jobangebot, Integer>>() {
+			@Override
+			public int compare(Map.Entry<Jobangebot, Integer> e1, Map.Entry<Jobangebot, Integer> e2) {
+				return (e2.getValue()).compareTo(e1.getValue());
+			}
+		});
+
+		return list;
+	}
+
+	/**
+	 * Sorts a list of {@link model.Jobangebot Jobangebote} by their priority
+	 * 
+	 * @param searchList
+	 * @return sorted Set
+	 */
+	private static Set<Entry<Jobangebot, Integer>> prioritizeJobangebote(List<List<Jobangebot>> searchList) {
+		HashMap<Jobangebot, Integer> prioList = new HashMap<>();
+		for (List<Jobangebot> sL : searchList) {
+			for (Jobangebot jobangebot : sL) {
+				int prio;
+				if (!prioList.containsKey(jobangebot)) {
+					prio = 1;
+				} else {
+					prio = prioList.get(jobangebot) + 1;
+				}
+				prioList.put(jobangebot, prio);
+			}
+		}
+		return prioList.entrySet();
 	}
 
 	@Override

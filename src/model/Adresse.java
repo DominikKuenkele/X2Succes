@@ -8,21 +8,21 @@ import util.exception.ValidateConstrArgsException;
  *
  */
 public class Adresse {
-	private String strasse;
+	private String street;
 	private String number;
 	private String city;
 	private String plz;
 
 	/**
-	 * @param strasse
+	 * @param street
 	 * @param number
 	 * @param city
 	 * @param plz
 	 * @throws ValidateConstrArgsException
 	 */
-	public Adresse(final String plz, final String city, final String strasse, final String number)
+	public Adresse(final String plz, final String city, final String street, final String number)
 			throws ValidateConstrArgsException {
-		this.strasse = strasse;
+		this.street = street;
 		this.number = number;
 		this.city = city;
 		this.plz = plz;
@@ -31,10 +31,10 @@ public class Adresse {
 	}
 
 	/**
-	 * @return the strasse
+	 * @return the street
 	 */
-	public String getStrasse() {
-		return strasse;
+	public String getStreet() {
+		return street;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class Adresse {
 	private void validateState() throws ValidateConstrArgsException {
 		String message = "";
 		try {
-			Validate.checkForAlpha(strasse);
+			Validate.checkForAlpha(street);
 		} catch (IllegalArgumentException e) {
 			message = message + "Straﬂe: " + e.getMessage();
 		}

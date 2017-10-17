@@ -118,8 +118,8 @@ public class ViewFSuche implements Initializable, EventHandler<MouseEvent> {
 
 		try {
 			GridPane searchGrid = new GridPane();
-
-			searchList = v.sucheJobangebote(cName, graduation, expertise, branche, minEmployees, maxEmployees, salary);
+			Freelancerprofil f = (Freelancerprofil) v.getCurrentProfil();
+			searchList = f.sucheJobangebote(cName, graduation, expertise, branche, minEmployees, maxEmployees, salary);
 			jA = new JobangebotAnzeige[searchList.size()];
 
 			int index = 0;

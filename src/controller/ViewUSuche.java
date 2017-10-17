@@ -27,6 +27,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import model.Freelancerprofil;
+import model.Unternehmensprofil;
 import persistence.AbschlussDAO;
 import persistence.ExpertiseDAO;
 import persistence.SpracheDAO;
@@ -107,7 +108,9 @@ public class ViewUSuche implements Initializable, EventHandler<MouseEvent> {
 		try {
 			GridPane searchGrid = new GridPane();
 
-			searchList = v.sucheFreelancer(fName, graduation, expertise, sprachen);
+			Unternehmensprofil unternehmensprofil = (Unternehmensprofil) v.getCurrentProfil();
+			searchList = unternehmensprofil.sucheFreelancer(fName, graduation, expertise, sprachen);
+
 			fA = new FreelancerprofilAnzeige[searchList.size()];
 
 			int index = 0;

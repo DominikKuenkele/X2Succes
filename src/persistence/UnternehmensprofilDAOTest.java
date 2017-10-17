@@ -5,12 +5,16 @@ package persistence;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import model.Adresse;
+import model.Freelancerprofil;
 import model.Unternehmensprofil;
 import util.exception.ValidateConstrArgsException;
 
@@ -27,6 +31,30 @@ public class UnternehmensprofilDAOTest {
 	@Before
 	public void setUp() throws Exception {
 
+	}
+
+	/**
+	 * Test method for
+	 * {@link application.Verwaltung#sucheJobangebote(String name, String abschluss, String branche, int minMitarbeiter, int maxMitarbeiter, int minGehalt)}.
+	 */
+	@Test
+	public void testSucheFreelancer() {
+		List<String> sprachen = new LinkedList<>();
+		sprachen.add("*");
+		try {
+			List<Entry<Freelancerprofil, Integer>> list;
+			list = Unternehmensprofil.sucheFreelancer("Dominik Künkele", "Ausbildung", "*", sprachen);
+			for (Entry<Freelancerprofil, Integer> entry : list) {
+				System.out.println(entry);
+			}
+			System.out.println(list.size() + " results");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// for (int i = 0; i < map.size(); i++) {
+		// System.out.println(map.entrySet());
+		// }
 	}
 
 	/**
@@ -56,7 +84,6 @@ public class UnternehmensprofilDAOTest {
 	 * Test method for
 	 * {@link persistence.UnternehmensprofilDAO#getUnternehmensprofil(int)}.
 	 */
-	@Ignore
 	@Test
 	public void testGetUnternehmensprofil() {
 		try {
@@ -71,7 +98,6 @@ public class UnternehmensprofilDAOTest {
 	 * Test method for
 	 * {@link persistence.UnternehmensprofilDAO#getAllUnternehmen()}.
 	 */
-	@Ignore
 	@Test
 	public void testGetAllUnternehmen() {
 		try {
@@ -107,10 +133,9 @@ public class UnternehmensprofilDAOTest {
 		try {
 			Unternehmensprofil u = new UnternehmensprofilDAO().getUnternehmensprofil(9);
 
-			Unternehmensprofil u2 = new Unternehmensprofil(u.getName(), u.getLegalForm(), u.getAddress(),
+			Unternehmensprofil u2 = new Unternehmensprofil(u.getUid(), u.getName(), u.getLegalForm(), u.getAddress(),
 					u.getFounding(), 50000, u.getDescription(), u.getBranche(), u.getWebsite(), "Olaf",
 					u.getCeoLastName(), u.getNutzer());
-			u2.setId(u.getId());
 			new UnternehmensprofilDAO().changeUnternehmen(u2);
 		} catch (ValidateConstrArgsException | SQLException e) {
 			// TODO Auto-generated catch block

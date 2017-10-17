@@ -18,10 +18,11 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import model.Adresse;
 import model.Unternehmensprofil;
 import persistence.BrancheDAO;
 import util.exception.DBException;
-import util.exception.UserInputException;
+import util.exception.ValidateConstrArgsException;
 
 public class ViewUProfil implements Initializable {
 
@@ -87,15 +88,26 @@ public class ViewUProfil implements Initializable {
 			String ceoLastName = cCeoname.getText();
 
 			try {
-				verwaltung.changeUnternehmen(name, form, plz, city, street, number, founding, employees, description,
-						branche, website, ceoFirstName, ceoLastName);
+				Unternehmensprofil unternehmensprofil = (Unternehmensprofil) verwaltung.getCurrentProfil();
+				unternehmensprofil.setName(name);
+				unternehmensprofil.setLegalForm(form);
+				unternehmensprofil.setAddress(new Adresse(plz, city, street, number));
+				unternehmensprofil.setFounding(founding);
+				unternehmensprofil.setEmployees(employees);
+				unternehmensprofil.setDescription(description);
+				unternehmensprofil.setBranche(branche);
+				unternehmensprofil.setWebsite(website);
+				unternehmensprofil.setCeoFirstName(ceoFirstName);
+				unternehmensprofil.setCeoLastName(ceoLastName);
+				unternehmensprofil.saveToDatabase();
+
 				Alert alert = new Alert(AlertType.INFORMATION);
 				alert.setTitle("Info");
 				alert.setHeaderText("Unternehmensprofil geändert");
 				alert.setContentText("Das Unternehmensprofil wurde erfolgreich geändert!");
 				alert.showAndWait();
 
-			} catch (UserInputException e) {
+			} catch (ValidateConstrArgsException e) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Error");
 				alert.setHeaderText("Änderung fehlgeschlagen");
@@ -145,7 +157,7 @@ public class ViewUProfil implements Initializable {
 		cDate.setValue(u.getFounding());
 		cEmployees.setText(Integer.toString(u.getEmployees()));
 		cCity.setText(u.getAddress().getCity());
-		cStreet.setText(u.getAddress().getStrasse());
+		cStreet.setText(u.getAddress().getStreet());
 		cPlz.setText(u.getAddress().getPlz());
 		cNumber.setText(u.getAddress().getNumber());
 		cDescription.setText(u.getDescription());

@@ -6,8 +6,6 @@ package application;
 import static org.junit.Assert.fail;
 
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -17,8 +15,6 @@ import org.junit.Test;
 
 import model.Freelancerprofil;
 import model.Jobangebot;
-import util.exception.DBException;
-import util.exception.UserInputException;
 
 /**
  * @author domin
@@ -117,7 +113,7 @@ public class VerwaltungTest {
 	public void testSucheJobangebote() {
 		try {
 			List<Entry<Jobangebot, Integer>> list;
-			list = Verwaltung.getInstance().sucheJobangebote("*", "Doktor", "*", "*", 0, 600, 1000);
+			list = Freelancerprofil.sucheJobangebote("*", "Doktor", "*", "*", 0, 600, 1000);
 			for (Entry<Jobangebot, Integer> entry : list) {
 				System.out.println(entry);
 			}
@@ -128,46 +124,6 @@ public class VerwaltungTest {
 		// for (int i = 0; i < map.size(); i++) {
 		// System.out.println(map.entrySet());
 		// }
-	}
-
-	/**
-	 * Test method for
-	 * {@link application.Verwaltung#sucheJobangebote(String name, String abschluss, String branche, int minMitarbeiter, int maxMitarbeiter, int minGehalt)}.
-	 */
-	@Test
-	public void testSucheFreelancer() {
-		List<String> sprachen = new LinkedList<>();
-		sprachen.add("*");
-		try {
-			List<Entry<Freelancerprofil, Integer>> list;
-			list = Verwaltung.getInstance().sucheFreelancer("Dominik Künkele", "Ausbildung", "*", sprachen);
-			for (Entry<Freelancerprofil, Integer> entry : list) {
-				System.out.println(entry);
-			}
-			System.out.println(list.size() + " results");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// for (int i = 0; i < map.size(); i++) {
-		// System.out.println(map.entrySet());
-		// }
-	}
-
-	/**
-	 * Test method for
-	 * {@link application.Verwaltung#changeNutzer(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.time.LocalDate)}.
-	 */
-	@Ignore
-	@Test
-	public void testChangeNutzer() {
-		try {
-			v.changeNutzer("Boris", "", "Schmidt", "m", "77772", "Stuttgart", "Strasse", "20",
-					LocalDate.of(2000, 6, 3));
-		} catch (UserInputException | DBException e) {
-			e.printStackTrace();
-		}
-		// fail("Not yet implemented");
 	}
 
 	/**

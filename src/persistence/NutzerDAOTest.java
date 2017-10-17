@@ -1,7 +1,5 @@
 package persistence;
 
-import static org.junit.Assert.fail;
-
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -64,10 +62,14 @@ public class NutzerDAOTest {
 	/**
 	 * Test method for {@link persistence.NutzerDAO#getAllNutzer()}.
 	 */
-	@Ignore
 	@Test
 	public void testGetAllNutzer() {
-		fail("Not yet implemented");
+		try {
+			System.out.println(new NutzerDAO().getAllNutzer());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -78,9 +80,8 @@ public class NutzerDAOTest {
 	public void testChangeNutzer() {
 		Nutzer test;
 		try {
-			test = new Nutzer("Manuel", "Schmidt", "Weiblich", LocalDate.of(2000, 6, 3), "manuel.kuenkele@live.de",
+			test = new Nutzer(35, "Manuel", "Schmidt", "Weiblich", LocalDate.of(2000, 6, 3), "manuel.kuenkele@live.de",
 					"pass", new Adresse("77772", "Stuttgart", "Strasse", "20"), Status.U);
-			test.setNID(35);
 			new NutzerDAO().changeNutzer(test);
 		} catch (ValidateConstrArgsException | SQLException e) {
 			e.printStackTrace();

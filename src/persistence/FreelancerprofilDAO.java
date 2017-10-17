@@ -33,48 +33,44 @@ public class FreelancerprofilDAO {
 	public int addFreelancerprofil(Freelancerprofil freelancer) throws SQLException {
 		int nutzerId = freelancer.getNutzer().getNID();
 		int fid = -1;
-		String sql = "INSERT INTO Freelancerprofil values (default, ?, ?, ?, ?, ?, ?)";
 
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			preparedStatement.setInt(1, nutzerId);
-			int gid = new AbschlussDAO().getAbschluss(freelancer.getAbschluss());
-			preparedStatement.setInt(2, gid);
-			int eid = new ExpertiseDAO().getExpertise(freelancer.getFachgebiet());
-			preparedStatement.setInt(3, eid);
-			preparedStatement.setString(4, freelancer.getBeschreibung());
-			Gson gson = new GsonBuilder().create();
-			String skillsJSON = gson.toJson(freelancer.getSkills());
-			preparedStatement.setString(5, skillsJSON);
-			preparedStatement.setString(6, freelancer.getLebenslauf());
-
-			preparedStatement.executeUpdate();
-
-		}
-
-		sql = "SELECT LAST_INSERT_ID()";
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				while (resultSet.next()) {
-					fid = resultSet.getInt("last_insert_id()");
-				}
-			}
-		}
-
-		sql = "INSERT INTO SprachenzuordnungFP values (?, ?)";
-
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-
-			List<String> sprachen = freelancer.getSprachen();
-			for (int i = 0; i < sprachen.size(); i++) {
-				int sid = new SpracheDAO().getSID(sprachen.get(i));
-
-				preparedStatement.setInt(1, fid);
-				preparedStatement.setInt(2, sid);
+		try (Connection connect = datasource.getConnection()) {
+			String sql = "INSERT INTO Freelancerprofil values (default, ?, ?, ?, ?, ?, ?)";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				preparedStatement.setInt(1, nutzerId);
+				int gid = new AbschlussDAO().getAbschluss(freelancer.getAbschluss());
+				preparedStatement.setInt(2, gid);
+				int eid = new ExpertiseDAO().getExpertise(freelancer.getFachgebiet());
+				preparedStatement.setInt(3, eid);
+				preparedStatement.setString(4, freelancer.getBeschreibung());
+				Gson gson = new GsonBuilder().create();
+				String skillsJSON = gson.toJson(freelancer.getSkills());
+				preparedStatement.setString(5, skillsJSON);
+				preparedStatement.setString(6, freelancer.getLebenslauf());
 
 				preparedStatement.executeUpdate();
+			}
+
+			sql = "SELECT LAST_INSERT_ID()";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				try (ResultSet resultSet = preparedStatement.executeQuery()) {
+					while (resultSet.next()) {
+						fid = resultSet.getInt("last_insert_id()");
+					}
+				}
+			}
+
+			sql = "INSERT INTO SprachenzuordnungFP values (?, ?)";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				List<String> sprachen = freelancer.getSprachen();
+				for (int i = 0; i < sprachen.size(); i++) {
+					int sid = new SpracheDAO().getSID(sprachen.get(i));
+
+					preparedStatement.setInt(1, fid);
+					preparedStatement.setInt(2, sid);
+
+					preparedStatement.executeUpdate();
+				}
 			}
 		}
 		return fid;
@@ -164,47 +160,47 @@ public class FreelancerprofilDAO {
 	 */
 	public void changeFreelancerprofil(Freelancerprofil freelancerprofil) throws SQLException {
 		List<String> sprachen = freelancerprofil.getSprachen();
-		String sql = "DELETE FROM sprachenzuordnungFP WHERE FID = ?";
 
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			preparedStatement.setInt(1, freelancerprofil.getFID());
+		try (Connection connect = datasource.getConnection()) {
+			String sql = "DELETE FROM sprachenzuordnungFP WHERE FID = ?";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				preparedStatement.setInt(1, freelancerprofil.getFID());
 
-			preparedStatement.executeUpdate();
-		}
+				preparedStatement.executeUpdate();
+			}
 
-		sql = "UPDATE freelancerprofil SET NID = ?, GID = ?, EID = ?, description = ?, skills = ?, "
-				+ "career = ? WHERE FID = ?";
+			sql = "UPDATE freelancerprofil SET NID = ?, GID = ?, EID = ?, description = ?, skills = ?, "
+					+ "career = ? WHERE FID = ?";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				int nid = freelancerprofil.getNutzer().getNID();
+				preparedStatement.setInt(1, nid);
+				int gid = new AbschlussDAO().getAbschluss(freelancerprofil.getAbschluss());
+				preparedStatement.setInt(2, gid);
+				int eid = new ExpertiseDAO().getExpertise(freelancerprofil.getFachgebiet());
+				preparedStatement.setInt(3, eid);
+				preparedStatement.setString(4, freelancerprofil.getBeschreibung());
+				Gson gson = new GsonBuilder().create();
+				String skillsJSON = gson.toJson(freelancerprofil.getSkills());
+				preparedStatement.setString(5, skillsJSON);
+				preparedStatement.setString(6, freelancerprofil.getLebenslauf());
+				preparedStatement.setInt(7, freelancerprofil.getFID());
 
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			int nid = freelancerprofil.getNutzer().getNID();
-			preparedStatement.setInt(1, nid);
-			int gid = new AbschlussDAO().getAbschluss(freelancerprofil.getAbschluss());
-			preparedStatement.setInt(2, gid);
-			int eid = new ExpertiseDAO().getExpertise(freelancerprofil.getFachgebiet());
-			preparedStatement.setInt(3, eid);
-			preparedStatement.setString(4, freelancerprofil.getBeschreibung());
-			Gson gson = new GsonBuilder().create();
-			String skillsJSON = gson.toJson(freelancerprofil.getSkills());
-			preparedStatement.setString(5, skillsJSON);
-			preparedStatement.setString(6, freelancerprofil.getLebenslauf());
-			preparedStatement.setInt(7, freelancerprofil.getFID());
+				preparedStatement.executeUpdate();
 
-			preparedStatement.executeUpdate();
+				for (int i = 0; i < sprachen.size(); i++) {
+					int sid = new SpracheDAO().getSID(sprachen.get(i));
 
-			for (int i = 0; i < sprachen.size(); i++) {
-				int sid = new SpracheDAO().getSID(sprachen.get(i));
+					String sql2 = "INSERT INTO SprachenzuordnungFP values (?, ?)";
+					try (PreparedStatement preparedStatement2 = connect.prepareStatement(sql2)) {
+						preparedStatement2.setInt(1, freelancerprofil.getFID());
+						preparedStatement2.setInt(2, sid);
 
-				String sql2 = "INSERT INTO SprachenzuordnungFP values (?, ?)";
-				try (PreparedStatement preparedStatement2 = connect.prepareStatement(sql2)) {
-					preparedStatement2.setInt(1, freelancerprofil.getFID());
-					preparedStatement2.setInt(2, sid);
-
-					preparedStatement2.executeUpdate();
+						preparedStatement2.executeUpdate();
+					}
 				}
 			}
 		}
+
 	}
 
 	/**
@@ -231,9 +227,8 @@ public class FreelancerprofilDAO {
 			List<String> sprachen = getLanguageInFreelancerprofil(freelancerId);
 
 			try {
-				Freelancerprofil tempFreelancer = new Freelancerprofil(graduation, expertise, description, skills,
-						career, sprachen, nutzer);
-				tempFreelancer.setId(freelancerId);
+				Freelancerprofil tempFreelancer = new Freelancerprofil(freelancerId, graduation, expertise, description,
+						skills, career, sprachen, nutzer);
 				result.add(tempFreelancer);
 			} catch (ValidateConstrArgsException e) {
 				throw new SQLException("Datenbank ist inkonsistent!", e);

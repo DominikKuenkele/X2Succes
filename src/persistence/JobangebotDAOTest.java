@@ -56,7 +56,6 @@ public class JobangebotDAOTest {
 	/**
 	 * Test method for {@link persistence.JobangebotDAO#getJobangebot(int)}.
 	 */
-	@Ignore
 	@Test
 	public void testGetJobangebot() {
 		try {
@@ -70,7 +69,6 @@ public class JobangebotDAOTest {
 	/**
 	 * Test method for {@link persistence.JobangebotDAO#getAllJobangebote()}.
 	 */
-	@Ignore
 	@Test
 	public void testGetAllJobangebote() {
 		List<Jobangebot> j;
@@ -110,9 +108,8 @@ public class JobangebotDAOTest {
 		sprachen.add("Deutsch");
 		try {
 			Jobangebot j = new JobangebotDAO().getJobangebot(11);
-			Jobangebot j2 = new Jobangebot("Master", "Chemie", j.getSprachen(), j.getJobTitel(), j.getBeschreibung(),
-					j.getFrist(), 5000, j.getWochenstunden(), j.getUnternehmensprofil());
-			j2.setId(j.getJID());
+			Jobangebot j2 = new Jobangebot(j.getJID(), "Master", "Chemie", j.getSprachen(), j.getJobTitel(),
+					j.getBeschreibung(), j.getFrist(), 5000, j.getWochenstunden(), j.getUnternehmensprofil());
 			new JobangebotDAO().changeJobangebot(j2);
 		} catch (ValidateConstrArgsException | SQLException e) {
 			// TODO Auto-generated catch block
@@ -184,6 +181,7 @@ public class JobangebotDAOTest {
 	/**
 	 * Test method for {@link persistence.JobangebotDAO#searchForGehalt(int)}.
 	 */
+	@Ignore
 	@Test
 	public void testSearchForGehalt() {
 		List<Jobangebot> list;

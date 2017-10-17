@@ -1,8 +1,14 @@
 package model;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 
+import persistence.NutzerDAO;
+import util.PassHash;
 import util.Validate;
+import util.exception.DBException;
+import util.exception.DuplicateEntryException;
+import util.exception.UserInputException;
 import util.exception.ValidateConstrArgsException;
 
 /**
@@ -41,6 +47,27 @@ public class Nutzer {
 		this.password = password;
 		this.address = address;
 		this.status = status;
+
+		validateState();
+	}
+
+	/**
+	 * @param nid
+	 * @param firstName
+	 * @param lastName
+	 * @param sex
+	 * @param birthdate
+	 * @param eMail
+	 * @param password
+	 * @param address
+	 * @param status
+	 * @throws ValidateConstrArgsException
+	 */
+	public Nutzer(int nid, String firstName, String lastName, String sex, LocalDate birthdate, String eMail,
+			String password, Adresse address, Status status) throws ValidateConstrArgsException {
+		this(firstName, lastName, sex, birthdate, eMail, password, address, status);
+
+		this.nid = nid;
 
 		validateState();
 	}
@@ -109,14 +136,6 @@ public class Nutzer {
 	}
 
 	/**
-	 * @param nid
-	 *            the nid to set
-	 */
-	public void setNID(int nid) {
-		this.nid = nid;
-	}
-
-	/**
 	 * @param status
 	 *            the status to set
 	 */
@@ -159,6 +178,102 @@ public class Nutzer {
 		if (message != "") {
 			throw new ValidateConstrArgsException(message);
 		}
+	}
+
+	public void saveToDatabase() throws DBException, UserInputException {
+		try {
+			final NutzerDAO nutzerDao = new NutzerDAO();
+			if (nid == -1) {
+				try {
+					this.nid = nutzerDao.addNutzer(this);
+				} catch (DuplicateEntryException e) {
+					throw new UserInputException(e.getMessage());
+				}
+			} else {
+				nutzerDao.changeNutzer(this);
+			}
+		} catch (SQLException e) {
+			throw new DBException(
+					"Auf die Datenbank kann im Moment nicht zugegriffen werden. Versuchen Sie es später erneut!");
+		}
+	}
+
+	/**
+	 * @return the nid
+	 */
+	public int getNid() {
+		return this.nid;
+	}
+
+	/**
+	 * @param aFirstName
+	 *            the firstName to set
+	 */
+	public void setFirstName(String aFirstName) {
+		this.firstName = aFirstName;
+	}
+
+	/**
+	 * @param aLastName
+	 *            the lastName to set
+	 */
+	public void setLastName(String aLastName) {
+		this.lastName = aLastName;
+	}
+
+	/**
+	 * @param aSex
+	 *            the sex to set
+	 */
+	public void setSex(String aSex) {
+		this.sex = aSex;
+	}
+
+	/**
+	 * @param aBirthdate
+	 *            the birthdate to set
+	 */
+	public void setBirthdate(LocalDate aBirthdate) {
+		this.birthdate = aBirthdate;
+	}
+
+	/**
+	 * @param aEMail
+	 *            the eMail to set
+	 */
+	public void seteMail(String aEMail) {
+		this.eMail = aEMail;
+	}
+
+	public void setAndHashPassword(String password) {
+		this.password = PassHash.generateStrongPasswordHash(password);
+	}
+
+	/**
+	 * @param oldPassword
+	 * @param newPassword
+	 *            the password to set
+	 * @throws UserInputException
+	 */
+	public void changePassword(String oldPassword, String newPassword) throws UserInputException {
+		final boolean validation = PassHash.validatePassword(oldPassword, password);
+		if (validation == true) {
+			this.password = PassHash.generateStrongPasswordHash(newPassword);
+		} else {
+			throw new UserInputException("Das alte Passwort stimmt nicht");
+		}
+	}
+
+	public boolean validatePassword(String password) {
+		return PassHash.validatePassword(password, this.password);
+	}
+
+	/**
+	 * @param aAddress
+	 *            the address to set
+	 */
+	public void setAddress(Adresse aAddress) {
+		this.address = aAddress;
 	}
 
 	@Override

@@ -26,49 +26,47 @@ public class JobangebotDAO {
 	 * @throws SQLException
 	 */
 	public int addJobangebot(Jobangebot jobangebot) throws SQLException {
-		int unternehmensId = jobangebot.getUnternehmensprofil().getId();
+		int unternehmensId = jobangebot.getUnternehmensprofil().getUid();
 		int jid = -1;
-		String sql = "INSERT INTO Jobangebot values (default, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			preparedStatement.setInt(1, unternehmensId);
-			int gid = new AbschlussDAO().getAbschluss(jobangebot.getAbschluss());
-			preparedStatement.setInt(2, gid);
-			int eid = new ExpertiseDAO().getExpertise(jobangebot.getFachgebiet());
-			preparedStatement.setInt(3, eid);
-			preparedStatement.setString(4, jobangebot.getJobTitel());
-			preparedStatement.setString(5, jobangebot.getBeschreibung());
-			preparedStatement.setObject(6, jobangebot.getFrist());
-			preparedStatement.setInt(7, jobangebot.getGehalt());
-			preparedStatement.setInt(8, jobangebot.getWochenstunden());
-
-			preparedStatement.executeUpdate();
-		}
-
-		sql = "SELECT LAST_INSERT_ID()";
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				while (resultSet.next()) {
-					jid = resultSet.getInt("last_insert_id()");
-				}
-			}
-		}
-
-		sql = "INSERT INTO SprachenzuordnungJA values (?, ?)";
-
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-
-			List<String> sprachen = jobangebot.getSprachen();
-			for (int i = 0; i < sprachen.size(); i++) {
-				int sid = new SpracheDAO().getSID(sprachen.get(i));
-
-				preparedStatement.setInt(1, jid);
-				preparedStatement.setInt(2, sid);
+		try (Connection connect = datasource.getConnection()) {
+			String sql = "INSERT INTO Jobangebot values (default, ?, ?, ?, ?, ?, ?, ?, ?)";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				preparedStatement.setInt(1, unternehmensId);
+				int gid = new AbschlussDAO().getAbschluss(jobangebot.getAbschluss());
+				preparedStatement.setInt(2, gid);
+				int eid = new ExpertiseDAO().getExpertise(jobangebot.getFachgebiet());
+				preparedStatement.setInt(3, eid);
+				preparedStatement.setString(4, jobangebot.getJobTitel());
+				preparedStatement.setString(5, jobangebot.getBeschreibung());
+				preparedStatement.setObject(6, jobangebot.getFrist());
+				preparedStatement.setInt(7, jobangebot.getGehalt());
+				preparedStatement.setInt(8, jobangebot.getWochenstunden());
 
 				preparedStatement.executeUpdate();
+			}
+
+			sql = "SELECT LAST_INSERT_ID()";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				try (ResultSet resultSet = preparedStatement.executeQuery()) {
+					while (resultSet.next()) {
+						jid = resultSet.getInt("last_insert_id()");
+					}
+				}
+			}
+
+			sql = "INSERT INTO SprachenzuordnungJA values (?, ?)";
+
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				List<String> sprachen = jobangebot.getSprachen();
+				for (int i = 0; i < sprachen.size(); i++) {
+					int sid = new SpracheDAO().getSID(sprachen.get(i));
+
+					preparedStatement.setInt(1, jid);
+					preparedStatement.setInt(2, sid);
+
+					preparedStatement.executeUpdate();
+				}
 			}
 		}
 		return jid;
@@ -138,42 +136,41 @@ public class JobangebotDAO {
 	 */
 	public void changeJobangebot(Jobangebot jobangebot) throws SQLException {
 		List<String> sprachen = jobangebot.getSprachen();
-		String sql = "DELETE FROM sprachenzuordnungJA WHERE JID = ?";
 
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			preparedStatement.setInt(1, jobangebot.getJID());
+		try (Connection connect = datasource.getConnection()) {
+			String sql = "DELETE FROM sprachenzuordnungJA WHERE JID = ?";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				preparedStatement.setInt(1, jobangebot.getJID());
 
-			preparedStatement.executeUpdate();
-		}
+				preparedStatement.executeUpdate();
+			}
 
-		sql = "UPDATE jobangebot SET GID = ?, EID = ?, jobTitle = ?, description = ?, deadline = ?, "
-				+ "salary = ?, weeklyHours = ? WHERE JID = ?";
+			sql = "UPDATE jobangebot SET GID = ?, EID = ?, jobTitle = ?, description = ?, deadline = ?, "
+					+ "salary = ?, weeklyHours = ? WHERE JID = ?";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				int gid = new AbschlussDAO().getAbschluss(jobangebot.getAbschluss());
+				preparedStatement.setInt(1, gid);
+				int eid = new ExpertiseDAO().getExpertise(jobangebot.getFachgebiet());
+				preparedStatement.setInt(2, eid);
+				preparedStatement.setString(3, jobangebot.getJobTitel());
+				preparedStatement.setString(4, jobangebot.getBeschreibung());
+				preparedStatement.setObject(5, jobangebot.getFrist());
+				preparedStatement.setInt(6, jobangebot.getGehalt());
+				preparedStatement.setInt(7, jobangebot.getWochenstunden());
+				preparedStatement.setInt(8, jobangebot.getJID());
 
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			int gid = new AbschlussDAO().getAbschluss(jobangebot.getAbschluss());
-			preparedStatement.setInt(1, gid);
-			int eid = new ExpertiseDAO().getExpertise(jobangebot.getFachgebiet());
-			preparedStatement.setInt(2, eid);
-			preparedStatement.setString(3, jobangebot.getJobTitel());
-			preparedStatement.setString(4, jobangebot.getBeschreibung());
-			preparedStatement.setObject(5, jobangebot.getFrist());
-			preparedStatement.setInt(6, jobangebot.getGehalt());
-			preparedStatement.setInt(7, jobangebot.getWochenstunden());
-			preparedStatement.setInt(8, jobangebot.getJID());
+				preparedStatement.executeUpdate();
 
-			preparedStatement.executeUpdate();
+				for (int i = 0; i < sprachen.size(); i++) {
+					int sid = new SpracheDAO().getSID(sprachen.get(i));
 
-			for (int i = 0; i < sprachen.size(); i++) {
-				int sid = new SpracheDAO().getSID(sprachen.get(i));
+					String sql2 = "INSERT INTO SprachenzuordnungJA values (?, ?)";
+					try (PreparedStatement preparedStatement2 = connect.prepareStatement(sql2)) {
+						preparedStatement.setInt(1, jobangebot.getJID());
+						preparedStatement.setInt(2, sid);
 
-				String sql2 = "INSERT INTO SprachenzuordnungJA values (?, ?)";
-				try (PreparedStatement preparedStatement2 = connect.prepareStatement(sql2)) {
-					preparedStatement.setInt(1, jobangebot.getJID());
-					preparedStatement.setInt(2, sid);
-
-					preparedStatement.executeUpdate();
+						preparedStatement.executeUpdate();
+					}
 				}
 			}
 		}
@@ -195,9 +192,8 @@ public class JobangebotDAO {
 			int weeklyHours = resultSet.getInt("jobangebot.weeklyHours");
 			List<String> sprachen = getLanguageInJobangebot(jobangebotsId);
 			try {
-				Jobangebot tempJobangebot = new Jobangebot(graduation, expertise, sprachen, jobTitle, description,
-						deadline, salary, weeklyHours, unternehmen);
-				tempJobangebot.setId(jobangebotsId);
+				Jobangebot tempJobangebot = new Jobangebot(jobangebotsId, graduation, expertise, sprachen, jobTitle,
+						description, deadline, salary, weeklyHours, unternehmen);
 				result.add(tempJobangebot);
 
 			} catch (ValidateConstrArgsException e) {

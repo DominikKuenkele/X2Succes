@@ -35,32 +35,31 @@ public class NutzerDAO {
 			throw new DuplicateEntryException("E-Mail wird schon verwendet!");
 		}
 
-		String sql = "INSERT INTO Nutzer values (default, ?, ?, ?, ? , ?, ?, ?, ?, ?, ?, ?)";
+		try (Connection connect = datasource.getConnection()) {
+			String sql = "INSERT INTO Nutzer values (default, ?, ?, ?, ? , ?, ?, ?, ?, ?, ?, ?)";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				preparedStatement.setString(1, nutzer.getFirstName());
+				preparedStatement.setString(2, nutzer.getLastName());
+				int sexId = new SexDAO().getSex(nutzer.getSex());
+				preparedStatement.setInt(3, sexId);
+				preparedStatement.setObject(4, nutzer.getBirthdate());
+				preparedStatement.setString(5, nutzer.geteMail());
+				preparedStatement.setString(6, nutzer.getPassword());
+				preparedStatement.setString(7, address.getPlz());
+				preparedStatement.setString(8, address.getCity());
+				preparedStatement.setString(9, address.getStreet());
+				preparedStatement.setString(10, address.getNumber());
+				preparedStatement.setString(11, nutzer.getStatus().getText());
 
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			preparedStatement.setString(1, nutzer.getFirstName());
-			preparedStatement.setString(2, nutzer.getLastName());
-			int sexId = new SexDAO().getSex(nutzer.getSex());
-			preparedStatement.setInt(3, sexId);
-			preparedStatement.setObject(4, nutzer.getBirthdate());
-			preparedStatement.setString(5, nutzer.geteMail());
-			preparedStatement.setString(6, nutzer.getPassword());
-			preparedStatement.setString(7, address.getPlz());
-			preparedStatement.setString(8, address.getCity());
-			preparedStatement.setString(9, address.getStrasse());
-			preparedStatement.setString(10, address.getNumber());
-			preparedStatement.setString(11, nutzer.getStatus().getText());
+				preparedStatement.executeUpdate();
+			}
 
-			preparedStatement.executeUpdate();
-		}
-
-		sql = "SELECT LAST_INSERT_ID()";
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				while (resultSet.next()) {
-					nid = resultSet.getInt("last_insert_id()");
+			sql = "SELECT LAST_INSERT_ID()";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				try (ResultSet resultSet = preparedStatement.executeQuery()) {
+					while (resultSet.next()) {
+						nid = resultSet.getInt("last_insert_id()");
+					}
 				}
 			}
 		}
@@ -85,9 +84,8 @@ public class NutzerDAO {
 			final String number = resultSet.getString("number");
 			final String status = resultSet.getString("status");
 			try {
-				final Nutzer tempNutzer = new Nutzer(firstName, lastName, sex, birthdate, eMail, password,
+				final Nutzer tempNutzer = new Nutzer(nutzerId, firstName, lastName, sex, birthdate, eMail, password,
 						new Adresse(plz, city, street, number), Status.valueOf(status));
-				tempNutzer.setNID(nutzerId);
 				result.add(tempNutzer);
 
 			} catch (final ValidateConstrArgsException e) {
@@ -176,7 +174,7 @@ public class NutzerDAO {
 			preparedStatement.setObject(6, nutzer.getBirthdate());
 			preparedStatement.setString(7, address.getPlz());
 			preparedStatement.setString(8, address.getCity());
-			preparedStatement.setString(9, address.getStrasse());
+			preparedStatement.setString(9, address.getStreet());
 			preparedStatement.setString(10, address.getNumber());
 			preparedStatement.setString(11, nutzer.getStatus().getText());
 			preparedStatement.setInt(12, nutzer.getNID());

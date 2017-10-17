@@ -23,9 +23,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import model.Adresse;
+import model.Unternehmensprofil;
 import persistence.BrancheDAO;
 import util.exception.DBException;
-import util.exception.UserInputException;
+import util.exception.ValidateConstrArgsException;
 
 public class ViewUProfilErstellen implements Initializable {
 
@@ -108,10 +110,14 @@ public class ViewUProfilErstellen implements Initializable {
 		String ceoLastName = cCeoname.getText();
 		String website = cWebsite.getText();
 		try {
-			verwaltung.createUnternehmen(name, form, plz, stadt, strasse, hausnummer, gruendung, mitarbeiter,
-					beschreibung, branche, website, ceoFirstName, ceoLastName);
+			Unternehmensprofil unternehmensprofil = new Unternehmensprofil(name, form,
+					new Adresse(plz, stadt, strasse, hausnummer), gruendung, mitarbeiter, beschreibung, branche,
+					website, ceoFirstName, ceoLastName, verwaltung.getCurrentNutzer());
+			unternehmensprofil.saveToDatabase();
+			verwaltung.setCurrentUnternehmensprofil(unternehmensprofil);
+
 			switchScene("/view/URahmen.fxml");
-		} catch (UserInputException | DBException e) {
+		} catch (ValidateConstrArgsException | DBException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Registrierung fehlgeschlagen");

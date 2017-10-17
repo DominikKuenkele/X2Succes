@@ -29,36 +29,36 @@ public class UnternehmensprofilDAO {
 	public int addUnternehmensprofil(Unternehmensprofil unternehmen) throws SQLException {
 		Adresse address = unternehmen.getAddress();
 		int uid = -1;
-		String sql = "INSERT INTO Unternehmensprofil values (default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			int nutzerId = unternehmen.getNutzer().getNID();
-			preparedStatement.setInt(1, nutzerId);
-			int bid = new BrancheDAO().getBID(unternehmen.getBranche());
-			preparedStatement.setInt(2, bid);
-			preparedStatement.setString(3, unternehmen.getName());
-			preparedStatement.setString(4, unternehmen.getLegalForm());
-			preparedStatement.setObject(5, unternehmen.getFounding());
-			preparedStatement.setInt(6, unternehmen.getEmployees());
-			preparedStatement.setString(7, unternehmen.getDescription());
-			preparedStatement.setString(8, unternehmen.getWebsite());
-			preparedStatement.setString(9, unternehmen.getCeoFirstName());
-			preparedStatement.setString(10, unternehmen.getCeoLastName());
-			preparedStatement.setString(11, address.getPlz());
-			preparedStatement.setString(12, address.getCity());
-			preparedStatement.setString(13, address.getStrasse());
-			preparedStatement.setString(14, address.getNumber());
+		try (Connection connect = datasource.getConnection()) {
+			String sql = "INSERT INTO Unternehmensprofil values (default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				int nutzerId = unternehmen.getNutzer().getNID();
+				preparedStatement.setInt(1, nutzerId);
+				int bid = new BrancheDAO().getBID(unternehmen.getBranche());
+				preparedStatement.setInt(2, bid);
+				preparedStatement.setString(3, unternehmen.getName());
+				preparedStatement.setString(4, unternehmen.getLegalForm());
+				preparedStatement.setObject(5, unternehmen.getFounding());
+				preparedStatement.setInt(6, unternehmen.getEmployees());
+				preparedStatement.setString(7, unternehmen.getDescription());
+				preparedStatement.setString(8, unternehmen.getWebsite());
+				preparedStatement.setString(9, unternehmen.getCeoFirstName());
+				preparedStatement.setString(10, unternehmen.getCeoLastName());
+				preparedStatement.setString(11, address.getPlz());
+				preparedStatement.setString(12, address.getCity());
+				preparedStatement.setString(13, address.getStreet());
+				preparedStatement.setString(14, address.getNumber());
 
-			preparedStatement.executeUpdate();
-		}
+				preparedStatement.executeUpdate();
+			}
 
-		sql = "SELECT LAST_INSERT_ID()";
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				while (resultSet.next()) {
-					uid = resultSet.getInt("last_insert_id()");
+			sql = "SELECT LAST_INSERT_ID()";
+			try (PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+				try (ResultSet resultSet = preparedStatement.executeQuery()) {
+					while (resultSet.next()) {
+						uid = resultSet.getInt("last_insert_id()");
+					}
 				}
 			}
 		}
@@ -143,10 +143,9 @@ public class UnternehmensprofilDAO {
 			String street = resultSet.getString("street");
 			String number = resultSet.getString("number");
 			try {
-				Unternehmensprofil tempUnternehmen = new Unternehmensprofil(name, legalForm,
+				Unternehmensprofil tempUnternehmen = new Unternehmensprofil(unternehmensId, name, legalForm,
 						new Adresse(plz, city, street, number), founding, employees, description, branche, website,
 						ceoFirstName, ceoLastName, nutzer);
-				tempUnternehmen.setId(unternehmensId);
 				result.add(tempUnternehmen);
 			} catch (ValidateConstrArgsException e) {
 				throw new SQLException("Datenbank ist inkonsistent!", e);
@@ -182,9 +181,9 @@ public class UnternehmensprofilDAO {
 			preparedStatement.setString(10, aUnternehmen.getCeoLastName());
 			preparedStatement.setString(11, address.getPlz());
 			preparedStatement.setString(12, address.getCity());
-			preparedStatement.setString(13, address.getStrasse());
+			preparedStatement.setString(13, address.getStreet());
 			preparedStatement.setString(14, address.getNumber());
-			preparedStatement.setInt(15, aUnternehmen.getId());
+			preparedStatement.setInt(15, aUnternehmen.getUid());
 
 			preparedStatement.executeUpdate();
 		}
