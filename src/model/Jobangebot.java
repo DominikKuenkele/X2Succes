@@ -150,32 +150,56 @@ public class Jobangebot {
 	/**
 	 * @param aAbschluss
 	 *            the abschluss to set
+	 * @throws ValidateArgsException
 	 */
-	public void setAbschluss(String aAbschluss) {
+	public void setAbschluss(String aAbschluss) throws ValidateArgsException {
+		try {
+			Validate.validateAbschluss(aAbschluss);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nAbschluss: " + e.getMessage());
+		}
 		this.abschluss = aAbschluss;
 	}
 
 	/**
 	 * @param aFachgebiet
 	 *            the fachgebiet to set
+	 * @throws ValidateArgsException
 	 */
-	public void setFachgebiet(String aFachgebiet) {
+	public void setFachgebiet(String aFachgebiet) throws ValidateArgsException {
+		try {
+			Validate.validateFachgebiet(aFachgebiet);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nFachgebiet: " + e.getMessage());
+		}
 		this.fachgebiet = aFachgebiet;
 	}
 
 	/**
 	 * @param aSprachen
 	 *            the sprachen to set
+	 * @throws ValidateArgsException
 	 */
-	public void setSprachen(List<String> aSprachen) {
+	public void setSprachen(List<String> aSprachen) throws ValidateArgsException {
+		try {
+			Validate.validateSprachen(aSprachen);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nSprachen: " + e.getMessage());
+		}
 		this.sprachen = aSprachen;
 	}
 
 	/**
 	 * @param aJobTitel
 	 *            the jobTitel to set
+	 * @throws ValidateArgsException
 	 */
-	public void setJobTitel(String aJobTitel) {
+	public void setJobTitel(String aJobTitel) throws ValidateArgsException {
+		try {
+			Validate.checkForContent(aJobTitel);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nJobtitel: " + e.getMessage());
+		}
 		this.jobTitel = aJobTitel;
 	}
 
@@ -190,24 +214,42 @@ public class Jobangebot {
 	/**
 	 * @param aFrist
 	 *            the frist to set
+	 * @throws ValidateArgsException
 	 */
-	public void setFrist(LocalDate aFrist) {
+	public void setFrist(LocalDate aFrist) throws ValidateArgsException {
+		try {
+			Validate.checkForDateInFuture(aFrist);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nFrist: " + e.getMessage());
+		}
 		this.frist = aFrist;
 	}
 
 	/**
 	 * @param aGehalt
 	 *            the gehalt to set
+	 * @throws ValidateArgsException
 	 */
-	public void setGehalt(int aGehalt) {
+	public void setGehalt(int aGehalt) throws ValidateArgsException {
+		try {
+			Validate.checkForPositive(aGehalt);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nGehalt: " + e.getMessage());
+		}
 		this.gehalt = aGehalt;
 	}
 
 	/**
 	 * @param aWochenstunden
 	 *            the wochenstunden to set
+	 * @throws ValidateArgsException
 	 */
-	public void setWochenstunden(int aWochenstunden) {
+	public void setWochenstunden(int aWochenstunden) throws ValidateArgsException {
+		try {
+			Validate.checkForPositive(aWochenstunden);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nWochenstunden: " + e.getMessage());
+		}
 		this.wochenstunden = aWochenstunden;
 	}
 
@@ -230,7 +272,7 @@ public class Jobangebot {
 		try {
 			Validate.validateFachgebiet(fachgebiet);
 		} catch (IllegalArgumentException e) {
-			message = message + "\nAbschluss: " + e.getMessage();
+			message = message + "\nFachgebiet: " + e.getMessage();
 		}
 		try {
 			Validate.validateSprachen(sprachen);
@@ -263,6 +305,11 @@ public class Jobangebot {
 		}
 	}
 
+	/**
+	 * Method saves this Object to database and sets the Id returned from database
+	 * 
+	 * @throws DBException
+	 */
 	public void saveToDatabase() throws DBException {
 		try {
 			final JobangebotDAO jobangebotDAO = new JobangebotDAO();

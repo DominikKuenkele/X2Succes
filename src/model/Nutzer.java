@@ -136,11 +136,131 @@ public class Nutzer {
 	}
 
 	/**
+	 * @return the nid
+	 */
+	public int getNid() {
+		return this.nid;
+	}
+
+	/**
 	 * @param status
 	 *            the status to set
 	 */
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+
+	/**
+	 * @param aFirstName
+	 *            the firstName to set
+	 * @throws ValidateArgsException
+	 */
+	public void setFirstName(String aFirstName) throws ValidateArgsException {
+		try {
+			Validate.checkForName(aFirstName);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nVorname: " + e.getMessage());
+		}
+		this.firstName = aFirstName;
+	}
+
+	/**
+	 * @param aLastName
+	 *            the lastName to set
+	 * @throws ValidateArgsException
+	 */
+	public void setLastName(String aLastName) throws ValidateArgsException {
+		try {
+			Validate.checkForName(aLastName);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nNachname: " + e.getMessage());
+		}
+		this.lastName = aLastName;
+	}
+
+	/**
+	 * @param aSex
+	 *            the sex to set
+	 * @throws ValidateArgsException
+	 */
+	public void setSex(String aSex) throws ValidateArgsException {
+		try {
+			Validate.validateSex(aSex);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nGeschlecht: " + e.getMessage());
+		}
+		this.sex = aSex;
+	}
+
+	/**
+	 * @param aBirthdate
+	 *            the birthdate to set
+	 * @throws ValidateArgsException
+	 */
+	public void setBirthdate(LocalDate aBirthdate) throws ValidateArgsException {
+		try {
+			if (aBirthdate == null) {
+				throw new IllegalArgumentException("Das Datum darf nicht leer sein!");
+			}
+			Validate.checkForDateInPast(aBirthdate);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nGeburtstag: " + e.getMessage());
+		}
+		this.birthdate = aBirthdate;
+	}
+
+	/**
+	 * @param aEMail
+	 *            the eMail to set
+	 * @throws ValidateArgsException
+	 */
+	public void seteMail(String aEMail) throws ValidateArgsException {
+		try {
+			Validate.checkForEMail(aEMail);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nE-Mail: " + e.getMessage());
+		}
+		this.eMail = aEMail;
+	}
+
+	/**
+	 * @param aAddress
+	 *            the address to set
+	 */
+	public void setAddress(Adresse aAddress) {
+		this.address = aAddress;
+	}
+
+	/**
+	 * Method sets the password after hashing it
+	 * 
+	 * @param password
+	 */
+	public void setAndHashPassword(String password) {
+		this.password = PassHash.generateStrongPasswordHash(password);
+	}
+
+	/**
+	 * @param oldPassword
+	 * @param newPassword
+	 *            the password to set
+	 * @throws UserInputException
+	 */
+	public void changePassword(String oldPassword, String newPassword) throws UserInputException {
+		final boolean validation = PassHash.validatePassword(oldPassword, password);
+		if (validation == true) {
+			this.password = PassHash.generateStrongPasswordHash(newPassword);
+		} else {
+			throw new UserInputException("Das alte Passwort stimmt nicht");
+		}
+	}
+
+	/**
+	 * @param password
+	 * @return true, if password is correct
+	 */
+	public boolean validatePassword(String password) {
+		return PassHash.validatePassword(password, this.password);
 	}
 
 	private void validateState() throws ValidateArgsException {
@@ -180,6 +300,12 @@ public class Nutzer {
 		}
 	}
 
+	/**
+	 * Method saves this Object to database and sets the Id returned from database
+	 * 
+	 * @throws DBException
+	 * @throws UserInputException
+	 */
 	public void saveToDatabase() throws DBException, UserInputException {
 		try {
 			final NutzerDAO nutzerDao = new NutzerDAO();
@@ -196,84 +322,6 @@ public class Nutzer {
 			throw new DBException(
 					"Auf die Datenbank kann im Moment nicht zugegriffen werden. Versuchen Sie es später erneut!");
 		}
-	}
-
-	/**
-	 * @return the nid
-	 */
-	public int getNid() {
-		return this.nid;
-	}
-
-	/**
-	 * @param aFirstName
-	 *            the firstName to set
-	 */
-	public void setFirstName(String aFirstName) {
-		this.firstName = aFirstName;
-	}
-
-	/**
-	 * @param aLastName
-	 *            the lastName to set
-	 */
-	public void setLastName(String aLastName) {
-		this.lastName = aLastName;
-	}
-
-	/**
-	 * @param aSex
-	 *            the sex to set
-	 */
-	public void setSex(String aSex) {
-		this.sex = aSex;
-	}
-
-	/**
-	 * @param aBirthdate
-	 *            the birthdate to set
-	 */
-	public void setBirthdate(LocalDate aBirthdate) {
-		this.birthdate = aBirthdate;
-	}
-
-	/**
-	 * @param aEMail
-	 *            the eMail to set
-	 */
-	public void seteMail(String aEMail) {
-		this.eMail = aEMail;
-	}
-
-	public void setAndHashPassword(String password) {
-		this.password = PassHash.generateStrongPasswordHash(password);
-	}
-
-	/**
-	 * @param oldPassword
-	 * @param newPassword
-	 *            the password to set
-	 * @throws UserInputException
-	 */
-	public void changePassword(String oldPassword, String newPassword) throws UserInputException {
-		final boolean validation = PassHash.validatePassword(oldPassword, password);
-		if (validation == true) {
-			this.password = PassHash.generateStrongPasswordHash(newPassword);
-		} else {
-			throw new UserInputException("Das alte Passwort stimmt nicht");
-		}
-	}
-
-	public boolean validatePassword(String password) {
-		return PassHash.validatePassword(password, this.password);
-	}
-
-	/**
-	 * @param aAddress
-	 *            the address to set
-	 */
-	public void setAddress(Adresse aAddress) {
-		this.address = aAddress;
 	}
 
 	@Override

@@ -43,8 +43,6 @@ public class Freelancerprofil implements Profil {
 	 * @param sprachen
 	 * @param nutzer
 	 * @throws ValidateArgsException
-	 * @throws SQLException
-	 * @throws DBException
 	 */
 	public Freelancerprofil(final String abschluss, final String fachgebiet, final String beschreibung,
 			final String[] skills, final String lebenslauf, final List<String> sprachen, Nutzer nutzer)
@@ -61,6 +59,7 @@ public class Freelancerprofil implements Profil {
 	}
 
 	/**
+	 * @param fid
 	 * @param abschluss
 	 * @param fachgebiet
 	 * @param beschreibung
@@ -69,8 +68,6 @@ public class Freelancerprofil implements Profil {
 	 * @param sprachen
 	 * @param nutzer
 	 * @throws ValidateArgsException
-	 * @throws SQLException
-	 * @throws DBException
 	 */
 	public Freelancerprofil(int fid, final String abschluss, final String fachgebiet, final String beschreibung,
 			final String[] skills, final String lebenslauf, final List<String> sprachen, Nutzer nutzer)
@@ -78,13 +75,6 @@ public class Freelancerprofil implements Profil {
 		this(abschluss, fachgebiet, beschreibung, skills, lebenslauf, sprachen, nutzer);
 		this.fid = fid;
 		validateState();
-	}
-
-	@Override
-	public String toString() {
-		return "Freelancerprofil [fid=" + this.fid + ", abschluss=" + this.abschluss + ", fachgebiet=" + this.fachgebiet
-				+ ", beschreibung=" + this.beschreibung + ", skills=" + Arrays.toString(this.skills) + ", lebenslauf="
-				+ this.lebenslauf + ", sprachen=" + this.sprachen + ", nutzer=" + this.nutzer + "]";
 	}
 
 	/**
@@ -153,16 +143,28 @@ public class Freelancerprofil implements Profil {
 	/**
 	 * @param aAbschluss
 	 *            the abschluss to set
+	 * @throws ValidateArgsException
 	 */
-	public void setAbschluss(String aAbschluss) {
+	public void setAbschluss(String aAbschluss) throws ValidateArgsException {
+		try {
+			Validate.validateAbschluss(aAbschluss);
+		} catch (ValidateArgsException e) {
+			throw new ValidateArgsException("\nAbschluss: " + e.getMessage());
+		}
 		this.abschluss = aAbschluss;
 	}
 
 	/**
 	 * @param aFachgebiet
 	 *            the fachgebiet to set
+	 * @throws ValidateArgsException
 	 */
-	public void setFachgebiet(String aFachgebiet) {
+	public void setFachgebiet(String aFachgebiet) throws ValidateArgsException {
+		try {
+			Validate.validateFachgebiet(aFachgebiet);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nFachgebiet: " + e.getMessage());
+		}
 		this.fachgebiet = aFachgebiet;
 	}
 
@@ -177,8 +179,14 @@ public class Freelancerprofil implements Profil {
 	/**
 	 * @param aSkills
 	 *            the skills to set
+	 * @throws ValidateArgsException
 	 */
-	public void setSkills(String[] aSkills) {
+	public void setSkills(String... aSkills) throws ValidateArgsException {
+		try {
+			validateSkills(aSkills);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nSkills: " + e.getMessage());
+		}
 		this.skills = aSkills;
 	}
 
@@ -193,8 +201,14 @@ public class Freelancerprofil implements Profil {
 	/**
 	 * @param aSprachen
 	 *            the sprachen to set
+	 * @throws ValidateArgsException
 	 */
-	public void setSprachen(List<String> aSprachen) {
+	public void setSprachen(List<String> aSprachen) throws ValidateArgsException {
+		try {
+			Validate.validateSprachen(aSprachen);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nSprachen: " + e.getMessage());
+		}
 		this.sprachen = aSprachen;
 	}
 
@@ -206,6 +220,39 @@ public class Freelancerprofil implements Profil {
 		this.nutzer = aNutzer;
 	}
 
+	private void validateState() throws ValidateArgsException {
+		String message = "";
+
+		try {
+			Validate.validateAbschluss(abschluss);
+		} catch (ValidateArgsException e) {
+			message = message + "\nAbschluss: " + e.getMessage();
+		}
+		try {
+			Validate.validateFachgebiet(fachgebiet);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nFachgebiet: " + e.getMessage();
+		}
+		try {
+			Validate.validateSprachen(sprachen);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nSprachen: " + e.getMessage();
+		}
+		try {
+			validateSkills(skills);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nSkills: " + e.getMessage();
+		}
+		if (message != "") {
+			throw new ValidateArgsException(message);
+		}
+	}
+
+	/**
+	 * Method saves this Object to database and sets the Id returned from database
+	 * 
+	 * @throws DBException
+	 */
 	public void saveToDatabase() throws DBException {
 		try {
 			final FreelancerprofilDAO freelancerprofilDao = new FreelancerprofilDAO();
@@ -218,6 +265,12 @@ public class Freelancerprofil implements Profil {
 		} catch (SQLException e) {
 			throw new DBException(
 					"Auf die Datenbank kann im Moment nicht zugegriffen werden. Versuchen Sie es später erneut!");
+		}
+	}
+
+	private void validateSkills(final String... skills) {
+		if (skills.length > ANZAHL_STAERKEN) {
+			throw new IllegalArgumentException("Es dürfen nur drei Skills angegeben werden.");
 		}
 	}
 
@@ -280,40 +333,6 @@ public class Freelancerprofil implements Profil {
 		return prioList.entrySet();
 	}
 
-	private void validateSkills(final String... skills) {
-		if (skills.length > ANZAHL_STAERKEN) {
-			throw new IllegalArgumentException("Es dürfen nur drei Skills angegeben werden.");
-		}
-	}
-
-	private void validateState() throws ValidateArgsException {
-		String message = "";
-
-		try {
-			Validate.validateAbschluss(abschluss);
-		} catch (ValidateArgsException e) {
-			message = message + "\nAbschluss: " + e.getMessage();
-		}
-		try {
-			Validate.validateFachgebiet(fachgebiet);
-		} catch (IllegalArgumentException e) {
-			message = message + "\nFachgebiet: " + e.getMessage();
-		}
-		try {
-			Validate.validateSprachen(sprachen);
-		} catch (IllegalArgumentException e) {
-			message = message + "\nSprachen: " + e.getMessage();
-		}
-		try {
-			validateSkills(skills);
-		} catch (IllegalArgumentException e) {
-			message = message + "\nSkills: " + e.getMessage();
-		}
-		if (message != "") {
-			throw new ValidateArgsException(message);
-		}
-	}
-
 	@Override
 	public boolean equals(Object object) {
 		boolean result = false;
@@ -328,5 +347,12 @@ public class Freelancerprofil implements Profil {
 	@Override
 	public int hashCode() {
 		return Objects.hash(fid);
+	}
+
+	@Override
+	public String toString() {
+		return "Freelancerprofil [fid=" + this.fid + ", abschluss=" + this.abschluss + ", fachgebiet=" + this.fachgebiet
+				+ ", beschreibung=" + this.beschreibung + ", skills=" + Arrays.toString(this.skills) + ", lebenslauf="
+				+ this.lebenslauf + ", sprachen=" + this.sprachen + ", nutzer=" + this.nutzer + "]";
 	}
 }

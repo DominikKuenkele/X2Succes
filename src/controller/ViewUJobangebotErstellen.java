@@ -85,7 +85,10 @@ public class ViewUJobangebotErstellen implements Initializable {
 		monthlysalary = Integer.parseInt(salary.getText());
 		String degree = necessarydegree.getValue();
 		String topic1 = topic.getValue();
+
+		// not yet used
 		String cname = contactname.getText();
+		// not yet used
 		String cmail = contactemail.getText();
 
 		jobangebot = new Jobangebot(degree, topic1, new LinkedList<String>(), jobTitle, description,
@@ -94,6 +97,9 @@ public class ViewUJobangebotErstellen implements Initializable {
 		return jobangebot;
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void createoffer(MouseEvent event) {
 		verwaltung = Verwaltung.getInstance();
@@ -125,8 +131,6 @@ public class ViewUJobangebotErstellen implements Initializable {
 	}
 
 	void changescene(String fxmlname) throws IOException {
-
-		// schliesst aktuelles Fenster
 		Stage stage2 = (Stage) seeofferb.getScene().getWindow();
 		stage2.close();
 
@@ -140,11 +144,9 @@ public class ViewUJobangebotErstellen implements Initializable {
 
 	}
 
-	@FXML
-	void createnewoffer(MouseEvent event) throws IOException {
-		changescene("UJobangebotErstellen.fxml");
-	}
-
+	/**
+	 * @param event
+	 */
 	@FXML
 	void seeoffer(MouseEvent event) throws IOException {
 		try {

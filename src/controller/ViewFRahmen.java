@@ -74,31 +74,26 @@ public class ViewFRahmen implements FreelancerObserver {
 		labelName.setText(nutzer.getFirstName() + " " + nutzer.getLastName());
 	}
 
-	// Event Listener on ImageView[#homebutton].onMouseClicked
 	@FXML
-	public void openHome(MouseEvent event) {
+	void openHome(MouseEvent event) {
 		openSubScene("FDashboard.fxml", "Dashboard");
 	}
 
-	// Event Listener on ImageView[#profilbutton].onMouseClicked
 	@FXML
-	public void openProfil(MouseEvent event) {
+	void openProfil(MouseEvent event) {
 		openSubScene("FProfil.fxml", "Profil bearbeiten");
 	}
 
-	// Event Listener on ImageView[#searchbutton].onMouseClicked
 	@FXML
-	public void openSearch(MouseEvent event) {
+	void openSearch(MouseEvent event) {
 		openSubScene("FSuche.fxml", "Suche");
 	}
 
-	// Event Listener on ImageView[#settingsbutton].onMouseClicked
 	@FXML
-	public void openSettings(MouseEvent event) {
+	void openSettings(MouseEvent event) {
 		openSubScene("Settings.fxml", "Einstellungen");
 	}
 
-	// Event Listener on ImageView[#signoutbutton].onMouseClicked
 	@FXML
 	public void openSignOut(MouseEvent event) {
 		Verwaltung verwaltung = Verwaltung.getInstance();

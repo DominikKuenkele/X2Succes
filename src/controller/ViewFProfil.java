@@ -28,6 +28,7 @@ import persistence.AbschlussDAO;
 import persistence.ExpertiseDAO;
 import persistence.SpracheDAO;
 import util.exception.DBException;
+import util.exception.ValidateArgsException;
 
 public class ViewFProfil implements Initializable {
 
@@ -70,9 +71,10 @@ public class ViewFProfil implements Initializable {
 	@FXML
 	private Button showfreelancerbutton;
 
-	@FXML
-	void changeFreelancer(ActionEvent event) { // Änderungen übernehmen
-		Verwaltung verwaltung = Verwaltung.getInstance();
+	private Verwaltung verwaltung;
+
+	private Freelancerprofil gatherData() throws ValidateArgsException {
+		Freelancerprofil freelancerprofil;
 
 		String abschluss = degree1.getValue();
 		String expertise = topic1.getValue();
@@ -100,14 +102,27 @@ public class ViewFProfil implements Initializable {
 			}
 		}
 
+		freelancerprofil = new Freelancerprofil(abschluss, expertise, beschreibung, skills, lebenslauf, sprachen,
+				verwaltung.getCurrentNutzer());
+
+		return freelancerprofil;
+	}
+
+	/**
+	 * @param event
+	 */
+	@FXML
+	void changeFreelancer(ActionEvent event) {
+
 		try {
 			Freelancerprofil freelancerprofil = (Freelancerprofil) verwaltung.getCurrentProfil();
-			freelancerprofil.setAbschluss(abschluss);
-			freelancerprofil.setFachgebiet(expertise);
-			freelancerprofil.setBeschreibung(beschreibung);
-			freelancerprofil.setSkills(skills);
-			freelancerprofil.setLebenslauf(lebenslauf);
-			freelancerprofil.setSprachen(sprachen);
+			Freelancerprofil tempFreelancerprofil = gatherData();
+			freelancerprofil.setAbschluss(tempFreelancerprofil.getAbschluss());
+			freelancerprofil.setFachgebiet(tempFreelancerprofil.getFachgebiet());
+			freelancerprofil.setBeschreibung(tempFreelancerprofil.getBeschreibung());
+			freelancerprofil.setSkills(tempFreelancerprofil.getSkills());
+			freelancerprofil.setLebenslauf(tempFreelancerprofil.getLebenslauf());
+			freelancerprofil.setSprachen(tempFreelancerprofil.getSprachen());
 			freelancerprofil.saveToDatabase();
 
 			Alert alert = new Alert(AlertType.INFORMATION);
@@ -115,7 +130,14 @@ public class ViewFProfil implements Initializable {
 			alert.setHeaderText("Freelancerprofil geändert");
 			alert.setContentText("Das Freelancerprofil wurde erfolgreich geändert!");
 			alert.showAndWait();
+		} catch (ValidateArgsException e) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error");
+			alert.setHeaderText("Änderung fehlgeschlagen");
+			alert.setContentText(e.getMessage());
+			alert.showAndWait();
 
+			e.printStackTrace();
 		} catch (DBException e) {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
@@ -141,13 +163,32 @@ public class ViewFProfil implements Initializable {
 
 	@FXML
 	void showFreelancer(ActionEvent event) throws IOException {
-		changeScene("/view/Freelancerprofil.fxml");
+		try {
+			Freelancerprofil freelancerprofil = gatherData();
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/UFreelancerprofil.fxml"));
+			Pane myPane = loader.load();
+			ViewUFreelancerprofil controller = loader.getController();
+			controller.setFreelancer(freelancerprofil);
+
+			Stage stage = new Stage();
+			stage.setTitle("X2Success");
+
+			Scene scene = new Scene(myPane);
+			stage.setScene(scene);
+			stage.show();
+		} catch (ValidateArgsException e) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error");
+			alert.setHeaderText("Registrierung fehlgeschlagen");
+			alert.setContentText(e.getMessage());
+			alert.showAndWait();
+		}
 	}
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		Verwaltung v = Verwaltung.getInstance();
-		Freelancerprofil f = (Freelancerprofil) v.getCurrentProfil();
+		verwaltung = Verwaltung.getInstance();
+		Freelancerprofil f = (Freelancerprofil) verwaltung.getCurrentProfil();
 
 		try {
 			ObservableList<String> sprachen = FXCollections.observableArrayList(new SpracheDAO().getAllSprachen());

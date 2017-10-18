@@ -15,6 +15,7 @@ import persistence.FreelancerprofilDAO;
 import persistence.UnternehmensprofilDAO;
 import util.Validate;
 import util.exception.DBException;
+import util.exception.UserInputException;
 import util.exception.ValidateArgsException;
 
 /**
@@ -68,6 +69,7 @@ public class Unternehmensprofil implements Profil {
 	}
 
 	/**
+	 * @param uid
 	 * @param name
 	 * @param legalForm
 	 * @param address
@@ -179,16 +181,28 @@ public class Unternehmensprofil implements Profil {
 	/**
 	 * @param aName
 	 *            the name to set
+	 * @throws ValidateArgsException
 	 */
-	public void setName(String aName) {
+	public void setName(String aName) throws ValidateArgsException {
+		try {
+			Validate.checkForName(aName);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nName: " + e.getMessage());
+		}
 		this.name = aName;
 	}
 
 	/**
 	 * @param aLegalForm
 	 *            the legalForm to set
+	 * @throws ValidateArgsException
 	 */
-	public void setLegalForm(String aLegalForm) {
+	public void setLegalForm(String aLegalForm) throws ValidateArgsException {
+		try {
+			Validate.checkForContent(aLegalForm);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nRechstform: " + e.getMessage());
+		}
 		this.legalForm = aLegalForm;
 	}
 
@@ -203,56 +217,101 @@ public class Unternehmensprofil implements Profil {
 	/**
 	 * @param aFounding
 	 *            the founding to set
+	 * @throws ValidateArgsException
 	 */
-	public void setFounding(LocalDate aFounding) {
+	public void setFounding(LocalDate aFounding) throws ValidateArgsException {
+		try {
+			if (aFounding == null) {
+				throw new IllegalArgumentException("Das Datum darf nicht leer sein!");
+			}
+			Validate.checkForDateInPast(aFounding);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nGründung: " + e.getMessage());
+		}
 		this.founding = aFounding;
 	}
 
 	/**
 	 * @param aEmployees
 	 *            the employees to set
+	 * @throws ValidateArgsException
 	 */
-	public void setEmployees(int aEmployees) {
+	public void setEmployees(int aEmployees) throws ValidateArgsException {
+		try {
+			Validate.checkForPositive(aEmployees);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nMitarbeiter: " + e.getMessage());
+		}
 		this.employees = aEmployees;
 	}
 
 	/**
 	 * @param aDescription
 	 *            the description to set
+	 * @throws ValidateArgsException
 	 */
-	public void setDescription(String aDescription) {
+	public void setDescription(String aDescription) throws ValidateArgsException {
+		try {
+			Validate.checkForContent(aDescription);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nBeschreibung: " + e.getMessage());
+		}
 		this.description = aDescription;
 	}
 
 	/**
 	 * @param aBranche
 	 *            the branche to set
+	 * @throws ValidateArgsException
 	 */
-	public void setBranche(String aBranche) {
+	public void setBranche(String aBranche) throws ValidateArgsException {
+		try {
+			Validate.validateBranche(aBranche);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nBranche: " + e.getMessage());
+		}
 		this.branche = aBranche;
 	}
 
 	/**
 	 * @param aWebsite
 	 *            the website to set
+	 * @throws ValidateArgsException
 	 */
-	public void setWebsite(String aWebsite) {
+	public void setWebsite(String aWebsite) throws ValidateArgsException {
+		try {
+			Validate.checkForUrl(aWebsite);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nWebsite: " + e.getMessage());
+		}
 		this.website = aWebsite;
 	}
 
 	/**
 	 * @param aCeoFirstName
 	 *            the ceoFirstName to set
+	 * @throws ValidateArgsException
 	 */
-	public void setCeoFirstName(String aCeoFirstName) {
+	public void setCeoFirstName(String aCeoFirstName) throws ValidateArgsException {
+		try {
+			Validate.checkForName(aCeoFirstName);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nCEO Vorname: " + e.getMessage());
+		}
 		this.ceoFirstName = aCeoFirstName;
 	}
 
 	/**
 	 * @param aCeoLastName
 	 *            the ceoLastName to set
+	 * @throws ValidateArgsException
 	 */
-	public void setCeoLastName(String aCeoLastName) {
+	public void setCeoLastName(String aCeoLastName) throws ValidateArgsException {
+		try {
+			Validate.checkForName(aCeoLastName);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nCEO-Nachname: " + e.getMessage());
+		}
 		this.ceoLastName = aCeoLastName;
 	}
 
@@ -268,9 +327,14 @@ public class Unternehmensprofil implements Profil {
 		String message = "";
 
 		try {
-			Validate.checkForContent(name);
+			Validate.checkForName(name);
 		} catch (IllegalArgumentException e) {
 			message = message + "\nName: " + e.getMessage();
+		}
+		try {
+			Validate.checkForContent(legalForm);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nRechtsform: " + e.getMessage();
 		}
 		try {
 			Validate.checkForContent(description);
@@ -278,12 +342,35 @@ public class Unternehmensprofil implements Profil {
 			message = message + "\nBeschreibung: " + e.getMessage();
 		}
 		try {
-			Validate.checkForAlpha(ceoFirstName);
+			if (founding == null) {
+				throw new IllegalArgumentException("Das Datum darf nicht leer sein!");
+			}
+			Validate.checkForDateInPast(founding);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nGründung: " + e.getMessage();
+		}
+		try {
+			Validate.checkForPositive(employees);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nMitarbeiter: " + e.getMessage();
+		}
+		try {
+			Validate.validateBranche(branche);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nBranche: " + e.getMessage();
+		}
+		try {
+			Validate.checkForUrl(website);
+		} catch (IllegalArgumentException e) {
+			message = message + "\nWebsite: " + e.getMessage();
+		}
+		try {
+			Validate.checkForName(ceoFirstName);
 		} catch (IllegalArgumentException e) {
 			message = message + "\nCEO Vorname: " + e.getMessage();
 		}
 		try {
-			Validate.checkForAlpha(ceoFirstName);
+			Validate.checkForName(ceoLastName);
 		} catch (IllegalArgumentException e) {
 			message = message + "\nCEO-Nachname: " + e.getMessage();
 		}
@@ -293,6 +380,12 @@ public class Unternehmensprofil implements Profil {
 		}
 	}
 
+	/**
+	 * Method saves this Object to database and sets the Id returned from database
+	 * 
+	 * @throws DBException
+	 * @throws UserInputException
+	 */
 	public void saveToDatabase() throws DBException {
 		try {
 			final UnternehmensprofilDAO unternehmensprofilDao = new UnternehmensprofilDAO();

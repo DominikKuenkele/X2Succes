@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.validator.routines.UrlValidator;
 
 import persistence.AbschlussDAO;
+import persistence.BrancheDAO;
 import persistence.ExpertiseDAO;
 import persistence.SexDAO;
 import persistence.SpracheDAO;
@@ -38,6 +39,17 @@ public final class Validate {
 		checkForContent(text);
 		if (!text.matches("[-A-Za-zäÄöÖüÜß ]+")) {
 			throw new IllegalArgumentException("Text \"" + text + "\" darf nur Buchstaben enthalten!");
+		}
+	}
+
+	public static void validateBranche(String branche) throws ValidateArgsException {
+		try {
+			List<String> branchenList = new BrancheDAO().getAllBranchen();
+			if (!branchenList.contains(branche)) {
+				throw new ValidateArgsException("Diese Branche darf nicht ausgewählt werden");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -210,7 +222,7 @@ public final class Validate {
 	 * @throws IllegalArgumentException
 	 */
 	public static void checkForPositive(final int zahl) throws IllegalArgumentException {
-		if (zahl <= 0) {
+		if (zahl < 0) {
 			throw new IllegalArgumentException("Zahl muss positiv sein!");
 		}
 	}
