@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -292,14 +293,15 @@ public class Freelancerprofil implements Profil {
 			String branche, int minMitarbeiter, int maxMitarbeiter, int minGehalt) throws SQLException {
 		JobangebotDAO jobangebotDao = new JobangebotDAO();
 
-		List<List<Jobangebot>> searchList = new LinkedList<>();
-		searchList.add(jobangebotDao.searchForName(name));
-		searchList.add(jobangebotDao.searchForAbschluss(abschluss, expertise));
-		searchList.add(jobangebotDao.searchForBranche(branche));
-		searchList.add(jobangebotDao.searchForMitarbeiter(minMitarbeiter, maxMitarbeiter));
-		searchList.add(jobangebotDao.searchForGehalt(minGehalt));
+		List<List<Jobangebot>> searchImpList = new LinkedList<>();
+		searchImpList.add(jobangebotDao.searchForName(name));
+		searchImpList.add(jobangebotDao.searchForAbschluss(abschluss, expertise));
+		searchImpList.add(jobangebotDao.searchForBranche(branche));
+		List<List<Jobangebot>> searchNotImpList = new LinkedList<>();
+		searchNotImpList.add(jobangebotDao.searchForMitarbeiter(minMitarbeiter, maxMitarbeiter));
+		searchNotImpList.add(jobangebotDao.searchForGehalt(minGehalt));
 
-		Set<Entry<Jobangebot, Integer>> prioList = prioritizeJobangebote(searchList);
+		Set<Entry<Jobangebot, Integer>> prioList = prioritizeJobangebote(searchImpList, searchNotImpList);
 		List<Map.Entry<Jobangebot, Integer>> list = new LinkedList<>(prioList);
 		Collections.sort(list, new Comparator<Map.Entry<Jobangebot, Integer>>() {
 			@Override
@@ -317,9 +319,12 @@ public class Freelancerprofil implements Profil {
 	 * @param searchList
 	 * @return sorted Set
 	 */
-	private static Set<Entry<Jobangebot, Integer>> prioritizeJobangebote(List<List<Jobangebot>> searchList) {
+	private static Set<Entry<Jobangebot, Integer>> prioritizeJobangebote(List<List<Jobangebot>> searchImpList,
+			List<List<Jobangebot>> searchNotImpList) {
 		HashMap<Jobangebot, Integer> prioList = new HashMap<>();
-		for (List<Jobangebot> sL : searchList) {
+
+		// Innerjoin lists from searchImpList
+		for (List<Jobangebot> sL : searchImpList) {
 			for (Jobangebot jobangebot : sL) {
 				int prio;
 				if (!prioList.containsKey(jobangebot)) {
@@ -330,6 +335,25 @@ public class Freelancerprofil implements Profil {
 				prioList.put(jobangebot, prio);
 			}
 		}
+		// remove all entries, which do not occur in all lists
+		Iterator<Entry<Jobangebot, Integer>> iterator = prioList.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<Jobangebot, Integer> entry = iterator.next();
+			if (entry.getValue() < searchImpList.size()) {
+				iterator.remove();
+			}
+		}
+
+		for (List<Jobangebot> sL : searchNotImpList) {
+			for (Jobangebot jobangebot : sL) {
+				int prio;
+				if (prioList.containsKey(jobangebot)) {
+					prio = prioList.get(jobangebot) + 1;
+					prioList.put(jobangebot, prio);
+				}
+			}
+		}
+
 		return prioList.entrySet();
 	}
 

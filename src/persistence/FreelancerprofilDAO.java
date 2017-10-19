@@ -265,6 +265,8 @@ public class FreelancerprofilDAO {
 		String expertise = aExpertise.replace("!", "!!").replace("%", "!%").replace("_", "!_").replace("[", "![")
 				.replace("*", "%");
 		int hierarchy = new AbschlussDAO().getHierarchy(aAbschluss);
+		System.out.println(expertise);
+		System.out.println(hierarchy);
 		String sql = "SELECT freelancerprofil.FID FROM freelancerprofil "
 				+ "INNER JOIN expertise ON freelancerprofil.EID = expertise.EID "
 				+ "INNER JOIN graduation ON freelancerprofil.GID = graduation.GID "

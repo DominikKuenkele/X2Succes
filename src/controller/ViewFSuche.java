@@ -17,6 +17,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ScrollPane;
@@ -92,7 +94,9 @@ public class ViewFSuche implements Initializable, EventHandler<MouseEvent> {
 	 */
 	@FXML
 	void dragdone(MouseEvent event) {
-		Salary.setText(Double.toString(Math.round(salarySlider.getValue())));
+		Double d = salarySlider.getValue();
+		int i = d.intValue();
+		Salary.setText(Integer.toString(i));
 	}
 
 	/**
@@ -132,11 +136,14 @@ public class ViewFSuche implements Initializable, EventHandler<MouseEvent> {
 
 		// fetches expertise from choicebox
 		String expertise = searchExpertise.getValue();
-
+		// if textfield is empty, fill it with a *, to search for all expertise
+		if (expertise.equals("")) {
+			expertise = "*";
+		}
 		// fetches branche from choicebox
 		String branche;
 		// if textfield is empty, fill it with a *, to search for all branchen
-		if (searchbranche.getValue() == "") {
+		if (searchbranche.getValue().equals("")) {
 			branche = "*";
 		} else {
 			branche = searchbranche.getValue();
@@ -155,20 +162,29 @@ public class ViewFSuche implements Initializable, EventHandler<MouseEvent> {
 			searchList = Freelancerprofil.sucheJobangebote(cName, graduation, expertise, branche, minEmployees,
 					maxEmployees, salary);
 
-			// display the results
-			jA = new JobangebotAnzeige[searchList.size()];
-			int index = 0;
-			for (Entry<Jobangebot, Integer> entry : searchList) {
-				jA[index] = new JobangebotAnzeige();
-				jA[index].setJobangebot(entry.getKey());
-				// add MouseListener
-				jA[index].setOnMouseClicked(this);
-				// arrange results
-				searchGrid.add(jA[index], index % 3, index / 3);
-				index++;
-			}
+			// show message, if no results were found
+			if (searchList.isEmpty()) {
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("Info");
+				alert.setHeaderText("Keine Suchergebnisse");
+				alert.setContentText("Es wurde keine Suchergebnisse zu ihren Suchkriterien gefunden.");
+				alert.showAndWait();
+			} else {
+				// display the results
+				jA = new JobangebotAnzeige[searchList.size()];
+				int index = 0;
+				for (Entry<Jobangebot, Integer> entry : searchList) {
+					jA[index] = new JobangebotAnzeige();
+					jA[index].setJobangebot(entry.getKey());
+					// add MouseListener
+					jA[index].setOnMouseClicked(this);
+					// arrange results
+					searchGrid.add(jA[index], index % 3, index / 3);
+					index++;
+				}
 
-			scrollPane.setContent(searchGrid);
+				scrollPane.setContent(searchGrid);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -195,6 +211,7 @@ public class ViewFSuche implements Initializable, EventHandler<MouseEvent> {
 			// fetch all expertises from database
 			ObservableList<String> expertises = FXCollections
 					.observableArrayList(new ExpertiseDAO().getAllExpertises());
+			expertises.add(0, "");
 			// fetch expertise from Freelancerprofil
 			String expertiseFP = f.getFachgebiet();
 			// fill choicebox

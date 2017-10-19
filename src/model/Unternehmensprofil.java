@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -417,12 +418,14 @@ public class Unternehmensprofil implements Profil {
 			String expertise, List<String> sprachen) throws SQLException {
 		FreelancerprofilDAO freelancerprofilDao = new FreelancerprofilDAO();
 
-		List<List<Freelancerprofil>> searchList = new LinkedList<>();
-		searchList.add(freelancerprofilDao.searchForName(name));
-		searchList.add(freelancerprofilDao.searchForAbschluss(abschluss, expertise));
-		searchList.add(freelancerprofilDao.searchForSprache(sprachen));
+		List<List<Freelancerprofil>> searchImpList = new LinkedList<>();
+		searchImpList.add(freelancerprofilDao.searchForName(name));
+		searchImpList.add(freelancerprofilDao.searchForAbschluss(abschluss, expertise));
 
-		Set<Entry<Freelancerprofil, Integer>> prioList = prioritizeFreelancerprofile(searchList);
+		List<List<Freelancerprofil>> searchNotImpList = new LinkedList<>();
+		searchNotImpList.add(freelancerprofilDao.searchForSprache(sprachen));
+
+		Set<Entry<Freelancerprofil, Integer>> prioList = prioritizeFreelancerprofile(searchImpList, searchNotImpList);
 		List<Map.Entry<Freelancerprofil, Integer>> list = new LinkedList<>(prioList);
 		Collections.sort(list, new Comparator<Map.Entry<Freelancerprofil, Integer>>() {
 			@Override
@@ -442,9 +445,11 @@ public class Unternehmensprofil implements Profil {
 	 * @return sorted Set
 	 */
 	private static Set<Entry<Freelancerprofil, Integer>> prioritizeFreelancerprofile(
-			List<List<Freelancerprofil>> searchList) {
+			List<List<Freelancerprofil>> searchImpList, List<List<Freelancerprofil>> searchNotImpList) {
 		HashMap<Freelancerprofil, Integer> prioList = new HashMap<>();
-		for (List<Freelancerprofil> sL : searchList) {
+
+		// Innerjoin lists from searchImpList
+		for (List<Freelancerprofil> sL : searchImpList) {
 			for (Freelancerprofil freelancerprofil : sL) {
 				int prio;
 				if (!prioList.containsKey(freelancerprofil)) {
@@ -453,6 +458,24 @@ public class Unternehmensprofil implements Profil {
 					prio = prioList.get(freelancerprofil) + 1;
 				}
 				prioList.put(freelancerprofil, prio);
+			}
+		}
+		// remove all entries, which do not occur in all lists
+		Iterator<Entry<Freelancerprofil, Integer>> iterator = prioList.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<Freelancerprofil, Integer> entry = iterator.next();
+			if (entry.getValue() < searchImpList.size()) {
+				iterator.remove();
+			}
+		}
+
+		for (List<Freelancerprofil> sL : searchNotImpList) {
+			for (Freelancerprofil freelancerprofil : sL) {
+				int prio;
+				if (prioList.containsKey(freelancerprofil)) {
+					prio = prioList.get(freelancerprofil) + 1;
+					prioList.put(freelancerprofil, prio);
+				}
 			}
 		}
 		return prioList.entrySet();

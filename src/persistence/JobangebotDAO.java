@@ -222,7 +222,7 @@ public class JobangebotDAO {
 	}
 
 	public List<Jobangebot> searchForName(String aName) throws SQLException {
-		List<Jobangebot> result = new LinkedList<>();
+		List<Jobangebot> tempResult = new LinkedList<>();
 		String name = aName.replace("!", "!!").replace("%", "!%").replace("_", "!_").replace("[", "![").replace("*",
 				"%");
 		String sql = "SELECT jobangebot.JID FROM jobangebot "
@@ -235,14 +235,23 @@ public class JobangebotDAO {
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				while (resultSet.next()) {
 					int jid = resultSet.getInt("jobangebot.JID");
-					result.add(new JobangebotDAO().getJobangebot(jid));
+					tempResult.add(new JobangebotDAO().getJobangebot(jid));
 					Jobangebot tempJobangebot = new JobangebotDAO().getJobangebot(jid);
 					if (tempJobangebot != null) {
-						result.add(tempJobangebot);
+						tempResult.add(tempJobangebot);
 					}
 				}
 			}
 		}
+
+		// remove duplicates
+		List<Jobangebot> result = new LinkedList<>();
+		for (Jobangebot j : tempResult) {
+			if (!result.contains(j)) {
+				result.add(j);
+			}
+		}
+
 		return result;
 	}
 

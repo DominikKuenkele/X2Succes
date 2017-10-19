@@ -17,6 +17,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ScrollPane;
@@ -87,7 +89,9 @@ public class ViewUSuche implements Initializable, EventHandler<MouseEvent> {
 
 		// fetches expertise employees from choicebox
 		String expertise = searchtopic.getValue();
-
+		if (expertise.equals("")) {
+			expertise = "*";
+		}
 		// fetches graduation employees from choicebox
 		String graduation = searchdegree.getValue();
 
@@ -125,18 +129,27 @@ public class ViewUSuche implements Initializable, EventHandler<MouseEvent> {
 
 			// get result list
 			searchList = Unternehmensprofil.sucheFreelancer(fName, graduation, expertise, sprachen);
-			System.out.println(searchList);
-			// display the results
-			fA = new FreelancerprofilAnzeige[searchList.size()];
-			int index = 0;
-			for (Entry<Freelancerprofil, Integer> entry : searchList) {
-				fA[index] = new FreelancerprofilAnzeige();
-				fA[index].setFreelancerprofil(entry.getKey());
-				// add MouseListener
-				fA[index].setOnMouseClicked(this);
-				// arrange results
-				searchGrid.add(fA[index], index % 3, index / 3);
-				index++;
+
+			// show message, if no results were found
+			if (searchList.isEmpty()) {
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("Info");
+				alert.setHeaderText("Keine Suchergebnisse");
+				alert.setContentText("Es wurde keine Suchergebnisse zu ihren Suchkriterien gefunden.");
+				alert.showAndWait();
+			} else {
+				// display the results
+				fA = new FreelancerprofilAnzeige[searchList.size()];
+				int index = 0;
+				for (Entry<Freelancerprofil, Integer> entry : searchList) {
+					fA[index] = new FreelancerprofilAnzeige();
+					fA[index].setFreelancerprofil(entry.getKey());
+					// add MouseListener
+					fA[index].setOnMouseClicked(this);
+					// arrange results
+					searchGrid.add(fA[index], index % 3, index / 3);
+					index++;
+				}
 			}
 
 			scrollPane.setContent(searchGrid);

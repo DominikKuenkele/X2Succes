@@ -62,7 +62,7 @@ public class AbschlussDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllAbschluss() throws SQLException {
-		String sql = "SELECT graduation FROM graduation";
+		String sql = "SELECT graduation FROM graduation ORDER BY hierarchy";
 
 		try (Connection connect = datasource.getConnection();
 				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {

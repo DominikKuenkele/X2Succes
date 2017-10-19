@@ -83,7 +83,6 @@ public class ViewFJobangebot {
 		// star.setOpacity(1);
 		// // Favorit löschen
 		// }
-
 	}
 
 	/**
@@ -117,7 +116,7 @@ public class ViewFJobangebot {
 		String formattedDate = u.getFounding().format(formatter);
 		date.setText("Gründungsdatum: " + formattedDate);
 		employees.setText("Mitarbeiteranzahl: " + u.getEmployees());
-		branche.setText("Branche: " + jobangebot.getFachgebiet());
+		branche.setText("Branche: " + jobangebot.getUnternehmensprofil().getBranche());
 		Jobtitel.setText(jobangebot.getJobTitel());
 		jobdescription.setText(jobangebot.getBeschreibung());
 		salary.setText(Integer.toString(jobangebot.getGehalt()) + " EURO/Monat");
