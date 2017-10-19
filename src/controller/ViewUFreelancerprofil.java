@@ -15,6 +15,11 @@ import javafx.scene.input.MouseEvent;
 import model.Freelancerprofil;
 import model.Nutzer;
 
+/**
+ * Controller class for the view 'UFreelancerrofil.fxml'
+ * 
+ * @author domin
+ */
 public class ViewUFreelancerprofil {
 
 	@FXML
@@ -46,8 +51,13 @@ public class ViewUFreelancerprofil {
 
 	private Freelancerprofil freelancerprofil;
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void addfavorite(MouseEvent event) {
+		// not yet implemented
+
 		// // Pfad ändern ist glaub falsch?!
 		// if (star.getOpacity() == 1) {
 		// star.setImage(new Image("url=@Icons/stern_voll.png"));
@@ -61,6 +71,13 @@ public class ViewUFreelancerprofil {
 		// }
 	}
 
+	/**
+	 * opens mailprogram
+	 * 
+	 * @param event
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
 	@FXML
 	void mailTo(MouseEvent event) throws URISyntaxException, IOException {
 		if (Desktop.isDesktopSupported()) {
@@ -72,13 +89,20 @@ public class ViewUFreelancerprofil {
 		}
 	}
 
-	public void fillFormular() {
+	/**
+	 * fills the form of the scene with a given {@link model.Freelancerprofil
+	 * Freelancerprofil}
+	 */
+	public void fillForm() {
+		// fetch Nutzer from Freelancerprofil
 		Nutzer n = freelancerprofil.getNutzer();
 
+		// fill form
 		username.setText(n.getFirstName() + " " + n.getLastName());
 		description.setText(freelancerprofil.getBeschreibung());
 		degree.setText(freelancerprofil.getAbschluss() + " in " + freelancerprofil.getFachgebiet());
 		career.setText(freelancerprofil.getLebenslauf());
+		// display all languages, separated with commas
 		List<String> sprachen = freelancerprofil.getSprachen();
 		Iterator<String> it = sprachen.iterator();
 		for (String sprache : sprachen) {
@@ -87,6 +111,7 @@ public class ViewUFreelancerprofil {
 				languages.setText(languages.getText() + ", ");
 			}
 		}
+		// display all skills, separated with new lines
 		String[] skillsArray = freelancerprofil.getSkills();
 		for (String skill : skillsArray) {
 			skills.setText(skills.getText() + skill + "\n");
@@ -95,9 +120,14 @@ public class ViewUFreelancerprofil {
 		contactmail.setText(n.geteMail());
 	}
 
+	/**
+	 * fills the form and sets the {@link model.Freelancerprofil Freelancerprofil}
+	 * 
+	 * @param aFreelancerprofil
+	 */
 	public void setFreelancer(Freelancerprofil aFreelancerprofil) {
 		this.freelancerprofil = aFreelancerprofil;
-		fillFormular();
+		fillForm();
 	}
 
 }

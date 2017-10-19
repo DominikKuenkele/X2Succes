@@ -31,10 +31,12 @@ import persistence.ExpertiseDAO;
 import util.exception.DBException;
 import util.exception.ValidateArgsException;
 
+/**
+ * Controller class for the view 'UJobangebotErstellen.fxml'
+ * 
+ * @author domin
+ */
 public class ViewUJobangebotErstellen implements Initializable {
-
-	@FXML
-	private ImageView signoutbutton;
 
 	@FXML
 	private ImageView addofferbutton;
@@ -74,6 +76,12 @@ public class ViewUJobangebotErstellen implements Initializable {
 
 	private Verwaltung verwaltung;
 
+	/**
+	 * gathers data from form
+	 * 
+	 * @return a {@link model.Jobangebot Jobangebot} with gathered data
+	 * @throws ValidateArgsException
+	 */
 	private Jobangebot gatherData() throws ValidateArgsException {
 		Jobangebot jobangebot;
 
@@ -108,14 +116,17 @@ public class ViewUJobangebotErstellen implements Initializable {
 		try {
 			try {
 				Jobangebot jobangebot = gatherData();
+				// saves gathered data to database
 				jobangebot.saveToDatabase();
 
+				// show message, if creation was successful
 				Alert alert = new Alert(AlertType.INFORMATION);
 				alert.setTitle("Info");
 				alert.setHeaderText("Jobangebot erstellt");
 				alert.setContentText("Das Jobangebot wurde erfolgreich erstellt!");
 				alert.showAndWait();
 			} catch (ValidateArgsException | DBException e) {
+				// show message, if creation failed
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Error");
 				alert.setHeaderText("Registrierung fehlgeschlagen");
@@ -123,6 +134,7 @@ public class ViewUJobangebotErstellen implements Initializable {
 				alert.showAndWait();
 			}
 		} catch (NumberFormatException e) {
+			// show message, if creation failed
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Ungültige Eingabe");
@@ -132,9 +144,11 @@ public class ViewUJobangebotErstellen implements Initializable {
 	}
 
 	void changescene(String fxmlname) throws IOException {
+		// close current stage
 		Stage stage2 = (Stage) seeofferb.getScene().getWindow();
 		stage2.close();
 
+		// open new stage
 		Stage stage = new Stage();
 		stage.setTitle("X2Success");
 		Pane myPane = null;
@@ -146,17 +160,22 @@ public class ViewUJobangebotErstellen implements Initializable {
 	}
 
 	/**
+	 * open preview of new {@link model.Jobangebot Jobangebot}
+	 * 
 	 * @param event
 	 */
 	@FXML
 	void seeoffer(MouseEvent event) throws IOException {
 		try {
+			// gather data form from
 			Jobangebot jobangebot = gatherData();
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/FJobangebot.fxml"));
 			Pane myPane = loader.load();
 			ViewFJobangebot controller = loader.getController();
+			// transfer Jobangebot to controller
 			controller.setJobangebot(jobangebot);
 
+			// open new stage
 			Stage stage = new Stage();
 			stage.setTitle("X2Success");
 
@@ -164,6 +183,7 @@ public class ViewUJobangebotErstellen implements Initializable {
 			stage.setScene(scene);
 			stage.show();
 		} catch (ValidateArgsException e) {
+			// show message, if registration failed
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Registrierung fehlgeschlagen");
@@ -177,22 +197,20 @@ public class ViewUJobangebotErstellen implements Initializable {
 		verwaltung = Verwaltung.getInstance();
 
 		try {
+			// fetch all expertises from database
 			ObservableList<String> expertises = FXCollections
 					.observableArrayList(new ExpertiseDAO().getAllExpertises());
+			// fill choicebox
 			topic.setItems(expertises);
 			topic.setValue(expertises.get(0));
 
+			// fetch all graduations from database
 			ObservableList<String> graduation = FXCollections.observableArrayList(new AbschlussDAO().getAllAbschluss());
+			// fill choicebox
 			necessarydegree.setItems(graduation);
 			necessarydegree.setValue(graduation.get(0));
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} catch (NumberFormatException e) {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Error");
-			alert.setHeaderText("Ungültige Eingabe");
-			alert.setContentText("Das ist keine Zahl!");
-			alert.showAndWait();
 		}
 	}
 }
