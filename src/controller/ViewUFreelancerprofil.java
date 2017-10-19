@@ -105,7 +105,7 @@ public class ViewUFreelancerprofil {
 		// display all languages, separated with commas
 		List<String> sprachen = freelancerprofil.getSprachen();
 		Iterator<String> it = sprachen.iterator();
-		for (String sprache : sprachen) {
+		while (it.hasNext()) {
 			languages.setText(languages.getText() + it.next());
 			if (it.hasNext()) {
 				languages.setText(languages.getText() + ", ");

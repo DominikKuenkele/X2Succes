@@ -136,7 +136,7 @@ public class ViewFProfil implements Initializable {
 			freelancerprofil.setSprachen(tempFreelancerprofil.getSprachen());
 			freelancerprofil.saveToDatabase();
 
-			// show message, if change was succesful
+			// show message, if change was successful
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Info");
 			alert.setHeaderText("Freelancerprofil geändert");

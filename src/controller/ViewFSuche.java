@@ -103,8 +103,6 @@ public class ViewFSuche implements Initializable, EventHandler<MouseEvent> {
 	 */
 	@FXML
 	void searchoffers(ActionEvent event) throws IOException {
-		verwaltung = Verwaltung.getInstance();
-
 		// fetches name from textfield
 		String cName;
 		// if textfield is empty, fill it with a *, to search for all names
@@ -153,9 +151,9 @@ public class ViewFSuche implements Initializable, EventHandler<MouseEvent> {
 		try {
 			GridPane searchGrid = new GridPane();
 			// get current Freelancerprofil
-			Freelancerprofil f = (Freelancerprofil) verwaltung.getCurrentProfil();
 			// get result list
-			searchList = f.sucheJobangebote(cName, graduation, expertise, branche, minEmployees, maxEmployees, salary);
+			searchList = Freelancerprofil.sucheJobangebote(cName, graduation, expertise, branche, minEmployees,
+					maxEmployees, salary);
 
 			// display the results
 			jA = new JobangebotAnzeige[searchList.size()];

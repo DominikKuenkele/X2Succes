@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.validator.routines.UrlValidator;
-
 import persistence.AbschlussDAO;
 import persistence.BrancheDAO;
 import persistence.ExpertiseDAO;
@@ -125,11 +123,13 @@ public final class Validate {
 	 * @throws IllegalArgumentException
 	 */
 	public static void checkForUrl(final String url) throws IllegalArgumentException {
-		final UrlValidator urlvalidator = new UrlValidator();
-		if (!urlvalidator.isValid(url)) {
+		final String URL_PATTERN = "[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)";
+		Pattern pattern = Pattern.compile(URL_PATTERN);
+		Matcher matcher = pattern.matcher(url);
+
+		if (!matcher.matches()) {
 			throw new IllegalArgumentException("Url ist nicht zulässig!");
 		}
-
 	}
 
 	/**

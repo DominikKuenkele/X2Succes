@@ -26,7 +26,7 @@
 				<Font size="16.0" />
 			</font>
 		</Label>
-		<Label layoutX="285.0" layoutY="179.0" onMouseClicked="#openSearch"
+		<Label layoutX="285.0" layoutY="179.0"
 			text="Suche" textFill="BLUE" underline="true">
 			<font>
 				<Font size="16.0" />

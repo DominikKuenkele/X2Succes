@@ -1,22 +1,26 @@
 package controller;
 
-import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import application.UnternehmerObserver;
 import application.Verwaltung;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import model.Nutzer;
 import model.Unternehmensprofil;
 
-public class ViewURahmen implements UnternehmerObserver {
+/**
+ * Controller class for the view 'URahmen.fxml'
+ * 
+ * @author domin
+ */
+public class ViewURahmen extends ViewRahmen implements UnternehmerObserver, Initializable {
 
 	@FXML
 	private Label labelName;
@@ -39,89 +43,95 @@ public class ViewURahmen implements UnternehmerObserver {
 	@FXML
 	private ImageView addofferbutton;
 
-	private void openStage(String datei) {
-		try {
-			Stage prevStage = (Stage) labelName.getScene().getWindow();
-			prevStage.close();
+	private Verwaltung verwaltung;
 
-			Stage stage = new Stage();
-			stage.setTitle("X2Success");
-			Pane myPane = null;
-			myPane = FXMLLoader.load(getClass().getResource("/view/" + datei));
-			Scene scene = new Scene(myPane);
-			stage.setScene(scene);
-			stage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void openSubScene(String datei, String name) {
-		try {
-			Pane myPane = FXMLLoader.load(getClass().getResource("/view/" + datei));
-			pane.getChildren().clear();
-			pane.getChildren().add(myPane);
-			titel.setText(name);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void initialize() {
-		Verwaltung verwaltung = Verwaltung.getInstance();
-		verwaltung.registerAsUnternehmer(this);
-		Nutzer nutzer = verwaltung.getCurrentNutzer();
-		labelName.setText(nutzer.getFirstName() + " " + nutzer.getLastName());
-		openSubScene("UDashboard.fxml", "Dashboard");
-	}
-
-	// Event Listener on ImageView[#homebutton].onMouseClicked
+	/**
+	 * opens Home-Subscene
+	 * 
+	 * @param event
+	 */
 	@FXML
 	public void openHome(MouseEvent event) {
-		openSubScene("UDashboard.fxml", "Dashboard");
+		openSubScene(pane, "UDashboard.fxml", titel, "Dashboard");
 	}
 
-	// Event Listener on ImageView[#profilbutton].onMouseClicked
+	/**
+	 * opens Profil-Subscene
+	 * 
+	 * @param event
+	 */
 	@FXML
 	public void openProfil(MouseEvent event) {
-		openSubScene("UProfil.fxml", "Profil bearbeiten");
+		openSubScene(pane, "UProfil.fxml", titel, "Profil bearbeiten");
 	}
 
-	// Event Listener on ImageView[#searchbutton].onMouseClicked
+	/**
+	 * opens Search-Subscene
+	 * 
+	 * @param event
+	 */
 	@FXML
 	public void openSearch(MouseEvent event) {
-		openSubScene("USuche.fxml", "Suche");
+		openSubScene(pane, "USuche.fxml", titel, "Suche");
 	}
 
-	// Event Listener on ImageView[#settingsbutton].onMouseClicked
+	/**
+	 * opens Settings-Subscene
+	 * 
+	 * @param event
+	 */
 	@FXML
 	public void openSettings(MouseEvent event) {
-		openSubScene("Settings.fxml", "Einstellungen");
+		openSubScene(pane, "Settings.fxml", titel, "Einstellungen");
 	}
 
-	// Event Listener on ImageView[#signoutbutton].onMouseClicked
+	/**
+	 * opens Login-Stage
+	 * 
+	 * @param event
+	 */
 	@FXML
 	public void openSignOut(MouseEvent event) {
-		Verwaltung verwaltung = Verwaltung.getInstance();
+		// logs out the user
 		verwaltung.logout();
+		closeStage((Stage) labelName.getScene().getWindow());
 		openStage("Startseite.fxml");
 	}
 
-	// Event Listener on ImageView[#addofferbutton].onMouseClicked
+	/**
+	 * opens NewOffer-Subscene
+	 * 
+	 * @param event
+	 */
 	@FXML
 	public void createnewoffer(MouseEvent event) {
-		openSubScene("UJobangebotErstellen.fxml", "Jobangebot erstellen");
+		openSubScene(pane, "UJobangebotErstellen.fxml", titel, "Jobangebot erstellen");
 	}
 
 	@Override
 	public void updateUnternehmer(Unternehmensprofil aUnternehmer) {
-		// TODO Auto-generated method stub
-
+		// updates all references of Unternehmensprofil in this stage
+		// there are no references yet
 	}
 
 	@Override
 	public void updateNutzer(Nutzer aNutzer) {
+		// updates all references of Nutzer in this stage
+		// update name label
 		labelName.setText(aNutzer.getFirstName() + " " + aNutzer.getLastName());
 	}
 
+	@Override
+	public void initialize(URL aLocation, ResourceBundle aResources) {
+		verwaltung = Verwaltung.getInstance();
+
+		// register as Observer to realize changes of Unternehmensprofil/Nutzer-Object
+		// in Verwaltungs-Object
+		verwaltung.registerAsUnternehmer(this);
+		// get current Nutzer
+		Nutzer nutzer = verwaltung.getCurrentNutzer();
+		// fill name label
+		labelName.setText(nutzer.getFirstName() + " " + nutzer.getLastName());
+		openSubScene(pane, "UDashboard.fxml", titel, "Dashboard");
+	}
 }

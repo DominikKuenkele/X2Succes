@@ -24,6 +24,11 @@ import persistence.BrancheDAO;
 import util.exception.DBException;
 import util.exception.ValidateArgsException;
 
+/**
+ * Controller class for the view 'UProfil.fxml'
+ * 
+ * @author domin
+ */
 public class ViewUProfil implements Initializable {
 
 	@FXML
@@ -68,11 +73,18 @@ public class ViewUProfil implements Initializable {
 	@FXML
 	private Button changeCompany;
 
+	private Verwaltung verwaltung;
+
+	/**
+	 * changes data from existing {@link model.Unternehmensprofil
+	 * Unternehmensprofil}
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void changeUnternehmen(ActionEvent event) {
-		Verwaltung verwaltung = Verwaltung.getInstance();
-
 		try {
+			// fetch data from form
 			String name = cName.getText();
 			String form = cForm.getText();
 			LocalDate founding = cDate.getValue();
@@ -88,7 +100,9 @@ public class ViewUProfil implements Initializable {
 			String ceoLastName = cCeoname.getText();
 
 			try {
+				// get the current Unternehmensprofil with its id
 				Unternehmensprofil unternehmensprofil = (Unternehmensprofil) verwaltung.getCurrentProfil();
+				// change Unternehmensprofil-Object data
 				unternehmensprofil.setName(name);
 				unternehmensprofil.setLegalForm(form);
 				unternehmensprofil.setAddress(new Adresse(plz, city, street, number));
@@ -101,6 +115,7 @@ public class ViewUProfil implements Initializable {
 				unternehmensprofil.setCeoLastName(ceoLastName);
 				unternehmensprofil.saveToDatabase();
 
+				// show message, if change was successful
 				Alert alert = new Alert(AlertType.INFORMATION);
 				alert.setTitle("Info");
 				alert.setHeaderText("Unternehmensprofil geändert");
@@ -108,6 +123,7 @@ public class ViewUProfil implements Initializable {
 				alert.showAndWait();
 
 			} catch (ValidateArgsException e) {
+				// show message, if change failed because of false user input
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Error");
 				alert.setHeaderText("Änderung fehlgeschlagen");
@@ -116,6 +132,7 @@ public class ViewUProfil implements Initializable {
 
 				e.printStackTrace();
 			} catch (DBException e) {
+				// show message, if change failed because of failed database acces
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Error");
 				alert.setHeaderText("Änderung fehlgeschlagen");
@@ -126,6 +143,7 @@ public class ViewUProfil implements Initializable {
 				e.printStackTrace();
 			}
 		} catch (NumberFormatException e) {
+			// show message, if change failed because of false user input
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Änderung fehlgeschlagen");
@@ -137,11 +155,14 @@ public class ViewUProfil implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		Verwaltung v = Verwaltung.getInstance();
-		Unternehmensprofil u = (Unternehmensprofil) v.getCurrentProfil();
+		// fetch the current Unternehmensprofil
+		verwaltung = Verwaltung.getInstance();
+		Unternehmensprofil u = (Unternehmensprofil) verwaltung.getCurrentProfil();
 
 		try {
+			// Fetch all languages from database
 			ObservableList<String> branche = FXCollections.observableArrayList(new BrancheDAO().getAllBranchen());
+			// fill choicebox
 			cBranche.setItems(branche);
 			if (!u.getBranche().equals("")) {
 				cBranche.setValue(u.getBranche());
@@ -152,6 +173,7 @@ public class ViewUProfil implements Initializable {
 			e.printStackTrace();
 		}
 
+		// fill form
 		cName.setText(u.getName());
 		cForm.setText(u.getLegalForm());
 		cDate.setValue(u.getFounding());

@@ -1,20 +1,16 @@
 package controller;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import application.FreelancerObserver;
 import application.Verwaltung;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import model.Freelancerprofil;
 import model.Nutzer;
@@ -24,7 +20,7 @@ import model.Nutzer;
  * 
  * @author domin
  */
-public class ViewFRahmen implements FreelancerObserver, Initializable {
+public class ViewFRahmen extends ViewRahmen implements FreelancerObserver, Initializable {
 
 	@FXML
 	private Label labelName;
@@ -49,46 +45,6 @@ public class ViewFRahmen implements FreelancerObserver, Initializable {
 
 	private Verwaltung verwaltung;
 
-	/**
-	 * Method opens a new stage
-	 * 
-	 * @param datei
-	 */
-	private void openStage(String datei) {
-		try {
-			// close current stage
-			Stage prevStage = (Stage) labelName.getScene().getWindow();
-			prevStage.close();
-
-			// load new stage
-			Stage stage = new Stage();
-			stage.setTitle("X2Success");
-			Pane myPane = null;
-			myPane = FXMLLoader.load(getClass().getResource("/view/" + datei));
-			Scene scene = new Scene(myPane);
-			stage.setScene(scene);
-			stage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	// opens a new subscene
-	private void openSubScene(String datei, String name) {
-		try {
-			// load new pane
-			Pane subPane = FXMLLoader.load(getClass().getResource("/view/" + datei));
-			// clear the existing pane
-			pane.getChildren().clear();
-			// add new pane
-			pane.getChildren().add(subPane);
-			// change title for this scene
-			titel.setText(name);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		verwaltung = Verwaltung.getInstance();
@@ -100,6 +56,7 @@ public class ViewFRahmen implements FreelancerObserver, Initializable {
 		Nutzer nutzer = verwaltung.getCurrentNutzer();
 		// fill name label
 		labelName.setText(nutzer.getFirstName() + " " + nutzer.getLastName());
+		openSubScene(pane, "FDashboard.fxml", titel, "Dashboard");
 	}
 
 	/**
@@ -109,7 +66,7 @@ public class ViewFRahmen implements FreelancerObserver, Initializable {
 	 */
 	@FXML
 	void openHome(MouseEvent event) {
-		openSubScene("FDashboard.fxml", "Dashboard");
+		openSubScene(pane, "FDashboard.fxml", titel, "Dashboard");
 	}
 
 	/**
@@ -119,7 +76,7 @@ public class ViewFRahmen implements FreelancerObserver, Initializable {
 	 */
 	@FXML
 	void openProfil(MouseEvent event) {
-		openSubScene("FProfil.fxml", "Profil bearbeiten");
+		openSubScene(pane, "FProfil.fxml", titel, "Profil bearbeiten");
 	}
 
 	/**
@@ -129,7 +86,7 @@ public class ViewFRahmen implements FreelancerObserver, Initializable {
 	 */
 	@FXML
 	void openSearch(MouseEvent event) {
-		openSubScene("FSuche.fxml", "Suche");
+		openSubScene(pane, "FSuche.fxml", titel, "Suche");
 	}
 
 	/**
@@ -139,11 +96,11 @@ public class ViewFRahmen implements FreelancerObserver, Initializable {
 	 */
 	@FXML
 	void openSettings(MouseEvent event) {
-		openSubScene("Settings.fxml", "Einstellungen");
+		openSubScene(pane, "Settings.fxml", titel, "Einstellungen");
 	}
 
 	/**
-	 * opens SignOut-Stage
+	 * opens Login-Stage
 	 * 
 	 * @param event
 	 */
@@ -151,22 +108,19 @@ public class ViewFRahmen implements FreelancerObserver, Initializable {
 	public void openSignOut(MouseEvent event) {
 		// logs out the user
 		verwaltung.logout();
+		closeStage((Stage) labelName.getScene().getWindow());
 		openStage("Startseite.fxml");
 	}
 
-	/**
-	 * updates all references of Freelancer in this stage
-	 */
 	@Override
 	public void updateFreelancer(Freelancerprofil aFreelancer) {
+		// updates all references of Freelancer in this stage
 		// there are no references yet
 	}
 
-	/**
-	 * updates all references of Nutzer in this stage
-	 */
 	@Override
 	public void updateNutzer(Nutzer aNutzer) {
+		// updates all references of Nutzer in this stage
 		// update name label
 		labelName.setText(aNutzer.getFirstName() + " " + aNutzer.getLastName());
 	}
