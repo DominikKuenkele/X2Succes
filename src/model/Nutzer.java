@@ -235,8 +235,14 @@ public class Nutzer {
 	 * Method sets the password after hashing it
 	 * 
 	 * @param password
+	 * @throws ValidateArgsException
 	 */
-	public void setAndHashPassword(String password) {
+	public void setAndHashPassword(String password) throws ValidateArgsException {
+		try {
+			Validate.checkForPassword(password);
+		} catch (IllegalArgumentException e) {
+			throw new ValidateArgsException("\nPasswort: " + e.getMessage());
+		}
 		this.password = PassHash.generateStrongPasswordHash(password);
 	}
 
@@ -245,10 +251,17 @@ public class Nutzer {
 	 * @param newPassword
 	 *            the password to set
 	 * @throws UserInputException
+	 * @throws ValidateArgsException
 	 */
-	public void changePassword(String oldPassword, String newPassword) throws UserInputException {
+	public void changePassword(String oldPassword, String newPassword)
+			throws UserInputException, ValidateArgsException {
 		final boolean validation = PassHash.validatePassword(oldPassword, password);
 		if (validation == true) {
+			try {
+				Validate.checkForPassword(newPassword);
+			} catch (IllegalArgumentException e) {
+				throw new ValidateArgsException("\nPasswort: " + e.getMessage());
+			}
 			this.password = PassHash.generateStrongPasswordHash(newPassword);
 		} else {
 			throw new UserInputException("Das alte Passwort stimmt nicht");

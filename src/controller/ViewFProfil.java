@@ -20,7 +20,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import model.Freelancerprofil;
@@ -30,13 +29,12 @@ import persistence.SpracheDAO;
 import util.exception.DBException;
 import util.exception.ValidateArgsException;
 
+/**
+ * Controller class for the view 'FProfil.fxml'
+ * 
+ * @author domin
+ */
 public class ViewFProfil implements Initializable {
-
-	@FXML
-	private ImageView homebutton;
-
-	@FXML
-	private ImageView userpicture;
 
 	@FXML
 	private ChoiceBox<String> degree1;
@@ -73,6 +71,12 @@ public class ViewFProfil implements Initializable {
 
 	private Verwaltung verwaltung;
 
+	/**
+	 * gathers data from form
+	 * 
+	 * @return a {@link model.Freelancerprofil Freelancerprofil} with gathered data
+	 * @throws ValidateArgsException
+	 */
 	private Freelancerprofil gatherData() throws ValidateArgsException {
 		Freelancerprofil freelancerprofil;
 
@@ -81,6 +85,7 @@ public class ViewFProfil implements Initializable {
 		String beschreibung = selfDescription.getText();
 		String[] skills = tAskills.getText().split("\n");
 		String lebenslauf = cv.getText();
+		// Fetch language from choicebox if not empty
 		List<String> sprachenTemp = new LinkedList<>();
 		if (!language1.getValue().equals("")) {
 			sprachenTemp.add(language1.getValue());

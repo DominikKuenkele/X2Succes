@@ -32,6 +32,18 @@ public final class Validate {
 	/**
 	 * Method validates a String, if it contains only letters and spaces.
 	 * 
+	 * @param password
+	 * @throws IllegalArgumentException
+	 */
+	public static void checkForPassword(final String password) throws IllegalArgumentException {
+		if (password.length() < 5) {
+			throw new IllegalArgumentException("Das Passwort muss mindestens 5 Zeichen haben!");
+		}
+	}
+
+	/**
+	 * Method validates a String, if it contains only letters and spaces.
+	 * 
 	 * @param text
 	 * @throws IllegalArgumentException
 	 */
@@ -131,7 +143,7 @@ public final class Validate {
 		Matcher matcher = pattern.matcher(eMail);
 
 		if (!matcher.matches()) {
-			throw new IllegalArgumentException("Das ist keine eMail-Adresse!");
+			throw new IllegalArgumentException("E-Mail-Adresse ungültig!");
 		}
 	}
 

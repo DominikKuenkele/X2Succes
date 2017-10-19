@@ -18,7 +18,7 @@
 				<Label layoutX="61.0" layoutY="116.0" text="Passwort" />
 				<Label layoutX="132.0" layoutY="32.0" text="Willkommen bie X2Success" />
 				<Button fx:id="LoginButton" layoutX="178.0" layoutY="163.0"
-					mnemonicParsing="false" onAction="#Login" text="Login" />
+					mnemonicParsing="false" onAction="#login" text="Login" />
 			</children>
 		</AnchorPane>
 	</children>

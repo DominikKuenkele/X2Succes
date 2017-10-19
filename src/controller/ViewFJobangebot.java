@@ -14,6 +14,11 @@ import javafx.scene.input.MouseEvent;
 import model.Jobangebot;
 import model.Unternehmensprofil;
 
+/**
+ * Controller class for the view 'FJobangebot.fxml'
+ * 
+ * @author domin
+ */
 public class ViewFJobangebot {
 
 	@FXML
@@ -60,6 +65,7 @@ public class ViewFJobangebot {
 
 	private Jobangebot jobangebot;
 
+	// not yet used
 	@FXML
 	void addfavorite(MouseEvent event) {
 
@@ -77,6 +83,13 @@ public class ViewFJobangebot {
 
 	}
 
+	/**
+	 * opens mailprogram
+	 * 
+	 * @param event
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
 	@FXML
 	void mailTo(MouseEvent event) throws URISyntaxException, IOException {
 		if (Desktop.isDesktopSupported()) {
@@ -88,9 +101,14 @@ public class ViewFJobangebot {
 		}
 	}
 
-	public void fillFormular() {
+	/**
+	 * fills the form of the scene with a given {@link model.Jobangebot Jobangebot}
+	 */
+	public void fillForm() {
+		// fetch Unternehmensprofil from Jobangebot
 		Unternehmensprofil u = jobangebot.getUnternehmensprofil();
 
+		// fill form
 		companyname.setText(u.getName());
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.LLLL.yyyy");
 		String formattedDate = u.getFounding().format(formatter);
@@ -106,8 +124,13 @@ public class ViewFJobangebot {
 		contactmail.setText(u.getNutzer().geteMail());
 	}
 
+	/**
+	 * fills the form and sets the {@link model.Jobangebot Jobangebot}
+	 * 
+	 * @param aJobangebot
+	 */
 	public void setJobangebot(Jobangebot aJobangebot) {
 		this.jobangebot = aJobangebot;
-		fillFormular();
+		fillForm();
 	}
 }

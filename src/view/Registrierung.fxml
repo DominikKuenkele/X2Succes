@@ -8,49 +8,35 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.102"
-	xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ViewRegistrierung">
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ViewRegistrierung">
 	<children>
 		<AnchorPane prefHeight="469.0" prefWidth="542.0">
 			<children>
 				<Label layoutX="224.0" layoutY="40.0" text="Nutzer anlegen" />
 				<Label layoutX="65.0" layoutY="88.0" text="Vorname" />
-				<TextField fx:id="UserVorname" layoutX="191.0" layoutY="83.0"
-					prefHeight="25.0" prefWidth="192.0" />
+				<TextField fx:id="UserVorname" layoutX="191.0" layoutY="83.0" prefHeight="25.0" prefWidth="192.0" />
 				<Label layoutX="66.0" layoutY="121.0" text="Nachname" />
-				<TextField fx:id="UserNachname" layoutX="191.0" layoutY="117.0"
-					prefHeight="25.0" prefWidth="192.0" />
+				<TextField fx:id="UserNachname" layoutX="191.0" layoutY="117.0" prefHeight="25.0" prefWidth="192.0" />
 				<Label layoutX="65.0" layoutY="154.0" text="Geschlecht" />
-				<ChoiceBox fx:id="UserGeschlecht" layoutX="190.0" layoutY="149.0"
-					prefHeight="31.0" prefWidth="192.0" />
+				<ChoiceBox fx:id="UserGeschlecht" layoutX="190.0" layoutY="149.0" prefHeight="31.0" prefWidth="192.0" />
 				<Label layoutX="66.0" layoutY="189.0" text="Geburtsdatum" />
-				<DatePicker fx:id="UserDatum" layoutX="190.0" layoutY="184.0"
-					prefHeight="25.0" prefWidth="192.0" />
+				<DatePicker fx:id="UserDatum" layoutX="190.0" layoutY="184.0" prefHeight="25.0" prefWidth="192.0" />
 				<Label layoutX="66.0" layoutY="222.0" text="Stadt" />
-				<TextField fx:id="UserStadt" layoutX="191.0" layoutY="217.0"
-					prefHeight="25.0" prefWidth="192.0" />
+				<TextField fx:id="UserStadt" layoutX="191.0" layoutY="217.0" prefHeight="25.0" prefWidth="192.0" />
 				<Label layoutX="396.0" layoutY="222.0" text="Plz" />
-				<TextField fx:id="UserPlz" layoutX="446.0" layoutY="218.0"
-					prefHeight="25.0" prefWidth="34.0" />
+				<TextField fx:id="UserPlz" layoutX="429.0" layoutY="218.0" prefHeight="25.0" prefWidth="82.0" />
 				<Label layoutX="63.0" layoutY="254.0" text="Straße" />
-				<TextField fx:id="UserStraße" layoutX="191.0" layoutY="249.0"
-					prefHeight="25.0" prefWidth="192.0" />
+				<TextField fx:id="UserStraße" layoutX="191.0" layoutY="249.0" prefHeight="25.0" prefWidth="192.0" />
 				<Label layoutX="397.0" layoutY="254.0" text="Nr" />
-				<TextField fx:id="UserNr" layoutX="446.0" layoutY="250.0"
-					prefHeight="25.0" prefWidth="34.0" />
+				<TextField fx:id="UserNr" layoutX="429.0" layoutY="250.0" prefHeight="25.0" prefWidth="82.0" />
 				<Label layoutX="66.0" layoutY="289.0" text="E-Mail Adresse" />
-				<TextField fx:id="UserMail" layoutX="190.0" layoutY="284.0"
-					prefHeight="25.0" prefWidth="192.0" />
+				<TextField fx:id="UserMail" layoutX="190.0" layoutY="284.0" prefHeight="25.0" prefWidth="192.0" />
 				<Label layoutX="66.0" layoutY="328.0" text="Passwort" />
-				<PasswordField fx:id="UserPW" layoutX="191.0" layoutY="323.0"
-					prefHeight="25.0" prefWidth="192.0" />
+				<PasswordField fx:id="UserPW" layoutX="191.0" layoutY="323.0" prefHeight="25.0" prefWidth="192.0" />
 				<Label layoutX="66.0" layoutY="364.0" text="Passwort wiederholen" />
-				<PasswordField fx:id="UserPW2" layoutX="191.0"
-					layoutY="359.0" prefHeight="25.0" prefWidth="192.0" />
-				<Button fx:id="addfreelancerb" layoutX="67.0" layoutY="411.0"
-					mnemonicParsing="false" onAction="#addFreelancer" text="Freelancerprofil auswählen" />
-				<Button fx:id="addcompanyb" layoutX="294.0" layoutY="411.0"
-					mnemonicParsing="false" onAction="#addCompany" text="Unternehmen anlegen" />
+				<PasswordField fx:id="UserPW2" layoutX="191.0" layoutY="359.0" prefHeight="25.0" prefWidth="192.0" />
+				<Button fx:id="addfreelancerb" layoutX="67.0" layoutY="411.0" mnemonicParsing="false" onAction="#addFreelancer" text="Freelancerprofil auswählen" />
+				<Button fx:id="addcompanyb" layoutX="294.0" layoutY="411.0" mnemonicParsing="false" onAction="#addCompany" text="Unternehmen anlegen" />
 			</children>
 		</AnchorPane>
 	</children>

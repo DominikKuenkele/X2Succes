@@ -33,8 +33,6 @@ import util.exception.ValidateArgsException;
 
 public class ViewRegistrierung implements Initializable {
 
-	private ObservableList<String> GenderList = FXCollections.observableArrayList("Männlich", "Weiblich", "Anderes");
-
 	private Verwaltung verwaltung;
 
 	@FXML

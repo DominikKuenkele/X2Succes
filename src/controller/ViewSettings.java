@@ -86,7 +86,7 @@ public class ViewSettings implements Initializable {
 				alert.setHeaderText("Änderung erfolgreich");
 				alert.setContentText("Password geändert!");
 				alert.showAndWait();
-			} catch (UserInputException e) {
+			} catch (UserInputException | ValidateArgsException e) {
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Error");
 				alert.setHeaderText("Änderung fehlgeschlagen");
