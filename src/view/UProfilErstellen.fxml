@@ -23,7 +23,7 @@
 				<Label layoutX="47.0" layoutY="177.0" text="Stadt" />
 				<Label layoutX="47.0" layoutY="217.0" text="Straße" />
 				<Label layoutX="411.0" layoutY="216.0" text="Nr" />
-				<Label layoutX="47.0" layoutY="258.0" text="Grundungsdatum" />
+				<Label layoutX="47.0" layoutY="258.0" text="Gründungsdatum" />
 				<Label layoutX="411.0" layoutY="258.0" text="Mitarbeiteranzahl" />
 				<Label layoutX="47.0" layoutY="343.0" text="Branche" />
 				<Label layoutX="47.0" layoutY="390.0" text="Kurzbeschreibung" />

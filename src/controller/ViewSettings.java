@@ -25,6 +25,11 @@ import util.exception.DBException;
 import util.exception.UserInputException;
 import util.exception.ValidateArgsException;
 
+/**
+ * Controller class for the view 'Settings.fxml'
+ * 
+ * @author domin
+ */
 public class ViewSettings implements Initializable {
 
 	@FXML
@@ -69,24 +74,34 @@ public class ViewSettings implements Initializable {
 	@FXML
 	private ChoiceBox<String> newgender;
 
+	private Verwaltung verwaltung;
+
+	/**
+	 * @param event
+	 */
 	@FXML
 	void changePW(ActionEvent event) {
-		Verwaltung verwaltung = Verwaltung.getInstance();
+		// checks if repeated password equals the password
 		if (newpassword.getText().equals(newpassword2.getText())) {
 			try {
+				// get current Nutzer
 				Nutzer nutzer = verwaltung.getCurrentNutzer();
+				// change password
 				nutzer.changePassword(oldpassword.getText(), newpassword.getText());
 
+				// clear textfields
 				oldpassword.clear();
 				newpassword.clear();
 				newpassword2.clear();
 
+				// show message, if change was succesful
 				Alert alert = new Alert(AlertType.INFORMATION);
 				alert.setTitle("Info");
 				alert.setHeaderText("Änderung erfolgreich");
 				alert.setContentText("Password geändert!");
 				alert.showAndWait();
 			} catch (UserInputException | ValidateArgsException e) {
+				// show message, if change failed
 				Alert alert = new Alert(AlertType.ERROR);
 				alert.setTitle("Error");
 				alert.setHeaderText("Änderung fehlgeschlagen");
@@ -94,20 +109,22 @@ public class ViewSettings implements Initializable {
 				alert.showAndWait();
 			}
 		} else {
+			// show message, if repeated password not equals the password
 			Alert alert = new Alert(AlertType.WARNING);
 			alert.setTitle("Fehler");
-			alert.setHeaderText(null);
+			alert.setHeaderText("Änderung fehlgeschlagen");
 			alert.setContentText("Die neuen Passwörter sind nicht identisch");
-
 			alert.showAndWait();
 		}
-
 	}
 
+	/**
+	 * 
+	 * @param event
+	 */
 	@FXML
 	void changeUserData(ActionEvent event) {
-		Verwaltung verwaltung = Verwaltung.getInstance();
-
+		// fetch data from form
 		String newFirstName = newprenom.getText();
 		String newLastName = newname.getText();
 		String newEmail = email.getText();
@@ -119,6 +136,7 @@ public class ViewSettings implements Initializable {
 		LocalDate newBirthdate = birthdate.getValue();
 
 		try {
+			// store fetched data in object
 			Nutzer nutzer = verwaltung.getCurrentNutzer();
 			nutzer.setFirstName(newFirstName);
 			nutzer.setLastName(newLastName);
@@ -126,14 +144,17 @@ public class ViewSettings implements Initializable {
 			nutzer.setSex(newSex);
 			nutzer.setBirthdate(newBirthdate);
 			nutzer.setAddress(new Adresse(newPlz, newCity, newStreet, newNumber));
+			// save object to database
 			nutzer.saveToDatabase();
 
+			// show message, if change was successful
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Info");
 			alert.setHeaderText("Nutzerdaten geändert");
 			alert.setContentText("Die Nutzerdaten wurden erfolgreich geändert!");
 			alert.showAndWait();
 		} catch (ValidateArgsException e) {
+			// show message, if change failed because of false user input
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Änderung fehlgeschlagen");
@@ -142,6 +163,7 @@ public class ViewSettings implements Initializable {
 
 			e.printStackTrace();
 		} catch (DBException e) {
+			// show message, if change failed because of failed database acces
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Änderung fehlgeschlagen");
@@ -159,14 +181,18 @@ public class ViewSettings implements Initializable {
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		Verwaltung v = Verwaltung.getInstance();
-		Nutzer nutzer = v.getCurrentNutzer();// Daten ausfüllen
+		verwaltung = Verwaltung.getInstance();
+		// get current Nutzer
+		Nutzer nutzer = verwaltung.getCurrentNutzer();
 		if (nutzer != null) {
+			// fill form with data from Nutzer
 			newprenom.setText(nutzer.getFirstName());
 			newname.setText(nutzer.getLastName());
 
 			try {
+				// fetch all sexes from database
 				ObservableList<String> sexList = FXCollections.observableArrayList(new SexDAO().getAllSex());
+				// fill choicebox
 				newgender.setItems(sexList);
 				newgender.setValue(nutzer.getSex());
 			} catch (SQLException e) {

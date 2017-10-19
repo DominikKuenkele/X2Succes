@@ -36,8 +36,10 @@ public final class Validate {
 	 * @throws IllegalArgumentException
 	 */
 	public static void checkForPassword(final String password) throws IllegalArgumentException {
-		if (password.length() < 5) {
-			throw new IllegalArgumentException("Das Passwort muss mindestens 5 Zeichen haben!");
+		final int MIN_PASSWORD_LENGTH = 8;
+		if (password.length() < MIN_PASSWORD_LENGTH) {
+			throw new IllegalArgumentException(
+					"Das Passwort muss mindestens " + MIN_PASSWORD_LENGTH + " Zeichen haben!");
 		}
 	}
 

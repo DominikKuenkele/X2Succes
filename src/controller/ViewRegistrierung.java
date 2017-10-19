@@ -31,6 +31,11 @@ import util.exception.DBException;
 import util.exception.UserInputException;
 import util.exception.ValidateArgsException;
 
+/**
+ * Controller class for the view 'FRegistrierung.fxml'
+ * 
+ * @author domin
+ */
 public class ViewRegistrierung implements Initializable {
 
 	private Verwaltung verwaltung;
@@ -74,9 +79,13 @@ public class ViewRegistrierung implements Initializable {
 	@FXML
 	private Button addcompanyb;
 
+	/**
+	 * method switches the stage
+	 * 
+	 * @param fxmlname
+	 */
 	void changescene(String fxmlname) throws IOException {
-
-		// schliesst aktuelles Fenster
+		// close current stage
 		Stage stage2 = (Stage) addfreelancerb.getScene().getWindow();
 		stage2.close();
 
@@ -90,8 +99,19 @@ public class ViewRegistrierung implements Initializable {
 
 	}
 
+	/**
+	 * fetches data from form and saves it as {@link model.Nutzer Nutzer} in
+	 * database
+	 * 
+	 * @param status
+	 * @throws UserInputException
+	 * @throws DBException
+	 * @throws ValidateArgsException
+	 */
 	private void nutzerAnlegen(Status status) throws UserInputException, DBException, ValidateArgsException {
+		// checks if repeated password equals the password
 		if (UserPW.getText().equals(UserPW2.getText())) {
+			// fetches data from form
 			String vorname = UserVorname.getText();
 			String nachname = UserNachname.getText();
 			String geschlecht = UserGeschlecht.getValue();
@@ -103,21 +123,32 @@ public class ViewRegistrierung implements Initializable {
 			String eMail = UserMail.getText();
 			String passwort = UserPW.getText();
 
-			Nutzer nutzer;
-			nutzer = new Nutzer(vorname, nachname, geschlecht, birthdate, eMail, passwort,
+			// stores data in Nutzer-Object
+			Nutzer nutzer = new Nutzer(vorname, nachname, geschlecht, birthdate, eMail, passwort,
 					new Adresse(plz, stadt, strasse, hausnummer), status);
+			// sets password
 			nutzer.setAndHashPassword(passwort);
+			// save object to database
 			nutzer.saveToDatabase();
+			// update current Nutzer
 			verwaltung.setCurrentNutzer(nutzer);
 		}
 	}
 
+	/**
+	 * opens stage to create an {@link model.Unternehmensprofil Unternehmensprofil}
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
 	@FXML
 	void addCompany(ActionEvent event) throws IOException {
 		try {
 			nutzerAnlegen(Status.U);
+			// open new stage
 			changescene("/view/UProfilErstellen.fxml");
 		} catch (UserInputException | DBException | ValidateArgsException e) {
+			// show message, if registration failed
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Registrierung fehlgeschlagen");
@@ -126,14 +157,22 @@ public class ViewRegistrierung implements Initializable {
 		}
 	}
 
+	/**
+	 * opens stage to create an {@link model.Freelancerprofil Freelancerprofil}
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
 	@FXML
 	void addFreelancer(ActionEvent event) throws IOException {
 		try {
 			nutzerAnlegen(Status.F);
+			// open new stage
 			changescene("/view/FProfilErstellen.fxml");
 		} catch (UserInputException | DBException | ValidateArgsException e) {
-			Alert alert = new Alert(AlertType.ERROR); // Statt .Error geht auch .Warning etc
-			alert.setTitle("Error"); // Fenstername
+			// show message, if registration failed
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error");
 			alert.setHeaderText("Registrierung fehlgeschlagen");
 			alert.setContentText(e.getMessage());
 			alert.showAndWait();
@@ -145,13 +184,13 @@ public class ViewRegistrierung implements Initializable {
 		verwaltung = Verwaltung.getInstance();
 
 		try {
+			// fetch all sexes from database
 			ObservableList<String> sexList = FXCollections.observableArrayList(new SexDAO().getAllSex());
+			// fill choicebox with fetched data
 			UserGeschlecht.setItems(sexList);
 			UserGeschlecht.setValue(sexList.get(0));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }

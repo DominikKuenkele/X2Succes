@@ -16,7 +16,7 @@
 					layoutY="112.0" />
 				<Label layoutX="58.0" layoutY="69.0" text="E-Mail" />
 				<Label layoutX="61.0" layoutY="116.0" text="Passwort" />
-				<Label layoutX="132.0" layoutY="32.0" text="Willkommen bie X2Success" />
+				<Label layoutX="132.0" layoutY="32.0" text="Willkommen bei X2Success" />
 				<Button fx:id="LoginButton" layoutX="178.0" layoutY="163.0"
 					mnemonicParsing="false" onAction="#login" text="Login" />
 			</children>

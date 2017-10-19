@@ -66,6 +66,9 @@ public class ViewFJobangebot {
 	private Jobangebot jobangebot;
 
 	// not yet used
+	/**
+	 * @param event
+	 */
 	@FXML
 	void addfavorite(MouseEvent event) {
 

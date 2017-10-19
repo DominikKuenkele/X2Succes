@@ -91,6 +91,7 @@ public class ViewUJobangebotErstellen implements Initializable {
 		// not yet used
 		String cmail = contactemail.getText();
 
+		// frist not yet used
 		jobangebot = new Jobangebot(degree, topic1, new LinkedList<String>(), jobTitle, description,
 				LocalDate.of(5050, 12, 31), monthlysalary, weeklyworktime,
 				(Unternehmensprofil) verwaltung.getCurrentProfil());

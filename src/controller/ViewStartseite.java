@@ -10,6 +10,11 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+/**
+ * Controller class for the view 'Startseite.fxml'
+ * 
+ * @author domin
+ */
 public class ViewStartseite {
 
 	@FXML
@@ -19,8 +24,7 @@ public class ViewStartseite {
 	private Button Regisitrierungsbutton;
 
 	void changescene(String fxmlname) throws IOException {
-
-		// schliesst aktuelles Fenster
+		// close current stage
 		Stage stage2 = (Stage) LoginButton.getScene().getWindow();
 		stage2.close();
 
@@ -34,11 +38,23 @@ public class ViewStartseite {
 
 	}
 
+	/**
+	 * open Login-Stage
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
 	@FXML
 	void Login(ActionEvent event) throws IOException {
 		changescene("/view/Einloggen.fxml");
 	}
 
+	/**
+	 * open Register-Stage
+	 * 
+	 * @param event
+	 * @throws IOException
+	 */
 	@FXML
 	void Registrierung(ActionEvent event) throws IOException {
 		changescene("/view/Registrierung.fxml");
