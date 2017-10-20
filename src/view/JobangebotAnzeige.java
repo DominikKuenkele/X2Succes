@@ -75,7 +75,7 @@ public class JobangebotAnzeige extends AnchorPane {
 			imgImageView.setLayoutY(LOC_Y_IMG);
 			imgImageView.setPickOnBounds(true);
 			imgImageView.setPreserveRatio(true);
-			InputStream inputStream = new FileInputStream("src/view/Icons/Bk.png");
+			InputStream inputStream = new FileInputStream("src/view/Icons/company_icon.png");
 			Image img = new Image(inputStream);
 			imgImageView.setImage(img);
 		} catch (FileNotFoundException ex) {
