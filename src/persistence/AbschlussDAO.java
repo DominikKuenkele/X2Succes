@@ -25,12 +25,17 @@ public class AbschlussDAO {
 	 * @throws SQLException
 	 */
 	public String getAbschluss(int gid) throws SQLException {
+		// set the sql query
 		String sql = "SELECT graduation FROM graduation WHERE GID=?";
 
+		// try with connection and prepared statement
+		// closes the connection and statement after usage
 		try (Connection connect = datasource.getConnection();
 				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			// set WHERE in statement
 			preparedStatement.setInt(1, gid);
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				// return the result
 				return getAbschlussFromResultSet(resultSet).get(0);
 			}
 		}
@@ -43,12 +48,17 @@ public class AbschlussDAO {
 	 */
 	public int getAbschluss(String abschluss) throws SQLException {
 		int gid = -1;
+
+		// set the sql query
 		String sql = "SELECT GID FROM graduation WHERE graduation=?";
 
+		// try with connection and prepared statement
 		try (Connection connect = datasource.getConnection();
 				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			// set WHERE in statement
 			preparedStatement.setString(1, abschluss);
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				// fetch the result
 				while (resultSet.next()) {
 					gid = resultSet.getInt("GID");
 				}
@@ -62,19 +72,29 @@ public class AbschlussDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllAbschluss() throws SQLException {
+		// set the sql query
 		String sql = "SELECT graduation FROM graduation ORDER BY hierarchy";
 
+		// try with connection and prepared statement
 		try (Connection connect = datasource.getConnection();
 				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				// return the result
 				return getAbschlussFromResultSet(resultSet);
 			}
 		}
 	}
 
+	/**
+	 * @param resultSet
+	 * @return the resultset as list of Strings
+	 * @throws SQLException
+	 */
 	private List<String> getAbschlussFromResultSet(ResultSet resultSet) throws SQLException {
 		List<String> result = new LinkedList<>();
+		// for each returned row from database
 		while (resultSet.next()) {
+			// get the value
 			String abschluss = resultSet.getString("graduation");
 			result.add(abschluss);
 		}
@@ -88,13 +108,17 @@ public class AbschlussDAO {
 	 */
 	public int getHierarchy(String aAbschluss) throws SQLException {
 		int hier = -1;
+		// set the sql query
 		String sql = "SELECT hierarchy FROM graduation WHERE graduation=?";
 
+		// try with connection and prepared statement
 		try (Connection connect = datasource.getConnection();
 				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			// set WHERE in statement
 			preparedStatement.setString(1, aAbschluss);
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				while (resultSet.next()) {
+					// fetch the result
 					hier = resultSet.getInt("hierarchy");
 				}
 			}

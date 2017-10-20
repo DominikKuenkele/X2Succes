@@ -16,7 +16,11 @@ import javax.crypto.spec.PBEKeySpec;
 /**
  * Class generates and validates password-hashes
  * 
- * @author domin
+ * Class contains methods from
+ * https://howtodoinjava.com/security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
+ * 
+ * @author Lokesh Gupta
+ * 
  *
  */
 public class PassHash {

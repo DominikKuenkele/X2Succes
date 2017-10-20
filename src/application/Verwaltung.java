@@ -148,7 +148,7 @@ public class Verwaltung extends Subject {
 	/**
 	 * sets the current {@link model.Unternehmensprofil Unternehmensprofil}
 	 * 
-	 * @param aFreelancerprofil
+	 * @param aUnternehmensprofil
 	 */
 	public void setCurrentUnternehmensprofil(final Unternehmensprofil aUnternehmensprofil) {
 		this.currentUnternehmen = aUnternehmensprofil;

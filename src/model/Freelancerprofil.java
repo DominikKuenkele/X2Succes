@@ -316,7 +316,8 @@ public class Freelancerprofil implements Profil {
 	/**
 	 * Sorts a list of {@link model.Jobangebot Jobangebote} by their priority
 	 * 
-	 * @param searchList
+	 * @param searchImpList
+	 * @param searchNotImpList
 	 * @return sorted Set
 	 */
 	private static Set<Entry<Jobangebot, Integer>> prioritizeJobangebote(List<List<Jobangebot>> searchImpList,

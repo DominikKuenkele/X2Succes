@@ -16,7 +16,6 @@ import persistence.FreelancerprofilDAO;
 import persistence.UnternehmensprofilDAO;
 import util.Validate;
 import util.exception.DBException;
-import util.exception.UserInputException;
 import util.exception.ValidateArgsException;
 
 /**
@@ -385,7 +384,6 @@ public class Unternehmensprofil implements Profil {
 	 * Method saves this Object to database and sets the Id returned from database
 	 * 
 	 * @throws DBException
-	 * @throws UserInputException
 	 */
 	public void saveToDatabase() throws DBException {
 		try {
@@ -441,7 +439,8 @@ public class Unternehmensprofil implements Profil {
 	 * Sorts a list of {@link model.Freelancerprofil Freelancerprofile} by their
 	 * priority
 	 * 
-	 * @param searchList
+	 * @param searchImpList
+	 * @param searchNotImpList
 	 * @return sorted Set
 	 */
 	private static Set<Entry<Freelancerprofil, Integer>> prioritizeFreelancerprofile(

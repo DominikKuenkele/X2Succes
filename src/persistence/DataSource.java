@@ -11,7 +11,7 @@ import java.util.Properties;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
- * Class open the connection to a database
+ * Singleton-Class opens the connection to a database
  * 
  * @author domin
  *
@@ -24,6 +24,7 @@ public class DataSource {
 	private DataSource() {
 		Properties prop = new Properties();
 
+		// fetch the user and password from config.properties
 		try (InputStream input = new FileInputStream("config.properties")) {
 			prop.load(input);
 		} catch (IOException ex) {
@@ -31,14 +32,18 @@ public class DataSource {
 		}
 
 		try {
+			// create connectionpool
 			cpds = new ComboPooledDataSource();
-			cpds.setDriverClass("com.mysql.jdbc.Driver");// loads the jdbc driver
+			// loads the jdbc driver
+			cpds.setDriverClass("com.mysql.jdbc.Driver");
+			// set url
 			cpds.setJdbcUrl(
 					"jdbc:mysql://" + prop.getProperty("database") + "/x2succes?autoReconnect=true&useSSL=false");
+			// set user
 			cpds.setUser(prop.getProperty("dbuser"));
+			// set password
 			cpds.setPassword(prop.getProperty("dbpassword"));
 
-			// the settings below are optional -- c3p0 can work with defaults
 			cpds.setMinPoolSize(3);
 			cpds.setAcquireIncrement(5);
 			cpds.setMaxPoolSize(20);
@@ -49,6 +54,9 @@ public class DataSource {
 
 	}
 
+	/**
+	 * @return the instance o this singleton class
+	 */
 	public static DataSource getInstance() {
 		if (datasource == null) {
 			datasource = new DataSource();
@@ -58,25 +66,11 @@ public class DataSource {
 		}
 	}
 
+	/**
+	 * @return the connection of a connectionpool
+	 * @throws SQLException
+	 */
 	public Connection getConnection() throws SQLException {
 		return this.cpds.getConnection();
 	}
-
-	// protected final Connection getConnection() throws SQLException {
-	// Connection connect = null;
-	// try {
-	// Class.forName("com.mysql.jdbc.Driver");
-	// } catch (ClassNotFoundException e) {
-	// e.printStackTrace();
-	// }
-	//
-	// String connectionURL = "jdbc:mysql://" + prop.getProperty("database")
-	// + "/x2succes?autoReconnect=true&useSSL=false";
-	// connect = DriverManager.getConnection(connectionURL,
-	// prop.getProperty("dbuser"),
-	// prop.getProperty("dbpassword"));
-	//
-	// return connect;
-	// }
-
 }

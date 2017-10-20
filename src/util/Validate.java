@@ -17,7 +17,6 @@ import util.exception.ValidateArgsException;
  * Class is a Utility-class for the Validation of parameters.
  * 
  * @author Dominik Künkele
- * @date 22.09.2017
  */
 public final class Validate {
 
@@ -54,6 +53,12 @@ public final class Validate {
 		}
 	}
 
+	/**
+	 * Method validates, if String is a Branche
+	 * 
+	 * @param branche
+	 * @throws ValidateArgsException
+	 */
 	public static void validateBranche(String branche) throws ValidateArgsException {
 		try {
 			List<String> branchenList = new BrancheDAO().getAllBranchen();
@@ -65,6 +70,12 @@ public final class Validate {
 		}
 	}
 
+	/**
+	 * Method validates, if String is a sex
+	 * 
+	 * @param sex
+	 * @throws ValidateArgsException
+	 */
 	public static void validateSex(String sex) throws ValidateArgsException {
 		try {
 			List<String> sexList = new SexDAO().getAllSex();
@@ -76,6 +87,12 @@ public final class Validate {
 		}
 	}
 
+	/**
+	 * Method validates, if String is a language
+	 * 
+	 * @param sprachen
+	 * @throws ValidateArgsException
+	 */
 	public static void validateSprachen(List<String> sprachen) throws ValidateArgsException {
 		try {
 			String message = "";
@@ -94,6 +111,12 @@ public final class Validate {
 		}
 	}
 
+	/**
+	 * Method validates, if String is a graduation
+	 * 
+	 * @param abschluss
+	 * @throws ValidateArgsException
+	 */
 	public static void validateAbschluss(String abschluss) throws ValidateArgsException {
 		try {
 			List<String> abschlussList = new AbschlussDAO().getAllAbschluss();
@@ -105,6 +128,12 @@ public final class Validate {
 		}
 	}
 
+	/**
+	 * Method validates, if String is an expertise
+	 * 
+	 * @param fachgebiet
+	 * @throws ValidateArgsException
+	 */
 	public static void validateFachgebiet(String fachgebiet) throws ValidateArgsException {
 		try {
 			List<String> fachgebietList = new ExpertiseDAO().getAllExpertises();
@@ -117,7 +146,7 @@ public final class Validate {
 	}
 
 	/**
-	 * Validats a URL
+	 * Validates an URL
 	 * 
 	 * @param url
 	 * @throws IllegalArgumentException

@@ -16,6 +16,9 @@ import javafx.scene.text.Font;
 import model.Freelancerprofil;
 
 /**
+ * Class is a view to show a preview of a {@link model.Freelancerprofil
+ * Freelancerprofil}
+ * 
  * @author domin
  *
  */
@@ -32,26 +35,31 @@ public class FreelancerprofilAnzeige extends AnchorPane {
 	private final int EMPH_SIZE = 14;
 
 	private final int SIZE_IMAGE = 70;
+	// location of image
 	private final int LOC_X_IMG = 20;
 	private final int LOC_Y_IMG = 20;
+	// location of namelabel
 	private final int LOC_X_NAME = LOC_X_IMG + SIZE_IMAGE + 5;
 	private final int LOC_Y_NAME = LOC_Y_IMG + (SIZE_IMAGE / 2) - EMPH_SIZE / 2;
 	private final int LOC_X_DESC = LOC_X_IMG;
 	private final int LOC_Y_DESC = LOC_Y_IMG + SIZE_IMAGE + 10;
 
+	// distance between objects
 	private final int DIST_Y = 25;
 	private final int DIST_Y_SMALL = 18;
 
+	// text modulars
 	private final String EXPERTISE_TEXT = "in ";
 	private final String SKILLS_TEXT = "Skills";
 
 	private Freelancerprofil freelancerprofil;
 
 	/**
-	 * 
-	*/
+	 * Constructor builds the view
+	 */
 	public FreelancerprofilAnzeige() {
 		super();
+		// size of view
 		setMinWidth(220);
 		setMinHeight(260);
 		try {
@@ -69,24 +77,29 @@ public class FreelancerprofilAnzeige extends AnchorPane {
 			ex.printStackTrace();
 		}
 
+		// namelabel
 		nameLabel = new Label();
 		nameLabel.setLayoutX(LOC_X_NAME);
 		nameLabel.setLayoutY(LOC_Y_NAME);
 		nameLabel.setFont(new Font(EMPH_FONT, EMPH_SIZE));
 
+		// graduationlabel
 		abschlussLabel = new Label();
 		abschlussLabel.setLayoutX(LOC_X_DESC);
 		abschlussLabel.setLayoutY(LOC_Y_DESC);
 
+		// expertiselabel
 		expertiseLabel = new Label(EXPERTISE_TEXT);
 		expertiseLabel.setLayoutX(LOC_X_DESC);
 		expertiseLabel.setLayoutY(abschlussLabel.getLayoutY() + DIST_Y_SMALL);
 
+		// skillstitlelabel
 		skillsTitleLabel = new Label(SKILLS_TEXT);
 		skillsTitleLabel.setLayoutX(LOC_X_DESC);
 		skillsTitleLabel.setLayoutY(expertiseLabel.getLayoutY() + DIST_Y);
 		skillsTitleLabel.setFont(new Font(EMPH_FONT, EMPH_SIZE));
 
+		// skillslabel
 		skillsLabel = new Label();
 		skillsLabel.setLayoutX(LOC_X_DESC);
 		skillsLabel.setLayoutY(skillsTitleLabel.getLayoutY() + DIST_Y_SMALL);
@@ -108,6 +121,11 @@ public class FreelancerprofilAnzeige extends AnchorPane {
 		return this.freelancerprofil;
 	}
 
+	/**
+	 * sets the Freelancerprofil for this view
+	 * 
+	 * @param freelancerprofil
+	 */
 	public void setFreelancerprofil(Freelancerprofil freelancerprofil) {
 		setName(freelancerprofil.getNutzer().getFirstName() + " " + freelancerprofil.getNutzer().getLastName());
 		setAbschluss(freelancerprofil.getAbschluss());

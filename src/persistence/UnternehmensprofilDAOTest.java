@@ -19,6 +19,8 @@ import model.Unternehmensprofil;
 import util.exception.ValidateArgsException;
 
 /**
+ * Class is a DAO for the table 'unternehmensprofil'
+ * 
  * @author domin
  *
  */

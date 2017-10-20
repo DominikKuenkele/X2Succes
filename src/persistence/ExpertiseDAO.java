@@ -25,12 +25,17 @@ public class ExpertiseDAO {
 	 * @throws SQLException
 	 */
 	public String getExpertise(int eid) throws SQLException {
+		// set the sql query
 		String sql = "SELECT expertise FROM expertise WHERE EID=?";
 
+		// try with connection and prepared statement
+		// closes the connection and statement after usage
 		try (Connection connect = datasource.getConnection();
 				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			// set WHERE in statement
 			preparedStatement.setInt(1, eid);
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				// return the result
 				return getExpertiseFromResultSet(resultSet).get(0);
 			}
 		}
@@ -43,13 +48,17 @@ public class ExpertiseDAO {
 	 */
 	public int getExpertise(String expertise) throws SQLException {
 		int eid = -1;
+		// set the sql query
 		String sql = "SELECT EID FROM expertise WHERE expertise=?";
 
+		// try with connection and prepared statement
 		try (Connection connect = datasource.getConnection();
 				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
+			// set WHERE in statement
 			preparedStatement.setString(1, expertise);
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				while (resultSet.next()) {
+					// fetch the result
 					eid = resultSet.getInt("EID");
 				}
 			}
@@ -63,19 +72,29 @@ public class ExpertiseDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllExpertises() throws SQLException {
+		// set the sql query
 		String sql = "SELECT expertise FROM expertise";
 
+		// try with connection and prepared statement
 		try (Connection connect = datasource.getConnection();
 				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				// return the result
 				return getExpertiseFromResultSet(resultSet);
 			}
 		}
 	}
 
+	/**
+	 * @param resultSet
+	 * @return the resultset as list of Strings
+	 * @throws SQLException
+	 */
 	private List<String> getExpertiseFromResultSet(ResultSet resultSet) throws SQLException {
 		List<String> result = new LinkedList<>();
+		// for each returned row from database
 		while (resultSet.next()) {
+			// get the value
 			String expertise = resultSet.getString("expertise");
 			result.add(expertise);
 		}
