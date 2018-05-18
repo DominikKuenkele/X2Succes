@@ -3,8 +3,6 @@
  */
 package persistence;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -17,7 +15,8 @@ import java.util.List;
  *
  */
 public class AbschlussDAO {
-	private DataSource datasource = DataSource.getInstance();
+
+	private final String TABLE = "graduation";
 
 	/**
 	 * @param gid
@@ -25,20 +24,17 @@ public class AbschlussDAO {
 	 * @throws SQLException
 	 */
 	public String getAbschluss(int gid) throws SQLException {
-		// set the sql query
-		String sql = "SELECT graduation FROM graduation WHERE GID=?";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		// closes the connection and statement after usage
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set WHERE in statement
-			preparedStatement.setInt(1, gid);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// return the result
-				return getAbschlussFromResultSet(resultSet).get(0);
-			}
-		}
+		String column = "graduation";
+		String condition = "GID=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(gid);
+
+		statement.select(column).from(TABLE).where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		return getAbschlussFromResultSet(result).get(0);
 	}
 
 	/**
@@ -49,20 +45,18 @@ public class AbschlussDAO {
 	public int getAbschluss(String abschluss) throws SQLException {
 		int gid = -1;
 
-		// set the sql query
-		String sql = "SELECT GID FROM graduation WHERE graduation=?";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set WHERE in statement
-			preparedStatement.setString(1, abschluss);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// fetch the result
-				while (resultSet.next()) {
-					gid = resultSet.getInt("GID");
-				}
-			}
+		String column = "GID";
+		String condition = "graduation=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(abschluss);
+
+		statement.select(column).from(TABLE).where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		while (result.next()) {
+			gid = result.getInt(column);
 		}
 		return gid;
 	}
@@ -72,17 +66,15 @@ public class AbschlussDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllAbschluss() throws SQLException {
-		// set the sql query
-		String sql = "SELECT graduation FROM graduation ORDER BY hierarchy";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// return the result
-				return getAbschlussFromResultSet(resultSet);
-			}
-		}
+		String column = "graduation";
+		String orderBy = "hierarchy";
+		
+		statement.select(column).from(TABLE).orderBy(orderBy);
+		ResultSet result = statement.executeQuery();
+
+		return getAbschlussFromResultSet(result);
 	}
 
 	/**
@@ -102,26 +94,25 @@ public class AbschlussDAO {
 	}
 
 	/**
-	 * @param aAbschluss
+	 * @param abschluss
 	 * @return the hierarchy of a given graduation
 	 * @throws SQLException
 	 */
-	public int getHierarchy(String aAbschluss) throws SQLException {
+	public int getHierarchy(String abschluss) throws SQLException {
 		int hier = -1;
-		// set the sql query
-		String sql = "SELECT hierarchy FROM graduation WHERE graduation=?";
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set WHERE in statement
-			preparedStatement.setString(1, aAbschluss);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				while (resultSet.next()) {
-					// fetch the result
-					hier = resultSet.getInt("hierarchy");
-				}
-			}
+		Sql statement = new Sql();
+
+		String column = "hierarchy";
+		String condition = "graduation=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(abschluss);
+
+		statement.select(column).from(TABLE).where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		while (result.next()) {
+			hier = result.getInt(column);
 		}
 		return hier;
 	}

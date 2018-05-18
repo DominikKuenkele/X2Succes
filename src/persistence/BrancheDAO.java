@@ -19,26 +19,25 @@ import java.util.List;
 public class BrancheDAO {
 	private DataSource datasource = DataSource.getInstance();
 
+	private final String TABLE = "branche";
+
 	/**
 	 * @param bid
 	 * @return the name of the branche with given ID
 	 * @throws SQLException
 	 */
 	public String getBranche(int bid) throws SQLException {
-		// set the sql query
-		String sql = "SELECT branche FROM branche WHERE BID=?";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		// closes the connection and statement after usage
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set WHERE in statement
-			preparedStatement.setInt(1, bid);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// return the result
-				return getBrancheFromResultSet(resultSet).get(0);
-			}
-		}
+		String column = "branche";
+		String condition = "BID=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(bid);
+
+		statement.select(column).from(TABLE).where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		return getBrancheFromResultSet(result).get(0);
 	}
 
 	/**
