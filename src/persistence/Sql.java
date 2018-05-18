@@ -15,6 +15,7 @@ public class Sql {
 	private String from = "";
 	private String where = "";
 	private String orderBy = "";
+	private String[] innerJoins = {};
 	private List<Object> conditionWildcards = null;
 
 	public Sql select(String... columns) {
@@ -37,6 +38,11 @@ public class Sql {
 		this.orderBy = orderBy;
 		return this;
 	}
+	
+	public Sql innerJoin(String table, String criteria) {
+		this.innerJoins[innerJoins.length] = table + " ON " + criteria;
+		return this;
+	}
 
 	private String buildSql() {
 		StringBuffer sql = new StringBuffer();
@@ -48,6 +54,10 @@ public class Sql {
 		if (!from.isEmpty() && from != null) {
 			sql.append(" FROM ");
 			sql.append(from);
+		}
+		for(String innerJoin : innerJoins) {
+			sql.append(" INNER JOIN ");
+			sql.append(innerJoin);
 		}
 		if (!where.isEmpty() && where != null) {
 			sql.append(" WHERE ");

@@ -1,7 +1,5 @@
 package persistence;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -14,7 +12,7 @@ import java.util.List;
  *
  */
 public class SpracheDAO {
-	private DataSource datasource = DataSource.getInstance();
+	private final String TABLE = "sprachen";
 
 	/**
 	 * @param sprache
@@ -22,25 +20,22 @@ public class SpracheDAO {
 	 * @throws SQLException
 	 */
 	public int getSID(String sprache) throws SQLException {
-		int result = 0;
-		// set the sql query
-		String sql = "SELECT SID FROM Sprachen WHERE sprache = ?";
+		int sid = -1;
 
-		// try with connection and prepared statement
-		// closes the connection and statement after usage
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set WHERE in statement
-			preparedStatement.setString(1, sprache);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				while (resultSet.next()) {
-					// return the result
-					int sid = resultSet.getInt("SID");
-					result = sid;
-				}
-			}
+		Sql statement = new Sql();
+
+		String column = "SID";
+		String condition = "sprache=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(sprache);
+
+		statement.select(column).from(TABLE).where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		while (result.next()) {
+			sid = result.getInt(column);
 		}
-		return result;
+		return sid;
 	}
 
 	/**
@@ -49,21 +44,17 @@ public class SpracheDAO {
 	 * @throws SQLException
 	 */
 	public String getSprache(int sid) throws SQLException {
-		String result = "";
-		// set the sql query
-		String sql = "SELECT * FROM Sprachen WHERE SID = ?";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set WHERE in statement
-			preparedStatement.setInt(1, sid);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// fetch the result
-				result = getSpracheFromResultSet(resultSet).get(0);
-			}
-		}
-		return result;
+		String columns = "*";
+		String condition = "SID=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(sid);
+
+		statement.select(columns).from(TABLE).where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		return getSpracheFromResultSet(result).get(0);
 	}
 
 	/**
@@ -71,19 +62,14 @@ public class SpracheDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllSprachen() throws SQLException {
-		// set the sql query
-		List<String> result = new LinkedList<>();
-		String sql = "SELECT * FROM Sprachen";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// return the result
-				result = getSpracheFromResultSet(resultSet);
-			}
-		}
-		return result;
+		String column = "*";
+		
+		statement.select(column).from(TABLE);
+		ResultSet result = statement.executeQuery();
+
+		return getSpracheFromResultSet(result);
 	}
 
 	/**

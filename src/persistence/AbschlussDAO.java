@@ -15,7 +15,6 @@ import java.util.List;
  *
  */
 public class AbschlussDAO {
-
 	private final String TABLE = "graduation";
 
 	/**

@@ -3,8 +3,6 @@
  */
 package persistence;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -17,7 +15,7 @@ import java.util.List;
  *
  */
 public class ExpertiseDAO {
-	private DataSource datasource = DataSource.getInstance();
+	private final String TABLE = "expertise";
 
 	/**
 	 * @param eid
@@ -25,20 +23,17 @@ public class ExpertiseDAO {
 	 * @throws SQLException
 	 */
 	public String getExpertise(int eid) throws SQLException {
-		// set the sql query
-		String sql = "SELECT expertise FROM expertise WHERE EID=?";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		// closes the connection and statement after usage
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set WHERE in statement
-			preparedStatement.setInt(1, eid);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// return the result
-				return getExpertiseFromResultSet(resultSet).get(0);
-			}
-		}
+		String column = "expertise";
+		String condition = "EID=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(eid);
+
+		statement.select(column).from(TABLE).where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		return getExpertiseFromResultSet(result).get(0);
 	}
 
 	/**
@@ -48,22 +43,20 @@ public class ExpertiseDAO {
 	 */
 	public int getExpertise(String expertise) throws SQLException {
 		int eid = -1;
-		// set the sql query
-		String sql = "SELECT EID FROM expertise WHERE expertise=?";
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set WHERE in statement
-			preparedStatement.setString(1, expertise);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				while (resultSet.next()) {
-					// fetch the result
-					eid = resultSet.getInt("EID");
-				}
-			}
+		Sql statement = new Sql();
+
+		String column = "EID";
+		String condition = "expertise=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(expertise);
+
+		statement.select(column).from(TABLE).where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		while (result.next()) {
+			eid = result.getInt(column);
 		}
-
 		return eid;
 	}
 
@@ -72,17 +65,14 @@ public class ExpertiseDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllExpertises() throws SQLException {
-		// set the sql query
-		String sql = "SELECT expertise FROM expertise";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// return the result
-				return getExpertiseFromResultSet(resultSet);
-			}
-		}
+		String column = "expertise";
+		
+		statement.select(column).from(TABLE);
+		ResultSet result = statement.executeQuery();
+
+		return getExpertiseFromResultSet(result);
 	}
 
 	/**

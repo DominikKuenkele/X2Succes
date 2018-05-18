@@ -23,6 +23,8 @@ import util.exception.ValidateArgsException;
 public class UnternehmensprofilDAO {
 	private DataSource datasource = DataSource.getInstance();
 
+	private final String TABLE = "unternehmensprofil";
+
 	/**
 	 * @param unternehmen
 	 * @return the generated ID of the new {@link model.Unternehmensprofil}
@@ -81,27 +83,19 @@ public class UnternehmensprofilDAO {
 	 * @throws SQLException
 	 */
 	public Unternehmensprofil getUnternehmensprofil(int uid) throws SQLException {
-		// set the sql query
-		String sql = "SELECT UID, NID, branche.branche, name, legalForm, founding, employees, description, "
-				+ "website, ceoFirstName, ceoLastName, plz, city, street, number " + "FROM unternehmensprofil "
-				+ "INNER JOIN branche ON unternehmensprofil.BID = branche.BID " + "WHERE UID = ?";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set param
-			preparedStatement.setInt(1, uid);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// fetch the list
-				List<Unternehmensprofil> resultList = getUnternehmensprofilFromResultSet(resultSet);
-				// return the first Unternehmensprofil of list if existing
-				if (resultList.size() > 0) {
-					return resultList.get(0);
-				} else {
-					return null;
-				}
-			}
-		}
+		String columns[] = { "UID", "NID", "branche.branche", "name", "legalForm", "founding", "employees",
+				"description", "website", "ceoFirstName", "ceoLastName", "plz", "city", "street", "number" };
+		String condition = "UID=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(uid);
+
+		statement.select(columns).from(TABLE).innerJoin("branche", "unternehmensprofil.BID = branche.BID")
+				.where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		return getUnternehmensprofilFromResultSet(result).get(0);
 	}
 
 	/**
@@ -110,19 +104,15 @@ public class UnternehmensprofilDAO {
 	 * @throws SQLException
 	 */
 	public List<Unternehmensprofil> getAllUnternehmen() throws SQLException {
-		// set the sql query
-		String sql = "SELECT UID, NID, branche.branche, name, legalForm, founding, employees, description, "
-				+ "website, ceoFirstName, ceoLastName, plz, city, street, number " + "FROM unternehmensprofil "
-				+ "INNER JOIN branche ON unternehmensprofil.BID = branche.BID ";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// return the list of all Freelancer
-				return getUnternehmensprofilFromResultSet(resultSet);
-			}
-		}
+		String columns[] = { "UID", "NID", "branche.branche", "name", "legalForm", "founding", "employees",
+				"description", "website", "ceoFirstName", "ceoLastName", "plz", "city", "street", "number" };
+
+		statement.select(columns).from(TABLE).innerJoin("branche", "unternehmensprofil.BID = branche.BID");
+		ResultSet result = statement.executeQuery();
+
+		return getUnternehmensprofilFromResultSet(result);
 	}
 
 	/**
@@ -229,31 +219,23 @@ public class UnternehmensprofilDAO {
 	}
 
 	/**
-	 * @param aNid
+	 * @param nid
 	 * @return {@link model.Unternehmensprofil} with given {@link model.Nutzer}
 	 * @throws SQLException
 	 */
-	public Unternehmensprofil getUnternehmensprofilByNutzer(int aNid) throws SQLException {
-		// set the sql query
-		String sql = "SELECT UID, NID, branche.branche, name, legalForm, founding, employees, description, "
-				+ "website, ceoFirstName, ceoLastName, plz, city, street, number " + "FROM unternehmensprofil "
-				+ "INNER JOIN branche ON unternehmensprofil.BID = branche.BID " + "WHERE NID = ?";
+	public Unternehmensprofil getUnternehmensprofilByNutzer(int nid) throws SQLException {
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set param
-			preparedStatement.setInt(1, aNid);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// fetch the list
-				List<Unternehmensprofil> resultList = getUnternehmensprofilFromResultSet(resultSet);
-				// return the first Freelancer of list if existing
-				if (resultList.size() > 0) {
-					return resultList.get(0);
-				} else {
-					return null;
-				}
-			}
-		}
+		String columns[] = { "UID", "NID", "branche.branche", "name", "legalForm", "founding", "employees",
+				"description", "website", "ceoFirstName", "ceoLastName", "plz", "city", "street", "number" };
+		String condition = "NID=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(nid);
+
+		statement.select(columns).from(TABLE).innerJoin("branche", "unternehmensprofil.BID = branche.BID")
+				.where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		return getUnternehmensprofilFromResultSet(result).get(0);
 	}
 }

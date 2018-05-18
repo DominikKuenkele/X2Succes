@@ -22,6 +22,8 @@ import util.exception.ValidateArgsException;
 public class NutzerDAO {
 	private DataSource datasource = DataSource.getInstance();
 
+	private final String TABLE = "nutzer";
+	
 	/**
 	 * @param nutzer
 	 * @return the generated ID of the new {@link model.Nutzer}
@@ -120,25 +122,17 @@ public class NutzerDAO {
 	 * @throws SQLException
 	 */
 	public Nutzer getNutzer(final String eMail) throws SQLException {
-		// set the sql query
-		String sql = "SELECT * FROM Nutzer WHERE eMail = ?";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set param
-			preparedStatement.setString(1, eMail);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// fetch the list
-				final List<Nutzer> result = getNutzerFromResultSet(resultSet);
-				// return the first Nutzer of list if existing
-				if (result.isEmpty()) {
-					return null;
-				} else {
-					return result.get(0);
-				}
-			}
-		}
+		String columns = "*";
+		String condition = "eMail=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(eMail);
+
+		statement.select(columns).from(TABLE).where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		return getNutzerFromResultSet(result).get(0);
 	}
 
 	/**
@@ -147,25 +141,17 @@ public class NutzerDAO {
 	 * @throws SQLException
 	 */
 	public Nutzer getNutzer(final int id) throws SQLException {
-		// set the sql query
-		String sql = "SELECT * FROM Nutzer WHERE NID = ?";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set param
-			preparedStatement.setInt(1, id);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// fetch the list
-				final List<Nutzer> result = getNutzerFromResultSet(resultSet);
-				// return the first Nutzer of list if existing
-				if (result.isEmpty()) {
-					return null;
-				} else {
-					return result.get(0);
-				}
-			}
-		}
+		String columns = "*";
+		String condition = "NID=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(id);
+
+		statement.select(columns).from(TABLE).where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		return getNutzerFromResultSet(result).get(0);
 	}
 
 	/**
@@ -173,17 +159,14 @@ public class NutzerDAO {
 	 * @throws SQLException
 	 */
 	public List<Nutzer> getAllNutzer() throws SQLException {
-		// set the sql query
-		String sql = "SELECT * FROM Nutzer";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// return the list of all Nutzer
-				return getNutzerFromResultSet(resultSet);
-			}
-		}
+		String columns = "*";
+		
+		statement.select(columns).from(TABLE);
+		ResultSet result = statement.executeQuery();
+
+		return getNutzerFromResultSet(result);
 	}
 
 	/**

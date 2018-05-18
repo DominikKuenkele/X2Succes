@@ -20,6 +20,8 @@ import util.exception.ValidateArgsException;
 public class JobangebotDAO {
 	private DataSource datasource = DataSource.getInstance();
 
+	private final String TABLE = "jobangebot";
+
 	/**
 	 * @param jobangebot
 	 * @return the generated ID of the new {@link model.Jobangebot}
@@ -87,28 +89,19 @@ public class JobangebotDAO {
 	 * @throws SQLException
 	 */
 	public Jobangebot getJobangebot(int jid) throws SQLException {
-		// set the sql query
-		String sql = "SELECT JID, UID, graduation.graduation, expertise.expertise, "
-				+ "jobTitle, description, deadline, salary, weeklyHours FROM jobangebot "
-				+ "INNER JOIN graduation ON jobangebot.GID=graduation.GID "
-				+ "INNER JOIN expertise ON jobangebot.EID = expertise.EID WHERE JID = ?";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			// set param
-			preparedStatement.setInt(1, jid);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// fetch the list
-				List<Jobangebot> resultList = getJobangebotFromResultSet(resultSet);
-				// return the first Jobangebot of list if existing
-				if (resultList.size() > 0) {
-					return resultList.get(0);
-				} else {
-					return null;
-				}
-			}
-		}
+		String columns[] = { "JID", "UID", "graduation.graduation", "expertise.expertise", "jobTitle", "description",
+				"deadline", "salary", "weeklyHours" };
+		String condition = "JID=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(jid);
+
+		statement.select(columns).from(TABLE).innerJoin("graduation", "jobangebot.GID=graduation.GID")
+				.innerJoin("expertise", "jobangebot.EID = expertise.EID").where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		return getJobangebotFromResultSet(result).get(0);
 	}
 
 	/**
@@ -116,20 +109,16 @@ public class JobangebotDAO {
 	 * @throws SQLException
 	 */
 	public List<Jobangebot> getAllJobangebote() throws SQLException {
-		// set the sql query
-		String sql = "SELECT JID, UID, graduation.graduation, expertise.expertise, "
-				+ "jobTitle, description, deadline, salary, weeklyHours FROM jobangebot "
-				+ "INNER JOIN graduation ON jobangebot.GID = graduation.GID "
-				+ "INNER JOIN expertise ON jobangebot.EID = expertise.EID";
+		Sql statement = new Sql();
 
-		// try with connection and prepared statement
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				// return the list of all Freelancer
-				return getJobangebotFromResultSet(resultSet);
-			}
-		}
+		String columns[] = { "JID", "UID", "graduation.graduation", "expertise.expertise", "jobTitle", "description",
+				"deadline", "salary", "weeklyHours" };
+
+		statement.select(columns).from(TABLE).innerJoin("graduation", "jobangebot.GID=graduation.GID")
+				.innerJoin("expertise", "jobangebot.EID = expertise.EID");
+		ResultSet result = statement.executeQuery();
+
+		return getJobangebotFromResultSet(result);
 	}
 
 	/**
@@ -248,21 +237,24 @@ public class JobangebotDAO {
 	 * @throws SQLException
 	 */
 	private List<String> getLanguageInJobangebot(int jid) throws SQLException {
-		List<String> result = new LinkedList<>();
-		String sql = "SELECT SID FROM SprachenzuordnungJA WHERE JID = ?";
+		List<String> res = new LinkedList<>();
+		Sql statement = new Sql();
 
-		try (Connection connect = datasource.getConnection();
-				PreparedStatement preparedStatement = connect.prepareStatement(sql)) {
-			preparedStatement.setInt(1, jid);
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				while (resultSet.next()) {
-					int sid = resultSet.getInt("SID");
-					String sprache = new SpracheDAO().getSprache(sid);
-					result.add(sprache);
-				}
-			}
+		String columns = "SID";
+		String condition = "JID=?";
+		List<Object> conditionWildcards = new LinkedList<>();
+		conditionWildcards.add(jid);
+
+		statement.select(columns).from("SprachenzuordnungJA").where(conditionWildcards, condition);
+		ResultSet result = statement.executeQuery();
+
+		while (result.next()) {
+			int sid = result.getInt("SID");
+			String sprache = new SpracheDAO().getSprache(sid);
+			res.add(sprache);
 		}
-		return result;
+		
+		return res;
 	}
 
 	/**
