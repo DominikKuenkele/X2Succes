@@ -22,7 +22,7 @@ public class SpracheDAO {
 	public int getSID(String sprache) throws SQLException {
 		int sid = -1;
 
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "SID";
 		String condition = "sprache=?";
@@ -44,7 +44,7 @@ public class SpracheDAO {
 	 * @throws SQLException
 	 */
 	public String getSprache(int sid) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns = "*";
 		String condition = "SID=?";
@@ -62,7 +62,7 @@ public class SpracheDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllSprachen() throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "*";
 		

@@ -23,7 +23,7 @@ public class BrancheDAO {
 	 * @throws SQLException
 	 */
 	public String getBranche(int bid) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "branche";
 		String condition = "BID=?";
@@ -44,7 +44,7 @@ public class BrancheDAO {
 	public int getBID(String branche) throws SQLException {
 		int bid = -1;
 
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "BID";
 		String condition = "branche=?";
@@ -65,7 +65,7 @@ public class BrancheDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllBranchen() throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "branche";
 		

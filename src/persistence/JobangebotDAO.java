@@ -89,7 +89,7 @@ public class JobangebotDAO {
 	 * @throws SQLException
 	 */
 	public Jobangebot getJobangebot(int jid) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns[] = { "JID", "UID", "graduation.graduation", "expertise.expertise", "jobTitle", "description",
 				"deadline", "salary", "weeklyHours" };
@@ -109,7 +109,7 @@ public class JobangebotDAO {
 	 * @throws SQLException
 	 */
 	public List<Jobangebot> getAllJobangebote() throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns[] = { "JID", "UID", "graduation.graduation", "expertise.expertise", "jobTitle", "description",
 				"deadline", "salary", "weeklyHours" };
@@ -238,7 +238,7 @@ public class JobangebotDAO {
 	 */
 	private List<String> getLanguageInJobangebot(int jid) throws SQLException {
 		List<String> res = new LinkedList<>();
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns = "SID";
 		String condition = "JID=?";

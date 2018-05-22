@@ -95,7 +95,7 @@ public class FreelancerprofilDAO {
 	 * @throws SQLException
 	 */
 	public Freelancerprofil getFreelancerprofilByNutzer(int nid) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns[] = { "FID", "NID", "graduation.graduation", "expertise.expertise", "description", "skills",
 				"career" };
@@ -116,7 +116,7 @@ public class FreelancerprofilDAO {
 	 * @throws SQLException
 	 */
 	public Freelancerprofil getFreelancerprofil(int fid) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns[] = { "FID", "NID", "graduation.graduation", "expertise.expertise", "description", "skills",
 				"career" };
@@ -137,7 +137,7 @@ public class FreelancerprofilDAO {
 	 * @throws SQLException
 	 */
 	public List<Freelancerprofil> getAllFreelancer() throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns[] = { "FID", "NID", "graduation.graduation", "expertise.expertise", "description", "skills",
 				"career" };
@@ -270,7 +270,7 @@ public class FreelancerprofilDAO {
 	 */
 	private List<String> getLanguageInFreelancerprofil(int fid) throws SQLException {
 		List<String> res = new LinkedList<>();
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns = "SID";
 		String condition = "FID=?";

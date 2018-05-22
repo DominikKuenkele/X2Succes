@@ -23,7 +23,7 @@ public class AbschlussDAO {
 	 * @throws SQLException
 	 */
 	public String getAbschluss(int gid) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "graduation";
 		String condition = "GID=?";
@@ -44,7 +44,7 @@ public class AbschlussDAO {
 	public int getAbschluss(String abschluss) throws SQLException {
 		int gid = -1;
 
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "GID";
 		String condition = "graduation=?";
@@ -65,7 +65,7 @@ public class AbschlussDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllAbschluss() throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "graduation";
 		String orderBy = "hierarchy";
@@ -100,7 +100,7 @@ public class AbschlussDAO {
 	public int getHierarchy(String abschluss) throws SQLException {
 		int hier = -1;
 
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "hierarchy";
 		String condition = "graduation=?";

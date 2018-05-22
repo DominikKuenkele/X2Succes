@@ -23,7 +23,7 @@ public class ExpertiseDAO {
 	 * @throws SQLException
 	 */
 	public String getExpertise(int eid) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "expertise";
 		String condition = "EID=?";
@@ -44,7 +44,7 @@ public class ExpertiseDAO {
 	public int getExpertise(String expertise) throws SQLException {
 		int eid = -1;
 
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "EID";
 		String condition = "expertise=?";
@@ -65,7 +65,7 @@ public class ExpertiseDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllExpertises() throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "expertise";
 		

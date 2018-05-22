@@ -83,7 +83,7 @@ public class UnternehmensprofilDAO {
 	 * @throws SQLException
 	 */
 	public Unternehmensprofil getUnternehmensprofil(int uid) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns[] = { "UID", "NID", "branche.branche", "name", "legalForm", "founding", "employees",
 				"description", "website", "ceoFirstName", "ceoLastName", "plz", "city", "street", "number" };
@@ -104,7 +104,7 @@ public class UnternehmensprofilDAO {
 	 * @throws SQLException
 	 */
 	public List<Unternehmensprofil> getAllUnternehmen() throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns[] = { "UID", "NID", "branche.branche", "name", "legalForm", "founding", "employees",
 				"description", "website", "ceoFirstName", "ceoLastName", "plz", "city", "street", "number" };
@@ -224,7 +224,7 @@ public class UnternehmensprofilDAO {
 	 * @throws SQLException
 	 */
 	public Unternehmensprofil getUnternehmensprofilByNutzer(int nid) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns[] = { "UID", "NID", "branche.branche", "name", "legalForm", "founding", "employees",
 				"description", "website", "ceoFirstName", "ceoLastName", "plz", "city", "street", "number" };

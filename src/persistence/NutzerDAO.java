@@ -122,7 +122,7 @@ public class NutzerDAO {
 	 * @throws SQLException
 	 */
 	public Nutzer getNutzer(final String eMail) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns = "*";
 		String condition = "eMail=?";
@@ -141,7 +141,7 @@ public class NutzerDAO {
 	 * @throws SQLException
 	 */
 	public Nutzer getNutzer(final int id) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns = "*";
 		String condition = "NID=?";
@@ -159,7 +159,7 @@ public class NutzerDAO {
 	 * @throws SQLException
 	 */
 	public List<Nutzer> getAllNutzer() throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns = "*";
 		

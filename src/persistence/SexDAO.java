@@ -23,7 +23,7 @@ public class SexDAO {
 	 * @throws SQLException
 	 */
 	public String getSex(int sexId) throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String columns = "sex";
 		String condition = "sexID=?";
@@ -44,7 +44,7 @@ public class SexDAO {
 	public int getSex(String sex) throws SQLException {
 		int sexId = -1;
 
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "sexID";
 		String condition = "sex=?";
@@ -65,7 +65,7 @@ public class SexDAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAllSex() throws SQLException {
-		Sql statement = new Sql();
+		SelectSql statement = new SelectSql();
 
 		String column = "sex";
 		
